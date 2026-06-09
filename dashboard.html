@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - E-Rapor Digital</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-[#0A0F1D] text-slate-200 min-h-screen p-6 relative overflow-x-hidden">
+
+    <div class="absolute -top-40 -left-40 w-96 h-96 bg-blue-600/10 rounded-full blur-[128px] pointer-events-none"></div>
+    <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-600/10 rounded-full blur-[128px] pointer-events-none"></div>
+
+    <div class="max-w-5xl mx-auto relative z-10 space-y-8">
+        
+        <div class="bg-[#111827]/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <span class="text-xs font-bold text-blue-400 tracking-widest uppercase">Ruang Kerja Admin Panel</span>
+                <h1 id="txtNamaSekolah" class="text-2xl font-extrabold text-white mt-1">Memuat Nama Sekolah...</h1>
+                <p class="text-xs text-slate-400 mt-0.5">Sistem Pengisian Nilai & Cetak Rapor Fase B Kelas 4</p>
+            </div>
+            <button onclick="logout()" class="bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-bold px-4 py-2.5 rounded-xl transition cursor-pointer">
+                Keluar Sistem
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <div class="bg-[#111827]/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:border-blue-500/40 transition-all duration-300 flex flex-col justify-between group">
+                <div>
+                    <div class="bg-blue-500/10 border border-blue-500/20 w-12 h-12 rounded-2xl flex items-center justify-center text-blue-400 mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+                    </div>
+                    <h2 class="text-lg font-bold text-white">1. Input Nilai & Data Siswa</h2>
+                    <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                        Gunakan lembar kerja ini untuk mengelola data master siswa, menginput nilai asesmen sumatif, nilai formatif, serta capaian kompetensi (TP) Kurikulum Merdeka.
+                    </p>
+                </div>
+                <div class="mt-6 pt-4 border-t border-white/5">
+                    <a id="lnkDbSiswa" target="_blank" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold py-3 px-4 rounded-xl shadow-lg shadow-blue-600/10 flex items-center justify-center gap-2 transition cursor-pointer">
+                        <span>Buka Spreadsheet Nilai</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-[#111827]/60 backdrop-blur-xl border border-white/10 rounded-3xl p-6 hover:border-emerald-500/40 transition-all duration-300 flex flex-col justify-between group">
+                <div>
+                    <div class="bg-emerald-500/10 border border-emerald-500/20 w-12 h-12 rounded-2xl flex items-center justify-center text-emerald-400 mb-4 group-hover:scale-110 transition-transform">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                    </div>
+                    <h2 class="text-lg font-bold text-white">2. Cetak Rapor Digital</h2>
+                    <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                        Lembar kerja khusus untuk memproses kalkulasi nilai akhir, generate deskripsi otomatis, serta mencetak lembar Rapor Kurikulum Merdeka secara massal menjadi file PDF.
+                    </p>
+                </div>
+                <div class="mt-6 pt-4 border-t border-white/5">
+                    <a id="lnkRapor" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-3 px-4 rounded-xl shadow-lg shadow-emerald-600/10 flex items-center justify-center gap-2 transition cursor-pointer">
+                        <span>Buka Aplikasi Rapor</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-4 flex gap-3 text-xs leading-relaxed text-amber-300">
+            <span class="text-base">💡</span>
+            <div>
+                <b class="text-amber-200">Informasi Alur Sinkronisasi:</b> Data Nilai yang diinput pada <span class="underline">Spreadsheet Nilai</span> akan ditarik secara otomatis oleh rumus internal ke dalam <span class="underline">Aplikasi Rapor</span>. Pastikan Anda tidak mengubah struktur kolom bawaan template agar relasi data antar file tidak terputus.
+            </div>
+        </div>
+    </div>
+
+    <script {important}>
+        // 1. Ekstrak parameter dari URL Browser saat ini
+        const urlParams = new URLSearchParams(window.location.search);
+        const dbId = urlParams.get('dbId');
+        const raporId = urlParams.get('raporId');
+        const namaSekolah = urlParams.get('namaSekolah');
+
+        // 2. Validasi Keamanan: Jika parameter tidak lengkap, tendang balik ke portal login
+        if (!dbId || !raporId) {
+            alert("Akses Ilegal! Anda akan dialihkan kembali ke gerbang login utama.");
+            window.location.href = "index.html";
+        } else {
+            // 3. Suntikkan Data Terjemahan ke Element HTML
+            document.getElementById('txtNamaSekolah').innerText = decodeURIComponent(namaSekolah || "SEKOLAH TERDAFTAR");
+            
+            // 4. Bangun URL Link Langsung Menuju Google Spreadsheet Masing-Masing
+            document.getElementById('lnkDbSiswa').href = `https://docs.google.com/spreadsheets/d/${dbId}/edit`;
+            document.getElementById('lnkRapor').href = `https://docs.google.com/spreadsheets/d/${raporId}/edit`;
+        }
+
+        // Fungsi Logout Bersih
+        function logout() {
+            if(confirm("Apakah Anda yakin ingin keluar dari sesi administrasi sekolah ini?")) {
+                window.location.href = "index.html";
+            }
+        }
+    </script>
+</body>
+</html>
