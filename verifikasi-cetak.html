@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pratinjau Rapor Resmi - UPT SDN Ranuklindungan I</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { 
+      font-family: 'Calibri', 'Arial', sans-serif; 
+      background-color: #f1f5f9; 
+      color: #000; 
+      margin: 0;
+      padding: 0;
+    }
+    .lembar-rapor {
+      background: white;
+      width: 210mm;
+      min-height: 297mm;
+      padding: 20mm 20mm 15mm 20mm;
+      margin: 20px auto;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+    }
+    .tabel-border-tegas, .tabel-border-tegas th, .tabel-border-tegas td {
+      border: 1.5px solid #000000 !important;
+    }
+
+    @page {
+      size: A4;           
+      margin: 0mm;        
+    }
+
+    @media print {
+      .no-print, #navigasiAtas, [class*="no-print"] { 
+        display: none !important; 
+        height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        visibility: hidden !important;
+      }
+      body { 
+        background: #ffffff !important; 
+        margin: 0 !important; 
+        padding: 0 !important; 
+      }
+      .lembar-rapor { 
+        box-shadow: none !important; 
+        margin: 0 auto !important; 
+        padding: 15mm 15mm 15mm 15mm !important; 
+        width: 210mm !important; 
+        min-height: auto !important; 
+      }
+      /* Arsitektur Pencegahan Dokumen Terpotong Tengah */
+      .blok-anti-pisah {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="navigasiAtas" class="no-print bg-slate-900 p-4 text-white flex justify-between items-center sticky top-0 shadow-md z-50">
+    <div class="text-xs font-bold font-sans tracking-wide">📄 RAPOR ELEKTRONIK (ISOLATED CHARIVA SYSTEM V14.5)</div>
+    <button onclick="window.print()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow transition">🖨️ Cetak Lembaran Rapor</button>
+  </div>
+
+  <div class="lembar-rapor" id="kontenRapor">
+    
+    <div id="loader" class="text-center text-slate-500 font-bold text-sm pt-20 animate-pulse font-sans">
+      🔄 Mengakses jalur data terisolasi 'cetak_github'... Memetakan lembar rapor...
+    </div>
+
+    <div id="coreRapor" class="hidden">
+      
+      <!-- HEADER RAPOR -->
+      <div class="flex items-center justify-start gap-6 border-b-2 border-black pb-4 mb-4">
+       <img src="img/Logo_SD_Ranu_1.png" 
+            class="w-16 h-auto object-contain" 
+            alt="Logo SDN Ranuklindungan I">
+       <div class="text-center flex-1 pr-16">
+         <h1 class="text-lg font-bold tracking-wide">LAPORAN HASIL BELAJAR</h1>
+         <h2 class="text-base font-bold tracking-wider">(RAPOR)</h2>
+       </div>
+      </div>
+
+      <!-- BIODATA / IDENTITAS SISWA -->
+      <div class="grid grid-cols-2 gap-x-8 text-[12.5px] leading-relaxed mb-4">
+        <table class="w-full">
+          <tr>
+            <td class="w-36 py-0.5 font-medium">Nama Peserta Didik</td>
+            <td class="w-4">:</td>
+            <td id="lblNama" class="font-bold uppercase text-sm">-</td>
+          </tr>
+          <tr>
+            <td class="py-0.5 font-medium">NIS / NISN</td>
+            <td>:</td>
+            <td><span id="lblMurniNis">-</span> / <span id="lblMurniNisn">-</span></td>
+          </tr>
+          <tr>
+            <td class="py-0.5 font-medium">Nama Sekolah</td>
+            <td>:</td>
+            <td id="lblSekolah" class="font-medium">-</td>
+          </tr>
+          <tr>
+            <td class="py-0.5 font-medium">Alamat</td>
+            <td>:</td>
+            <td id="lblAlamat">-</td>
+          </tr>
+        </table>
+        <table class="w-full">
+          <tr>
+            <td class="w-32 py-0.5 font-medium">Kelas</td>
+            <td class="w-4">:</td>
+            <td id="lblKelas">-</td>
+          </tr>
+          <tr>
+            <td class="py-0.5 font-medium">Fase</td>
+            <td>:</td>
+            <td id="lblFase">-</td>
+          </tr>
+          <tr>
+            <td class="py-0.5 font-medium">Semester</td>
+            <td>:</td>
+            <td id="lblSemester">-</td>
+          </tr>
+          <tr>
+            <td class="py-0.5 font-medium">Tahun Pelajaran</td>
+            <td>:</td>
+            <td id="lblTp">-</td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- TABEL A: MATAPELAJARAN UTAMA -->
+      <div class="mb-4">
+        <table class="w-full tabel-border-tegas text-xs text-left">
+          <thead>
+            <tr class="bg-slate-50 text-center font-bold">
+              <th class="p-2 w-10 text-center">No</th>
+              <th class="p-2 w-48 text-center">Muatan Pelajaran</th>
+              <th class="p-2 w-16 text-center">Nilai Akhir</th>
+              <th class="p-2 text-center">Capaian Kompetensi</th>
+            </tr>
+          </thead>
+          <tbody id="bodyTabelRapor" class="divide-y divide-black font-normal"></tbody>
+        </table>
+      </div>
+
+      <!-- TABEL B: MUATAN LOKAL -->
+      <div class="mb-5">
+        <h3 class="font-bold text-xs uppercase mb-1 tracking-wide">MUATAN LOKAL</h3>
+        <table class="w-full tabel-border-tegas text-xs text-left">
+          <thead>
+            <tr class="bg-slate-50 text-center font-bold">
+              <th class="p-2 w-10 text-center">No</th>
+              <th class="p-2 w-48 text-center">Muatan Pelajaran</th>
+              <th class="p-2 w-16 text-center">Nilai Akhir</th>
+              <th class="p-2 text-center">Capaian Kompetensi</th>
+            </tr>
+          </thead>
+          <tbody id="bodyTabelMulok" class="divide-y divide-black font-normal"></tbody>
+        </table>
+      </div>
+
+      <!-- TABEL C: EKSTRAKURIKULER (TURUN 5 BARIS DENGAN MT-20 & REGISTER ANTI-PISAH) -->
+      <div class="mt-20 mb-5 blok-anti-pisah">
+        <h3 class="font-bold text-xs uppercase mb-1 tracking-wide">EKSTRAKURIKULER</h3>
+        <table class="w-full tabel-border-tegas text-xs text-left">
+          <thead>
+            <tr class="bg-slate-50 text-center font-bold">
+              <th class="p-2 w-10 text-center">No</th>
+              <th class="p-2 w-48 text-center">Kegiatan Ekstrakurikuler</th>
+              <th class="p-2 w-16 text-center">Predikat</th>
+              <th class="p-2 text-center">Keterangan</th>
+            </tr>
+          </thead>
+          <tbody id="bodyTabelEkstra" class="divide-y divide-black font-normal"></tbody>
+        </table>
+      </div>
+
+      <!-- TABEL D: KETIDAKHADIRAN -->
+      <div class="mb-6 w-[260px] blok-anti-pisah">
+        <h3 class="font-bold text-xs uppercase mb-1 tracking-wide">KETIDAKHADIRAN</h3>
+        <table class="w-full tabel-border-tegas text-xs text-left">
+          <tbody>
+            <tr>
+              <td class="p-2 w-32 font-medium">Sakit</td>
+              <td id="lblSakit" class="p-2 text-center font-bold w-14 bg-slate-50">-</td>
+              <td class="p-2 text-left">hari</td>
+            </tr>
+            <tr>
+              <td class="p-2 font-medium">Izin</td>
+              <td id="lblIzin" class="p-2 text-center font-bold bg-slate-50">-</td>
+              <td class="p-2 text-left">hari</td>
+            </tr>
+            <tr>
+              <td class="p-2 font-medium">Tanpa Keterangan</td>
+              <td id="lblAlfa" class="p-2 text-center font-bold bg-slate-50">-</td>
+              <td class="p-2 text-left">hari</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- BLOK TANDA TANGAN (AUTOMATICALLY SEJALUR) -->
+      <div class="blok-anti-pisah text-xs mt-12 leading-relaxed">
+        
+        <div class="flex justify-between items-end text-center mb-16 px-4">
+          <div class="w-64">
+            <p class="mb-20 font-medium text-sm">Orang Tua,</p>
+            <div class="border-b border-black w-48 mx-auto"></div>
+            <p class="text-xs text-transparent select-none">NIP. -</p> 
+          </div>
+          <div class="w-64">
+            <p class="mb-20 font-medium text-sm"><span id="lblTempatTanggal">-</span><br>Wali Kelas 4 (empat)</p>
+            <p id="lblNamaGuru" class="font-bold text-sm capitalize">-</p>
+            <div class="border-b border-black w-48 mx-auto my-0.5"></div>
+            <p id="lblNipGuru" class="text-xs text-slate-700">-</p>
+          </div>
+        </div>
+
+        <div class="text-center w-full">
+          <p class="mb-20 font-medium text-sm">Mengetahui,<br>Kepala Sekolah</p>
+          <p id="lblNamaKepsek" class="font-bold text-sm capitalize">-</p>
+          <div class="border-b border-black w-56 mx-auto my-0.5"></div>
+          <p id="lblNipKepsek" class="text-xs text-slate-700">-</p>
+        </div>
+
+      </div>
+      
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentNoAbsen = urlParams.get('no_absen');
+    const dynamicAppsScriptUrl = urlParams.get('api_url');
+
+    window.addEventListener('DOMContentLoaded', function() {
+      if(!currentNoAbsen || !dynamicAppsScriptUrl) {
+        document.getElementById('loader').className = "text-center p-10 text-sm font-sans text-amber-600 font-bold bg-amber-50 rounded-xl border border-amber-200 m-5";
+        document.getElementById('loader').innerHTML = "⚠️ PARAMETER DOKUMEN BELUM LENGKAP.";
+        return;
+      }
+      
+      const targetApiUrl = `${dynamicAppsScriptUrl}?action=cetak_github&no_absen=${encodeURIComponent(currentNoAbsen)}`;
+      
+      fetch(targetApiUrl)
+        .then(response => {
+          if (!response.ok) throw new Error("Terjadi gangguan transmisi data API.");
+          return response.json();
+        })
+        .then(responseObj => {
+          if (responseObj.status === "SUCCESS" && responseObj.data) {
+            renderBundleKeRapor(responseObj.data);
+          } else {
+            throw new Error(responseObj.message || "Gagal menarik data melalui parameter cetak_github.");
+          }
+        })
+        .catch(err => {
+          tampilkanPesanGagal(err.toString());
+        });
+    });
+
+    function renderBundleKeRapor(bundle) {
+      document.getElementById('loader').classList.add('hidden');
+      document.getElementById('coreRapor').classList.remove('hidden');
+      
+      // 1. Injeksi Data Identitas Utama
+      document.getElementById('lblNama').innerText = bundle.profil.nama || "-";
+      document.getElementById('lblMurniNis').innerText = bundle.profil.nis || "-";
+      document.getElementById('lblMurniNisn').innerText = bundle.profil.nisn || "-";
+      document.getElementById('lblKelas').innerText = bundle.profil.kelas || "IV";
+      document.getElementById('lblFase').innerText = bundle.profil.fase || "B";
+      document.getElementById('lblSemester').innerText = bundle.profil.semester || "II";
+      
+      document.getElementById('lblSekolah').innerText = bundle.sekolah.nama_sekolah || "UPT SDN RANUKLINDUNGAN I";
+      document.getElementById('lblAlamat').innerText = bundle.sekolah.alamat || "Bandilan, Ranuklindungan";
+      document.getElementById('lblTp').innerText = bundle.sekolah.tp || "2025/2026";
+      
+      // 2. Render Tabel A: Muatan Pelajaran Utama
+      const tbodyUtama = document.getElementById('bodyTabelRapor');
+      tbodyUtama.innerHTML = "";
+      if (bundle.payloadNilai && bundle.payloadNilai.length > 0) {
+        bundle.payloadNilai.forEach(item => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="p-2 text-center font-semibold align-top">${item.no}</td>
+            <td class="p-2 font-semibold align-top">${item.mapel}</td>
+            <td class="p-2 text-center font-bold text-sm align-top bg-slate-50">${item.nilai}</td>
+            <td class="p-2 text-justify leading-relaxed text-[11px] align-top whitespace-pre-line">${item.deskripsi}</td>
+          `;
+          tbodyUtama.appendChild(tr);
+        });
+      }
+
+      // 3. Render Tabel B: Muatan Lokal
+      const tbodyMulok = document.getElementById('bodyTabelMulok');
+      tbodyMulok.innerHTML = "";
+      if (bundle.payloadMulok && bundle.payloadMulok.length > 0) {
+        bundle.payloadMulok.forEach(item => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="p-2 text-center font-semibold align-top">${item.no}</td>
+            <td class="p-2 font-semibold align-top">${item.mapel}</td>
+            <td class="p-2 text-center font-bold text-sm align-top bg-slate-50">${item.nilai}</td>
+            <td class="p-2 text-justify leading-relaxed text-[11px] align-top whitespace-pre-line">${item.deskripsi}</td>
+          `;
+          tbodyMulok.appendChild(tr);
+        });
+      }
+
+      // 4. Render Tabel C: Ekstrakurikuler
+      const tbodyEkstra = document.getElementById('bodyTabelEkstra');
+      tbodyEkstra.innerHTML = "";
+      const namaEkskul = (bundle.ekstra && bundle.ekstra.nama) ? bundle.ekstra.nama : "Pramuka";
+      const predikatEkskul = (bundle.ekstra && bundle.ekstra.predikat) ? bundle.ekstra.predikat : "-";
+      const keteranganEkskul = (bundle.ekstra && bundle.ekstra.keterangan) ? bundle.ekstra.keterangan : "-";
+
+      const trEx = document.createElement('tr');
+      trEx.innerHTML = `
+        <td class="p-2 text-center font-semibold align-top">1</td>
+        <td class="p-2 font-semibold align-top">${namaEkskul}</td>
+        <td class="p-2 text-center font-bold text-sm align-top bg-slate-50">${predikatEkskul}</td>
+        <td class="p-2 text-justify leading-relaxed text-[11px] align-top whitespace-pre-line">${keteranganEkskul}</td>
+      `;
+      tbodyEkstra.appendChild(trEx);
+
+      // 5. Render Tabel D: Rekap Ketidakhadiran (Absensi)
+      if (bundle.kehadiran) {
+        document.getElementById('lblSakit').innerText = bundle.kehadiran.sakit !== "" ? bundle.kehadiran.sakit : "-";
+        document.getElementById('lblIzin').innerText = bundle.kehadiran.izin !== "" ? bundle.kehadiran.izin : "-";
+        document.getElementById('lblAlfa').innerText = bundle.kehadiran.alfa !== "" ? bundle.kehadiran.alfa : "-";
+      }
+
+      // 6. Injeksi Dinamis Blok Tanda Tangan Sesuai Request
+      if (bundle.ttd) {
+        document.getElementById('lblTempatTanggal').innerText = bundle.ttd.tanggal_cetak || "Pasuruan, .........................";
+        document.getElementById('lblNamaGuru').innerText = bundle.ttd.guru_kelas || "-";
+        document.getElementById('lblNipGuru').innerText = bundle.ttd.nip_guru ? "NIP. " + bundle.ttd.nip_guru : "NIP. ...........................";
+        document.getElementById('lblNamaKepsek').innerText = bundle.ttd.kepala_sekolah || "-";
+        document.getElementById('lblNipKepsek').innerText = bundle.ttd.nip_kepala ? "NIP. " + bundle.ttd.nip_kepala : "NIP. ...........................";
+      }
+    }
+
+    function tampilkanPesanGagal(pesanError) {
+      document.getElementById('loader').removeAttribute('class');
+      document.getElementById('loader').className = "text-center p-8 text-sm font-sans text-red-600 font-bold bg-red-50 rounded-xl border border-red-200 m-5";
+      document.getElementById('loader').innerHTML = `🛑 GAGAL MEMUAT BLOK RAPOR:<br><span class='font-normal text-xs text-slate-600 block my-2'>${pesanError}</span>`;
+    }
+  </script>
+</body>
+</html>
