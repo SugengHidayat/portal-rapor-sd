@@ -59,7 +59,7 @@
                     </p>
                 </div>
                 <div class="mt-6 pt-4 border-t border-white/5">
-                    <a id="lnkRapor" target="_blank" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-3 px-4 rounded-xl shadow-lg shadow-emerald-600/10 flex items-center justify-center gap-2 transition cursor-pointer">
+                    <a id="lnkRapor" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-3 px-4 rounded-xl shadow-lg shadow-emerald-600/10 flex items-center justify-center gap-2 transition cursor-pointer">
                         <span>Buka Aplikasi Rapor</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                     </a>
@@ -76,7 +76,7 @@
         </div>
     </div>
 
-    <script {important}>
+    <script>
         // 1. Ekstrak parameter dari URL Browser saat ini
         const urlParams = new URLSearchParams(window.location.search);
         const dbId = urlParams.get('dbId');
@@ -91,9 +91,12 @@
             // 3. Suntikkan Data Terjemahan ke Element HTML
             document.getElementById('txtNamaSekolah').innerText = decodeURIComponent(namaSekolah || "SEKOLAH TERDAFTAR");
             
-            // 4. Bangun URL Link Langsung Menuju Google Spreadsheet Masing-Masing
+            // 4. Bangun Jalur Navigasi Baru
+            // Tautan 1: Tetap membuka Google Spreadsheet Database Siswa di tab baru
             document.getElementById('lnkDbSiswa').href = `https://docs.google.com/spreadsheets/d/${dbId}/edit`;
-            document.getElementById('lnkRapor').href = `https://docs.google.com/spreadsheets/d/${raporId}/edit`;
+            
+            // Tautan 2: Diarahkan ke halaman internal aplikasi-rapor.html membawa query parameter
+            document.getElementById('lnkRapor').href = `aplikasi-rapor.html?raporId=${raporId}&namaSekolah=${encodeURIComponent(namaSekolah)}`;
         }
 
         // Fungsi Logout Bersih
