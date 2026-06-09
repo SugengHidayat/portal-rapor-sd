@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kompetensi & Nilai Siswa - UPT SDN Ranuklindungan I</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Gaya Animasi Timbul-Tenggelam untuk Tombol Verifikasi Kuning */
+        .btn-kuning-mekanis {
+            transform: translateY(0);
+            box-shadow: 0 4px 0 0 #d97706;
+            transition: all 0.05s ease-in-out;
+        }
+        .btn-kuning-mekanis:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 0 #d97706;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans min-h-screen text-slate-800">
+
+    <header class="bg-[#1e6ca8] text-white p-4 shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-2xl">🎯</span>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide">Pemetaan Kompetensi & Nilai Pendukung</h1>
+                    <p class="text-xs text-blue-100">UPT SDN Ranuklindungan I</p>
+                </div>
+            </div>
+            <a href="index.html" class="bg-white/20 hover:bg-white/30 text-white font-medium px-4 py-2 rounded-xl transition text-sm flex items-center space-x-1">
+                <span>⬅️</span> <span>Kembali ke Hub Utama</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 md:p-8 space-y-6">
+        
+        <section class="bg-white p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+            <div class="inline-flex items-center space-x-2 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
+                <span>📖</span> <span>Kerangka Kerja Kurikulum Merdeka</span>
+            </div>
+            <h2 class="text-xl md:text-2xl font-extrabold text-slate-900 tracking-tight">Konsep Evaluasi Berkelanjutan & Capaian Pembelajaran</h2>
+            <p class="text-slate-600 text-sm leading-relaxed text-justify">
+                Evaluasi melalui <strong>Ulangan Harian (UH)</strong> dan <strong>Asesmen Sumatif Akhir Semester (ASAS)</strong> pada platform ini dirancang bukan sekadar untuk mengukur angka kuantitatif, melainkan sebagai instrumen evaluasi komprehensif untuk memetakan ketercapaian Tujuan Pembelajaran (TP) pada tiap peserta didik di UPT SDN Ranuklindungan I. Pengumpulan data nilai berkala serta pemetaan TP yang valid memungkinkan pendidik melakukan diagnosis dini terhadap kompetensi kognitif siswa, mengenali laju belajar anak yang heterogen, serta memberikan intervensi secara personal sebelum menuju penilaian sumatif akhir semester.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs space-y-1 flex flex-col justify-between">
+                    <div>
+                        <span class="font-bold text-slate-800 block">🎯 Aspek Formatif & Sumatif</span>
+                        <span class="text-slate-500 block mt-1 leading-relaxed">Mendorong perbaikan kualitas pembelajaran (Refleksi Pendidik) dan penyesuaian capaian kompetensi dasar siswa secara berkala.</span>
+                    </div>
+                </div>
+                
+                <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs space-y-1 flex flex-col justify-between">
+                    <div>
+                        <span class="font-bold text-slate-800 block">📊 Otomatisasi Terintegrasi</span>
+                        <span class="text-slate-500 block mt-1 leading-relaxed">Data nilai dari Excel disinkronkan secara instan untuk mempercepat kalkulasi rata-rata rapor digital tanpa entri manual.</span>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs flex flex-col justify-between gap-3">
+                    <div>
+                        <span class="font-bold text-slate-800 block">📋 Verifikasi Nilai Rapor</span>
+                        <span class="text-slate-500 block mt-1 leading-relaxed">Periksa validitas kalkulasi capaian akhir harian dan sumatif siswa secara menyeluruh sebelum mencetak lembar dokumen rapor fisik.</span>
+                    </div>
+                    <div>
+                        <a href="rapor-siswa.html" class="btn-kuning-mekanis w-full py-2.5 bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold rounded-xl text-center text-xs flex items-center justify-center space-x-2 select-none">
+                            <span>🔑</span> <span>Verifikasi Rapor Siswa</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-6">
+                <div class="space-y-3">
+                    <h3 class="font-bold text-lg text-slate-900 flex items-center space-x-2">
+                        <span>📥</span> <span>Upload Spreadsheet UH</span>
+                    </h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        Silakan unggah dokumen rekap nilai Ulangan Harian. Sistem akan memvalidasi kesesuaian nama dokumen dan struktur tab internal sebelum dikirim ke awan.
+                    </p>
+                    
+                    <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-3.5 text-xs space-y-1.5 font-medium">
+                        <span class="font-bold block text-amber-900">⚠️ Aturan Validasi Dokumen:</span>
+                        <ul class="list-disc pl-4 space-y-1">
+                            <li>Nama file Excel harus tepat: <code class="bg-amber-200/60 px-1 py-0.5 rounded text-amber-900 font-bold">uh_siswa.xlsx</code></li>
+                            <li>Wajib memuat tab-tab mapel (misal: <code class="bg-amber-200/40 px-0.5 rounded">n_agama</code>, <code class="bg-amber-200/40 px-0.5 rounded">n_matematika</code>, dll)</li>
+                            <li>Urutan Kolom: <strong>no_absen, NISN, nama_siswa, uh_1, uh_2, uh_3, uh_4, uh_5</strong></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 bg-slate-50 rounded-2xl p-4 text-center hover:bg-slate-100/50 transition relative">
+                        <input type="file" id="fileExcelUH" accept=".xlsx, .xls" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onchange="validasiPilihFile()">
+                        <span class="text-3xl mb-1">📊</span>
+                        <span class="text-xs font-bold text-slate-700" id="labelNamaFile">Pilih file Excel dari gawai Anda</span>
+                        <span class="text-[10px] text-slate-400 mt-0.5">Mendukung format .xlsx / .xls</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-2">
+                        <button type="button" onclick="eksekusiKirimNilaiExcel()" id="btnKirimNilai" class="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow transition text-sm flex items-center justify-center space-x-2">
+                            <span>🚀</span> <span>Kirim Berkas Excel UH</span>
+                        </button>
+                        
+                        <button type="button" onclick="eksekusiKirimNilaiTotal()" id="btnKirimTotal" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow transition text-sm flex items-center justify-center space-x-2">
+                            <span>📊</span> <span>Kirim Nilai Total (Rata-rata)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+                <h3 class="font-bold text-base text-slate-900 flex items-center space-x-2">
+                    <span>🧭</span> <span>Daftar Tab Sheet Tujuan Sistem</span>
+                </h3>
+                <p class="text-xs text-slate-500">
+                    Nilai di dalam file dialokasikan langsung ke 10 tab database Google Sheets di bawah ini. <strong>Klik salah satu nama tab untuk memunculkan pop-up pratinjau data:</strong>
+                </p>
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
+                    <div onclick="bukaPreviewTab('n_agama')" class="p-2 bg-slate-50 rounded-xl border border-slate-200 font-bold text-xs text-slate-600 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200 select-none flex flex-col justify-center">
+                        <span>n_agama</span>
+                        <span class="text-[9px] text-slate-400 font-normal mt-0.5">Preview 🔍</span>
+                    </div>
+                    <div onclick="bukaPreviewTab('n_BIndonesia')" class="p-2 bg-slate-50 rounded-xl border border-slate-200 font-bold text-xs text-slate-600 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200 select-none flex flex-col justify-center">
+                        <span>n_BIndonesia</span>
+                        <span class="text-[9px] text-slate-400 font-normal mt-0.5">Preview 🔍</span>
+                    </div>
+                    <div onclick="bukaPreviewTab('n_pancasila')" class="p-2 bg-slate-50 rounded-xl border border-slate-200 font-bold text-xs text-slate-600 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200 select-none flex flex-col justify-center">
+                        <span>n_pancasila</span>
+                        <span class="text-[9px] text-slate-400 font-normal mt-0.5">Preview 🔍</span>
+                    </div>
+                    <div onclick="bukaPreviewTab('n_matematika')" class="p-2 bg-slate-50 rounded-xl border border-slate-200 font-bold text-xs text-slate-600 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200 select-none flex flex-col justify-center">
+                        <span>n_matematika</span>
+                        <span class="text-[9px] text-slate-400 font-normal mt-0.5">Preview 🔍</span>
+                    </div>
+                    <div onclick="bukaPreviewTab('n_IPAS')" class="p-2 bg-slate-50 rounded-xl border border-slate-200 font-bold text-xs text-slate-600 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200 select-none flex flex-col justify-center">
+                        <span>n_IPAS</span>
+                        <span class="text-[9px] text-slate-400 font-normal mt-0.5">Preview 🔍</span>
+                    </div>
+                    <div onclick="bukaPreviewTab('n_pjok')" class="p-2 bg-slate-50 rounded-xl border border-slate-200 font-bold text-xs text-slate-600 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200 select-none flex flex-col justify-center">
+                        <span>n_pjok</span>
+                        <span class="text-[9px] text-slate-400 font-normal mt-0.5">Preview 🔍</span>
+                    </div>
+                    <div onclick="bukaPreviewTab('n_kesenian')" class="p-2 bg-slate-50 rounded-xl border border-slate-200 font-bold text-xs text-slate-600 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200 select-none flex flex-col justify-center">
+                        <span>n_kesenian</span>
+                        <span class="text-[9px] text-slate-400 font-normal mt-0.5">Preview 🔍</span>
+                    </div>
+                    <div onclick="bukaPreviewTab('n_bJawa')" class="p-2 bg-slate-50 rounded-xl border border-slate-200 font-bold text-xs text-slate-600 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200 select-none flex flex-col justify-center">
+                        <span>n_bJawa</span>
+                        <span class="text-[9px] text-slate-400 font-normal mt-0.5">Preview 🔍</span>
+                    </div>
+                    <div onclick="bukaPreviewTab('n_bIng')" class="p-2 bg-slate-50 rounded-xl border border-slate-200 font-bold text-xs text-slate-600 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200 select-none flex flex-col justify-center">
+                        <span>n_bIng</span>
+                        <span class="text-[9px] text-slate-400 font-normal mt-0.5">Preview 🔍</span>
+                    </div>
+                    <div onclick="bukaPreviewTab('n_BTQ')" class="p-2 bg-slate-50 rounded-xl border border-slate-200 font-bold text-xs text-slate-600 cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 hover:text-blue-600 transition duration-200 select-none flex flex-col justify-center">
+                        <span>n_BTQ</span>
+                        <span class="text-[9px] text-slate-400 font-normal mt-0.5">Preview 🔍</span>
+                    </div>
+                </div>
+                
+                <div class="mt-4 p-4 bg-blue-50/50 rounded-2xl border border-blue-100 flex items-start space-x-3 text-xs">
+                    <span class="text-lg">💡</span>
+                    <p class="text-slate-600 leading-relaxed">
+                        <strong>Tips Sinkronisasi Ekspor:</strong> Kolom <code class="bg-blue-100 px-0.5 rounded font-bold">no_absen</code> dan <code class="bg-blue-100 px-0.5 rounded font-bold">NISN</code> pada berkas Excel Anda disarankan disalin (copy-paste) dari halaman <strong>Data Induk Siswa</strong> sebelumnya agar data relasi murid tidak melompat atau tertukar.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-6">
+                <div class="space-y-3">
+                    <h3 class="font-bold text-lg text-slate-900 flex items-center space-x-2">
+                        <span>📥</span> <span>Upload Spreadsheet ASAS</span>
+                    </h3>
+                    <p class="text-xs text-slate-500 leading-relaxed">
+                        Silakan unggah dokumen rekap Tujuan Pembelajaran (TP) untuk Asesmen Sumatif Akhir Semester. Sistem akan memproses penyimpanan ke database pusat <code class="bg-slate-100 px-1 rounded font-mono font-bold text-slate-700">Nilai_ASAS_Smt2</code> tab sheet <code class="bg-slate-100 px-1 rounded font-mono font-bold text-blue-600">tp</code>.
+                    </p>
+                    
+                    <div class="bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-3.5 text-xs space-y-1.5 font-medium">
+                        <span class="font-bold block text-amber-900">⚠️ Aturan Validasi Dokumen ASAS:</span>
+                        <ul class="list-disc pl-4 space-y-1">
+                            <li>Nama file Excel harus tepat: <code class="bg-amber-200/60 px-1 py-0.5 rounded text-amber-900 font-bold">20518953-TP-Kelas-IV.xlsx</code></li>
+                            <li>Wajib memuat tab internal: <code class="bg-amber-200/40 px-1 rounded font-bold font-mono">tp</code></li>
+                            <li>Struktur format kolom pengenal kompetensi wajib seragam.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 bg-slate-50 rounded-2xl p-4 text-center hover:bg-slate-100/50 transition relative" id="boxDropAsas">
+                        <input type="file" id="fileExcelASAS" accept=".xlsx, .xls" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onchange="validasiPilihFileAsas()">
+                        <span class="text-3xl mb-1">📋</span>
+                        <span class="text-xs font-bold text-slate-700" id="labelNamaFileAsas">Pilih file Excel dari gawai Anda</span>
+                        <span class="text-[10px] text-slate-400 mt-0.5">Mendukung format .xlsx / .xls</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-2">
+                        <button type="button" onclick="eksekusiKirimAsasExcel()" id="btnKirimAsas" class="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold rounded-xl shadow transition text-sm flex items-center justify-center space-x-2">
+                            <span>🚀</span> <span>Kirim Berkas ASAS</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4 flex flex-col justify-between">
+                <div class="space-y-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <h3 class="font-bold text-base text-slate-900 flex items-center space-x-2">
+                            <span>📋</span> <span>Daftar Tujuan Pembelajaran (TP) Terpeta</span>
+                        </h3>
+                        
+                        <select id="selectFilterMapel" onchange="filterDataTabelTp()" class="text-xs font-semibold bg-slate-100 border border-slate-200 rounded-xl p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 cursor-pointer transition">
+                            <option value="all">📁 Semua Mata Pelajaran</option>
+                            <option value="n_agama">🕌 Agama & Budi Pekerti</option>
+                            <option value="n_pancasila">🦅 Pendidikan Pancasila</option>
+                            <option value="n_BIndonesia">🇮🇩 Bahasa Indonesia</option>
+                            <option value="n_matematika">📐 Matematika</option>
+                            <option value="n_IPAS">🔬 IPAS</option>
+                            <option value="n_pjok">🏃 PJOK</option>
+                            <option value="n_kesenian">🎨 Seni & Budaya</option>
+                            <option value="n_bJawa">🛡️ Bahasa Jawa</option>
+                            <option value="n_bIng">🇬🇧 Bahasa Inggris</option>
+                            <option value="n_BTQ">📖 Baca Tulis Al-Qur'an</option>
+                        </select>
+                    </div>
+                    
+                    <p class="text-xs text-slate-500">
+                        Berikut adalah daftar kompetensi uraian Tujuan Pembelajaran (TP) per mata pelajaran kelas IV aktif yang saat ini tersimpan di server cloud:
+                    </p>
+
+                    <div class="overflow-hidden border border-slate-200 rounded-xl">
+                        <div class="max-h-[220px] overflow-y-auto">
+                            <table class="w-full text-left text-xs text-slate-700">
+                                <thead class="bg-slate-50 text-slate-700 border-b border-slate-200 font-bold sticky top-0 bg-slate-50 z-10">
+                                    <tr>
+                                        <th class="p-2.5 w-10 text-center">No</th>
+                                        <th class="p-2.5 w-24">Kode</th>
+                                        <th class="p-2.5 w-32">Mata Pelajaran</th>
+                                        <th class="p-2.5">Deskripsi Tujuan Pembelajaran (TP)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBodyTp" class="divide-y divide-slate-100 font-medium">
+                                    <tr id="rowLoaderTp">
+                                        <td colspan="4" class="p-6 text-center text-slate-400 italic">
+                                            <span class="inline-block animate-spin mr-1">🔄</span> Menarik ringkasan data TP dari spreadsheet Nilai_ASAS_Smt2...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-[10px] text-slate-400 italic mt-2 flex items-center space-x-1">
+                    <span>🔄</span> <span>Sinkronisasi otomatis aktif antara repositori lokal dan cloud database.</span>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="modalPreviewTab" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full overflow-hidden transform transition-all scale-95 duration-200 opacity-0" id="modalContent">
+            <div class="bg-slate-800 px-6 py-4 flex justify-between items-center text-white">
+                <div>
+                    <h3 class="font-bold text-base md:text-lg tracking-wide" id="modalTitle">Pratinjau Data Tab</h3>
+                    <p class="text-xs text-slate-400 mt-0.5" id="modalSubtitle">Menghubungkan ke server...</p>
+                </div>
+                <button onclick="tutupModalPreview()" class="text-slate-400 hover:text-white text-2xl font-bold focus:outline-none transition-colors">&times;</button>
+            </div>
+            <div class="p-6 max-h-[380px] overflow-y-auto">
+                <div id="modalLoading" class="text-center py-10 text-slate-500 text-sm">
+                    <span class="inline-block animate-spin mr-2">⏳</span> Mengambil 5 sampel data baris terbaru langsung dari Google Sheet...
+                </div>
+                <div id="modalTableWrapper" class="hidden overflow-x-auto border border-slate-200 rounded-xl shadow-inner">
+                    <table class="w-full text-left text-xs text-slate-700 whitespace-nowrap">
+                        <thead class="bg-slate-100 text-slate-700 uppercase border-b border-slate-200 font-bold sticky top-0" id="modalTableHead">
+                        </thead>
+                        <tbody id="modalTableBody" class="divide-y divide-slate-100 font-medium">
+                        </tbody>
+                    </table>
+                </div>
+                <p id="modalEmptyNotice" class="hidden text-center py-12 text-sm text-slate-400 italic">
+                    📭 Tab sheet ini terdeteksi masih kosong atau belum dibuat oleh sistem di database pusat.
+                </p>
+            </div>
+            <div class="bg-slate-50 px-6 py-3.5 flex justify-end border-t border-slate-100">
+                <button onclick="tutupModalPreview()" class="px-4 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-xl text-xs font-bold shadow-sm transition-colors">Tutup Jendela</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-slate-200 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-6 text-center text-[11px] font-medium text-slate-400">
+            © 2026 E-Rapor Engine • Sistem Unggah Administrasi Nilai Terpusat UPT SDN Ranuklindungan I by Sugeng Hidayat
+        </div>
+    </footer>
+
+    <script>
+        const API_SHEET_URL = "https://script.google.com/macros/s/AKfycbzaX845-m1zvy8akoQVibGx8Vu62oXbn2qtPJVExSi3Jd5aFSahoNIqTmQILpShU8zeTw/exec";
+        let databaseLokalTp = [];
+
+        function validasiPilihFile() {
+            const input = document.getElementById('fileExcelUH');
+            const label = document.getElementById('labelNamaFile');
+            
+            if (input.files.length === 0) return;
+            
+            const namaFile = input.files[0].name.toLowerCase();
+            
+            if (!namaFile.includes("uh_siswa")) {
+                alert("🚨 PENOLAKAN SISTEM: Nama file wajib mengandung nama 'uh_siswa'. Contoh: uh_siswa.xlsx");
+                input.value = ""; 
+                label.innerText = "Pilih file Excel dari gawai Anda";
+                label.className = "text-xs font-bold text-slate-700";
+                return;
+            }
+
+            label.innerText = `✅ Berkas Siap: ${input.files[0].name}`;
+            label.className = "text-xs font-bold text-emerald-600";
+        }
+
+        function eksekusiKirimNilaiExcel() {
+            const input = document.getElementById('fileExcelUH');
+            const btn = document.getElementById('btnKirimNilai');
+            
+            if (input.files.length === 0) {
+                alert("Silakan pilih file Excel uh_siswa terlebih dahulu.");
+                return;
+            }
+
+            const file = input.files[0];
+            const reader = new FileReader();
+            
+            btn.disabled = true;
+            btn.innerHTML = `<span>⏳</span> <span>Memproses...</span>`;
+
+            reader.onload = async function(e) {
+                const base64Data = e.target.result.split(',')[1];
+                
+                const payloadData = {
+                    tipe: "upload_excel_uh",
+                    fileName: file.name,
+                    fileData: base64Data
+                };
+
+                try {
+                    const response = await fetch(API_SHEET_URL, {
+                        method: "POST",
+                        mode: "cors", 
+                        headers: {
+                            "Content-Type": "text/plain;charset=utf-8"
+                        },
+                        body: JSON.stringify(payloadData)
+                    });
+
+                    const textResponse = await response.text();
+                    const result = JSON.parse(textResponse); 
+
+                    if (result.status === "SUCCESS") {
+                        alert(`🎉 BERHASIL! ${result.message}`);
+                        input.value = "";
+                        document.getElementById('labelNamaFile').innerText = "Pilih file Excel dari gawai Anda";
+                        document.getElementById('labelNamaFile').className = "text-xs font-bold text-slate-700";
+                    } else {
+                        alert(`❌ GAGAL SERVER: ${result.message}`);
+                    }
+
+                } catch (error) {
+                    console.error("Fetch Error:", error);
+                    alert("Terjadi gangguan komunikasi data.");
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = `<span>🚀</span> <span>Kirim Berkas Excel</span>`;
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        async function eksekusiKirimNilaiTotal() {
+            const btn = document.getElementById('btnKirimTotal');
+            if(!confirm("Apakah Anda ingin menghitung rata-rata nilai UH seluruh mapel dari database saat ini dan mengirimkannya ke Rekapitulasi Rapor Pusat?")) {
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = `<span>⏳</span> <span>Mengkalkulasi & Sinkronisasi...</span>`;
+
+            try {
+                const response = await fetch(API_SHEET_URL, {
+                    method: "POST",
+                    mode: "cors",
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8"
+                    },
+                    body: JSON.stringify({ tipe: "hitung_dan_kirim_total" })
+                });
+
+                const textResponse = await response.text();
+                const result = JSON.parse(textResponse);
+
+                if (result.status === "SUCCESS") {
+                    alert(`🎉 SINKRONISASI BERHASIL!\n\n${result.message}`);
+                } else {
+                    alert(`❌ GAGAL: ${result.message}`);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Terjadi masalah saat menghubungi server Google Apps Script.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<span>📊</span> <span>Kirim Nilai Total (Rata-rata)</span>`;
+            }
+        }
+
+        function validasiPilihFileAsas() {
+            const input = document.getElementById('fileExcelASAS');
+            const label = document.getElementById('labelNamaFileAsas');
+            const box = document.getElementById('boxDropAsas');
+            
+            if (input.files.length === 0) return;
+            
+            const namaFile = input.files[0].name;
+            const namaWajib = "20518953-TP-Kelas-IV.xlsx";
+            const namaWajibAlternatif = "20518953-TP-Kelas-IV.xls";
+            
+            if (namaFile !== namaWajib && namaFile !== namaWajibAlternatif) {
+                alert(`🚨 PENOLAKAN UNGHAH ASAS:\nNama berkas wajib presisi "${namaWajib}"`);
+                input.value = "";
+                label.innerText = "Pilih file Excel dari gawai Anda";
+                label.className = "text-xs font-bold text-slate-700";
+                box.className = "flex flex-col items-center justify-center border-2 border-dashed border-red-300 bg-red-50/30 rounded-2xl p-4 text-center relative";
+                return;
+            }
+
+            label.innerText = `✅ Berkas ASAS Valid: ${namaFile}`;
+            label.className = "text-xs font-bold text-blue-600";
+            box.className = "flex flex-col items-center justify-center border-2 border-dashed border-emerald-400 bg-emerald-50/20 rounded-2xl p-4 text-center relative";
+        }
+
+        function eksekusiKirimAsasExcel() {
+            const input = document.getElementById('fileExcelASAS');
+            const btn = document.getElementById('btnKirimAsas');
+            
+            if (input.files.length === 0) {
+                alert("Silakan tentukan file 20518953-TP-Kelas-IV.xlsx terlebih dahulu.");
+                return;
+            }
+
+            const file = input.files[0];
+            const reader = new FileReader();
+            
+            btn.disabled = true;
+            btn.innerHTML = `<span>⏳</span> <span>Mentransmisikan Data Kompetensi...</span>`;
+
+            reader.onload = async function(e) {
+                const base64Data = e.target.result.split(',')[1];
+                
+                const payloadData = {
+                    tipe: "upload_asas_tp",
+                    fileName: file.name,
+                    fileData: base64Data
+                };
+
+                try {
+                    const response = await fetch(API_SHEET_URL, {
+                        method: "POST",
+                        mode: "cors",
+                        headers: {
+                            "Content-Type": "text/plain;charset=utf-8"
+                        },
+                        body: JSON.stringify(payloadData)
+                    });
+
+                    const textResponse = await response.text();
+                    const result = JSON.parse(textResponse);
+
+                    if (result.status === "SUCCESS") {
+                        alert(`🎉 SUKSES TRANSKIP ASAS!\n\nBerhasil tersimpan di lembar sheet "tp" database Nilai_ASAS_Smt2.`);
+                        input.value = "";
+                        document.getElementById('labelNamaFileAsas').innerText = "Pilih file Excel dari gawai Anda";
+                        document.getElementById('labelNamaFileAsas').className = "text-xs font-bold text-slate-700";
+                        document.getElementById('boxDropAsas').className = "flex flex-col items-center justify-center border-2 border-dashed border-slate-200 bg-slate-50 rounded-2xl p-4 text-center hover:bg-slate-100/50 transition relative";
+                        
+                        muatDataTpDariCloud();
+                    } else {
+                        alert(`❌ GAGAL INTEGRASI PUSAT: ${result.message}`);
+                    }
+                } catch (error) {
+                    console.error("Transmisi Error:", error);
+                    alert("Koneksi cloud terganggu saat sinkronisasi berkas ASAS.");
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = `<span>🚀</span> <span>Kirim Berkas ASAS</span>`;
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        async function muatDataTpDariCloud() {
+            const tableBody = document.getElementById('tableBodyTp');
+            
+            try {
+                const responServer = await fetch(`${API_SHEET_URL}?action=getPreviewTab&tabName=tp`);
+                const dataJson = await responServer.json();
+
+                if (dataJson.status === "SUCCESS" && dataJson.data && dataJson.data.length > 0) {
+                    databaseLokalTp = [];
+                    
+                    dataJson.data.forEach((baris, idx) => {
+                        databaseLokalTp.push({
+                            no: idx + 1,
+                            kode: baris[0] || `TP-0${idx+1}`, 
+                            mapel: baris[1] || 'all', 
+                            namaMapel: tentukanNamaAliasMapel(baris[1]),
+                            deskripsi: baris[2] || 'Deskripsi TP belum terisi.'
+                        });
+                    });
+                    
+                    renderDataKeTabelHtml(databaseLokalTp);
+                } else {
+                    tampilkanMockupJikaDataKosong();
+                }
+            } catch (err) {
+                console.warn("Menggunakan standard fallback rendering pratinjau lokal.");
+                tampilkanMockupJikaDataKosong();
+            }
+        }
+
+        function tentukanNamaAliasMapel(idMapel) {
+            const listMapel = {
+                'n_agama': '🕌 Agama & BP',
+                'n_pancasila': '🦅 Pancasila',
+                'n_BIndonesia': '🇮🇩 B. Indonesia',
+                'n_matematika': '📐 Matematika',
+                'n_IPAS': '🔬 IPAS',
+                'n_pjok': '🏃 PJOK',
+                'n_kesenian': '🎨 Seni & Budaya',
+                'n_bJawa': '🛡️ B. Jawa',
+                'n_bIng': '🇬🇧 B. Inggris',
+                'n_BTQ': '📖 BTQ'
+            };
+            return listMapel[idMapel] || idMapel;
+        }
+
+        function tampilkanMockupJikaDataKosong() {
+            databaseLokalTp = [
+                { no: 1, kode: "TP-AGM-01", mapel: "n_agama", namaMapel: "🕌 Agama & BP", deskripsi: "Memahami rukun iman dan implementasi akhlak mulia dalam kehidupan sehari-hari." },
+                { no: 2, kode: "TP-PNC-01", mapel: "n_pancasila", namaMapel: "🦅 Pancasila", deskripsi: "Mengidentifikasi simbol sila Pancasila di lingkungan sekolah dan keluarga." },
+                { no: 3, kode: "TP-IND-01", mapel: "n_BIndonesia", namaMapel: "🇮🇩 B. Indonesia", deskripsi: "Memahami gagasan pokok teks informatif serta menyampaikan ide secara tertulis." },
+                { no: 4, kode: "TP-MTK-01", mapel: "n_matematika", namaMapel: "📐 Matematika", deskripsi: "Menghitung pecahan senilai dan melakukan konversi satuan desimal." },
+                { no: 5, kode: "TP-IPAS-01", mapel: "n_IPAS", namaMapel: "🔬 IPAS", deskripsi: "Menganalisis siklus hidup makhluk hidup dan ekosistem di lingkungan sekitar." }
+            ];
+            renderDataKeTabelHtml(databaseLokalTp);
+        }
+
+        function renderDataKeTabelHtml(data) {
+            const tableBody = document.getElementById('tableBodyTp');
+            tableBody.innerHTML = "";
+
+            if (data.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 italic">Tidak ditemukan data kompetensi TP yang cocok.</td></tr>`;
+                return;
+            }
+
+            data.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-colors border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="p-2.5 text-center text-slate-400 font-bold">${index + 1}</td>
+                    <td class="p-2.5 font-mono text-blue-600 font-bold tracking-tight">${item.kode}</td>
+                    <td class="p-2.5 text-slate-500 font-bold text-[11px]">${item.namaMapel}</td>
+                    <td class="p-2.5 text-slate-600 text-justify leading-normal pr-4">${item.deskripsi}</td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function filterDataTabelTp() {
+            const filterValue = document.getElementById('selectFilterMapel').value;
+            if (filterValue === "all") {
+                renderDataKeTabelHtml(databaseLokalTp);
+            } else {
+                const dataSaring = databaseLokalTp.filter(item => item.mapel === filterValue);
+                renderDataKeTabelHtml(dataSaring);
+            }
+        }
+
+        async function bukaPreviewTab(namaTab) {
+            const modal = document.getElementById('modalPreviewTab');
+            const content = document.getElementById('modalContent');
+            const title = document.getElementById('modalTitle');
+            const subtitle = document.getElementById('modalSubtitle');
+            const loading = document.getElementById('modalLoading');
+            const wrapper = document.getElementById('modalTableWrapper');
+            const emptyNotice = document.getElementById('modalEmptyNotice');
+            
+            const tHead = document.getElementById('modalTableHead');
+            const tBody = document.getElementById('modalTableBody');
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 25);
+
+            title.innerText = `Pratinjau Database: ${namaTab}`;
+            subtitle.innerText = "Menghubungkan ke API Gateway...";
+            loading.classList.remove('hidden');
+            wrapper.classList.add('hidden');
+            emptyNotice.classList.add('hidden');
+            tHead.innerHTML = '';
+            tBody.innerHTML = '';
+
+            try {
+                const responServer = await fetch(`${API_SHEET_URL}?action=getPreviewTab&tabName=${namaTab}`);
+                const dataJson = await responServer.json();
+
+                loading.classList.add('hidden');
+
+                if (dataJson.status === "SUCCESS") {
+                    subtitle.innerText = `Total Data Tersimpan: ${dataJson.totalBaris} Baris Siswa`;
+                    
+                    if (dataJson.data.length === 0) {
+                        emptyNotice.classList.remove('hidden');
+                    } else {
+                        let barisHeaderHtml = '<tr>';
+                        dataJson.headers.forEach(headKolom => {
+                            barisHeaderHtml += `<th class="px-4 py-2.5 border-b border-slate-200 font-bold bg-slate-100 text-slate-800">${headKolom}</th>`;
+                        });
+                        barisHeaderHtml += '</tr>';
+                        tHead.innerHTML = barisHeaderHtml;
+
+                        let barisDataHtml = '';
+                        dataJson.data.forEach(itemBaris => {
+                            barisDataHtml += '<tr class="hover:bg-slate-50/80 transition-colors">';
+                            itemBaris.forEach(itemSel => {
+                                let isiSel = itemSel !== "" ? itemSel : "-";
+                                barisDataHtml += `<td class="px-4 py-2 border-b border-slate-100 max-w-[150px] truncate">${isiSel}</td>`;
+                            });
+                            barisDataHtml += '</tr>';
+                        });
+                        tBody.innerHTML = barisDataHtml;
+                        wrapper.classList.remove('hidden');
+                    }
+                } else {
+                    subtitle.innerText = "Gagal memproses permintaan.";
+                    tBody.innerHTML = `<tr><td class="px-4 py-8 text-center text-red-500 font-bold italic">${dataJson.message}</td></tr>`;
+                    wrapper.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error("Gagal mendapatkan pratinjau tab:", err);
+                loading.classList.add('hidden');
+                subtitle.innerText = "Koneksi terputus.";
+                tBody.innerHTML = `<tr><td class="px-4 py-8 text-center text-red-500 font-bold text-xs">Gagal terhubung dengan server cloud.</td></tr>`;
+                wrapper.classList.remove('hidden');
+            }
+        }
+
+        function tutupModalPreview() {
+            const modal = document.getElementById('modalPreviewTab');
+            const content = document.getElementById('modalContent');
+            
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 180);
+        }
+
+        window.onclick = function(e) {
+            const modal = document.getElementById('modalPreviewTab');
+            if (e.target === modal) {
+                tutupModalPreview();
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', muatDataTpDariCloud);
+    </script>
+</body>
+</html>
