@@ -210,32 +210,33 @@
         function sinkronisasiNamaSekolahSesi() {
             const elemenNamaSekolah = document.getElementById('namaSekolahHeader');
             
-            // 1. Tangkap data dari URL Parameter (yang dikirim oleh dashboard.html Anda)
+            // 1. Tangkap data dari URL Parameter (kiriman dari dashboard.html)
             const urlParams = new URLSearchParams(window.location.search);
             const namaSekolahUrl = urlParams.get('namaSekolah');
             const raporIdUrl = urlParams.get('raporId');
             const dbIdUrl = urlParams.get('dbId');
 
-            // 2. Jika di URL terdeteksi ada parameter, pindahkan langsung ke localStorage
-            if (namaSekolahUrl) {
+            // 2. Jika di URL terdeteksi ada parameter, prioritaskan & kunci ke localStorage
+            if (namaSekolahUrl && namaSekolahUrl !== "undefined" && namaSekolahUrl !== "null") {
                 localStorage.setItem('namaSekolahAktif', decodeURIComponent(namaSekolahUrl));
             }
-            if (raporIdUrl) {
+            if (raporIdUrl && raporIdUrl !== "undefined" && raporIdUrl !== "null") {
                 localStorage.setItem('raporIdAktif', raporIdUrl);
             }
-            if (dbIdUrl) {
+            if (dbIdUrl && dbIdUrl !== "undefined" && dbIdUrl !== "null") {
                 localStorage.setItem('dbIdAktif', dbIdUrl);
             }
 
-            // 3. Ambil hasil pembacaan sesi akhir
+            // 3. Ambil nilai final dari localStorage untuk validasi akhir
             const namaSekolahFinal = localStorage.getItem('namaSekolahAktif');
             
-            // 4. Validasi Tampilan Header Sekolah
+            // 4. Validasi Tampilan Header Sekolah (Amankan agar tidak memicu alert salah deteksi)
             if (namaSekolahFinal && namaSekolahFinal !== "undefined" && namaSekolahFinal !== "null") {
                 elemenNamaSekolah.innerText = namaSekolahFinal;
             } else {
-                // Fallback otomatis jika tidak lewat dashboard (mengambil teks default Anda)
+                // Jika benar-benar kosong baik di URL maupun localStorage, pakai default cadangan
                 elemenNamaSekolah.innerText = "SDN RANUKLINDUNGAN I";
+                localStorage.setItem('namaSekolahAktif', "SDN RANUKLINDUNGAN I");
             }
         }
 
@@ -396,7 +397,12 @@
         async function muatDataTpDariCloud() {
             try {
                 const idRapor = localStorage.getItem('raporIdAktif') || new URLSearchParams(window.location.search).get('raporId') || "";
-                const responServer = await fetch(`${API_SHEET_URL}?action=getPreviewTab&tabName=tp&raporId=${idRapor}`);
+                if (!idRapor || idRapor === "null" || idRapor === "undefined") {
+                    tampilkanMockupJikaDataKosong();
+                    return;
+                }
+                
+                const responServer = await fetch(`${API_SHEET_URL}?action=getPreviewTab&tabName=tp&targetId=${idRapor}`);
                 const dataJson = await responServer.json();
 
                 if (dataJson.status === "SUCCESS" && dataJson.data && dataJson.data.length > 0) {
@@ -557,7 +563,7 @@
             if (e.target === document.getElementById('modalPreviewTab')) tutupModalPreview();
         }
 
-        // Pemicu Sesi
+        // INISIALISASI UTAMA SAAT HALAMAN SELESAI DIMUAT
         window.addEventListener('DOMContentLoaded', () => {
             sinkronisasiNamaSekolahSesi();
             muatDataTpDariCloud();
