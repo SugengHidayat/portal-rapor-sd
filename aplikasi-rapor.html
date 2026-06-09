@@ -28,28 +28,51 @@
 
     <div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
         
-        <header class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div class="flex items-center gap-3.5">
-                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-blue-200">
-                    <span class="text-xl font-bold tracking-tighter">R</span>
+        <header class="bg-white rounded-3xl p-6 sm:p-8 shadow-xs border border-slate-200/60 space-y-6">
+            <div class="space-y-3">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-[10px] font-extrabold text-blue-600 uppercase tracking-wider">
+                    📖 Kerangka Kerja Kurikulum Merdeka
                 </div>
-                <div class="text-left">
-                    <h1 id="namaSekolahHeader" class="text-base font-extrabold text-slate-800 tracking-tight leading-none">
-                        Memuat Nama Sekolah...
-                    </h1>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">
-                        Sistem Integrasi Basis Data Nilai
+                <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+                    Konsep Evaluasi Berkelanjutan & Capaian Pembelajaran
+                </h1>
+                <p class="text-xs sm:text-sm text-slate-500 leading-relaxed text-justify">
+                    Evaluasi melalui <span class="font-bold text-slate-700">Ulangan Harian (UH)</span> dan <span class="font-bold text-slate-700">Asesmen Sumatif Akhir Semester (ASAS)</span> pada platform ini dirancang bukan sekadar untuk mengukur angka kuantitatif, melainkan sebagai instrumen evaluasi komprehensif untuk memetakan ketercapaian Tujuan Pembelajaran (TP) pada tiap peserta didik di <span id="namaSekolahHeader" class="font-bold text-blue-600">UPT SDN Ranuklindungan I</span>. Pengumpulan data nilai berkala serta pemetaan TP yang valid memungkinkan pendidik melakukan diagnosis dini terhadap kompetensi kognitif siswa, mengenali laju belajar anak yang heterogen, serta memberikan intervensi secara personal sebelum menuju penilaian sumatif akhir semester.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+                <div class="bg-slate-50/60 border border-slate-200/60 rounded-2xl p-4 space-y-2">
+                    <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
+                        <span>🎯</span> Aspek Formatif & Sumatif
+                    </div>
+                    <p class="text-[11px] text-slate-400 leading-relaxed">
+                        Mendorong perbaikan kualitas pembelajaran (Refleksi Pendidik) dan penyesuaian capaian kompetensi dasar siswa secara berkala.
                     </p>
                 </div>
-            </div>
-            
-            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                <a href="index.html" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 bg-slate-50 border border-slate-200 hover:bg-slate-100/80 hover:text-slate-800 transition active:scale-98">
-                    <span>⏮️</span> Keluar Aplikasi
-                </a>
-                <button onclick="bukaPreviewTab('rekap')" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 bg-amber-400 hover:bg-amber-500 shadow-sm shadow-amber-100 transition active:scale-98 cursor-pointer">
-                    <span>📊</span> Periksa Nilai Gabungan
-                </button>
+
+                <div class="bg-slate-50/60 border border-slate-200/60 rounded-2xl p-4 space-y-2">
+                    <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
+                        <span>📊</span> Otomatisasi Terintegrasi
+                    </div>
+                    <p class="text-[11px] text-slate-400 leading-relaxed">
+                        Data nilai dari Excel disinkronkan secara instan untuk mempercepat kalkulasi rata-rata rapor digital tanpa entri manual.
+                    </p>
+                </div>
+
+                <div class="bg-slate-50/60 border border-slate-200/60 rounded-2xl p-4 flex flex-col justify-between gap-3">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2 text-xs font-bold text-slate-800">
+                            <span>📋</span> Verifikasi Nilai Rapor
+                        </div>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">
+                            Periksa validitas kalkulasi capaian akhir harian dan sumatif siswa secara menyeluruh sebelum mencetak lembar dokumen rapor fisik.
+                        </p>
+                    </div>
+                    <button onclick="bukaPreviewTab('rekap')" class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-amber-800 bg-amber-400 hover:bg-amber-500 shadow-xs shadow-amber-100 transition active:scale-98 cursor-pointer">
+                        🔑 Verifikasi Rapor Siswa
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -230,13 +253,12 @@
             // 3. Ambil nilai final dari localStorage untuk validasi akhir
             const namaSekolahFinal = localStorage.getItem('namaSekolahAktif');
             
-            // 4. Validasi Tampilan Header Sekolah (Amankan agar tidak memicu alert salah deteksi)
+            // 4. Validasi Tampilan Header Sekolah
             if (namaSekolahFinal && namaSekolahFinal !== "undefined" && namaSekolahFinal !== "null") {
                 elemenNamaSekolah.innerText = namaSekolahFinal;
             } else {
-                // Jika benar-benar kosong baik di URL maupun localStorage, pakai default cadangan
-                elemenNamaSekolah.innerText = "SDN RANUKLINDUNGAN I";
-                localStorage.setItem('namaSekolahAktif', "SDN RANUKLINDUNGAN I");
+                elemenNamaSekolah.innerText = "UPT SDN Ranuklindungan I";
+                localStorage.setItem('namaSekolahAktif', "UPT SDN Ranuklindungan I");
             }
         }
 
