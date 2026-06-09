@@ -234,38 +234,40 @@
             btn.innerHTML = `Memproses Pendaftaran & Kloning DB...`;
 
             try {
-                const payload = new URLSearchParams();
-                payload.append('action', 'registrasiBaru'); // Action Baru
+                // Solusi: Gunakan FormData untuk membungkus request POST agar lolos CORS Google
+                const payload = new FormData();
+                payload.append('action', 'registrasiBaru');
                 payload.append('npsn', npsn);
                 payload.append('namaSekolah', namaSekolah);
                 payload.append('email', email);
                 payload.append('pendaftar', pendaftar);
                 payload.append('whatsapp', whatsapp);
 
+                // Catatan: JANGAN memasukkan 'Content-Type' di headers jika menggunakan FormData,
+                // Browser akan menentukannya secara otomatis sebagai multipart/form-data.
                 const respon = await fetch(API_REGISTRASI_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: payload
                 });
+                
                 const hasil = await respon.json();
 
                 if (hasil.status === "SUCCESS") {
                     alert(`🎉 Pendaftaran Berhasil!\n\nPIN Akses Anda: ${hasil.pin}\nSilakan simpan PIN ini baik-baik untuk masuk ke dashboard.`);
                     formReg.reset();
-                    linkSwitcher.click(); // Kembalikan ke form login
-                    location.reload();    // Reload data dropdown sekolah baru
+                    linkSwitcher.click(); // Kembali ke login
+                    location.reload();    // Reload dropdown otomatis
                 } else {
                     alert(`❌ Gagal Mendaftar: ${hasil.message}`);
                 }
             } catch (error) {
-                alert("❌ Gagal terhubung ke server pendaftaran.");
+                console.error("Detail Error:", error);
+                alert("❌ Gagal terhubung ke server pendaftaran. Cek konsol browser (F12) untuk detail.");
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = `Kirim Formulir Pendaftaran`;
             }
         });
-
-        window.addEventListener('DOMContentLoaded', muatDropdownSekolah);
     </script>
 </body>
 </html>
