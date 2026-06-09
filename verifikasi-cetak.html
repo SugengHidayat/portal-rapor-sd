@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pratinjau Rapor Resmi - UPT SDN Ranuklindungan I</title>
+  <title>Pratinjau Rapor Resmi - Multi Tenant Engine</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { 
@@ -66,7 +66,7 @@
       <a href="aplikasi-rapor.html" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold text-xs rounded-xl shadow transition">
         ⬅️ Kembali
       </a>
-      <div class="text-xs font-bold font-sans tracking-wide">📄 RAPOR ELEKTRONIK (ISOLATED CHARIVA SYSTEM V14.5)</div>
+      <div class="text-xs font-bold font-sans tracking-wide">📄 RAPOR ELEKTRONIK (DYNAMIC MULTI-TENANT ENGINE V15.0)</div>
     </div>
     <button onclick="window.print()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow transition">🖨️ Cetak Lembaran Rapor</button>
   </div>
@@ -82,7 +82,7 @@
       <div class="flex items-center justify-start gap-6 border-b-2 border-black pb-4 mb-4">
         <img src="img/Logo_SD_Ranu_1.png" 
              class="w-16 h-auto object-contain" 
-             alt="Logo SDN Ranuklindungan I"
+             alt="Logo Sekolah"
              onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_of_Ministry_of_Education_and_Culture_of_Republic_of_Indonesia.svg'">
         <div class="text-center flex-1 pr-16">
           <h1 class="text-lg font-bold tracking-wide">LAPORAN HASIL BELAJAR</h1>
@@ -235,10 +235,11 @@
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     
-    // Membaca session login di dashboard lokal jika URL Params kosong
+    // 1. Membaca data parameter identitas dan parameter database dinamis dari URL
     const currentNoAbsen = urlParams.get('no_absen') || localStorage.getItem('noAbsenAktif') || "1";
-    // Membaca URL Core Engine API Apps Script
     const dynamicAppsScriptUrl = urlParams.get('api_url') || "https://script.google.com/macros/s/AKfycbz_XXXXXXXXX/exec"; 
+    const dbProfil = urlParams.get('db_profil') || "";
+    const dbNilai = urlParams.get('db_nilai') || "";
 
     window.addEventListener('DOMContentLoaded', function() {
       if(!currentNoAbsen || !dynamicAppsScriptUrl || dynamicAppsScriptUrl.includes("XXXXXXXXX")) {
@@ -247,7 +248,8 @@
         return;
       }
       
-      const targetApiUrl = `${dynamicAppsScriptUrl}?action=cetak_github&no_absen=${encodeURIComponent(currentNoAbsen)}`;
+      // 2. Menyuntikkan parameter db_profil dan db_nilai langsung ke request URL API secara otomatis
+      const targetApiUrl = `${dynamicAppsScriptUrl}?action=cetak_github&no_absen=${encodeURIComponent(currentNoAbsen)}&db_profil=${encodeURIComponent(dbProfil)}&db_nilai=${encodeURIComponent(dbNilai)}`;
       
       fetch(targetApiUrl)
         .then(response => {
@@ -288,6 +290,7 @@
       if (bundle.payloadNilai && bundle.payloadNilai.length > 0) {
         bundle.payloadNilai.forEach(item => {
           const tr = document.createElement('tr');
+          tr.className = "break-inside-avoid";
           tr.innerHTML = `
             <td class="p-2 text-center font-semibold align-top">${item.no}</td>
             <td class="p-2 font-semibold align-top">${item.mapel}</td>
@@ -304,6 +307,7 @@
       if (bundle.payloadMulok && bundle.payloadMulok.length > 0) {
         bundle.payloadMulok.forEach(item => {
           const tr = document.createElement('tr');
+          tr.className = "break-inside-avoid";
           tr.innerHTML = `
             <td class="p-2 text-center font-semibold align-top">${item.no}</td>
             <td class="p-2 font-semibold align-top">${item.mapel}</td>
