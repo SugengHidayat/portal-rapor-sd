@@ -18,7 +18,7 @@
     </style>
     <script>
         // URL API Gateway Google Apps Script Anda (Sesuai Hasil Deploy Web App)
-        const API_SHEET_URL = "https://script.google.com/macros/s/AKfycbwEpRt1PizUVTq3zatgbEX8gnce2LILCoPjEsf0FertTGfCwuhFps0wVYguPyF8XRyo/exec"; 
+        const API_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_XXXXXXXXX/exec"; 
         
         // Database Lokal Sementara untuk Penampung Filter & Render Tabel
         let databaseLokalTp = [];
@@ -133,7 +133,7 @@
                         <select id="selectFilterMapel" onchange="filterDataTabelTp()" class="w-full sm:w-auto text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500 shadow-sm transition">
                             <option value="all">🌐 Semua Mata Pelajaran</option>
                             <option value="n_agama">🕌 Agama & BP</option>
-                            <option value="n_pancasila"> eagles Pancasila</option>
+                            <option value="n_pancasila">🦅 Pancasila</option>
                             <option value="n_BIndonesia">🇮🇩 B. Indonesia</option>
                             <option value="n_matematika">📐 Matematika</option>
                             <option value="n_IPAS">🔬 IPAS</option>
@@ -179,23 +179,18 @@
             </div>
 
             <div class="flex-1 overflow-auto p-4 bg-slate-50/50 content-start min-h-[250px]">
-                
                 <div id="modalLoading" class="flex flex-col items-center justify-center py-16 space-y-3">
                     <div class="w-8 h-8 border-3 border-blue-600/20 border-t-blue-600 rounded-full animate-spin"></div>
                     <p class="text-xs font-bold text-slate-500 animate-pulse">Sedang mengunduh struktur data dari cloud server...</p>
                 </div>
-
                 <div id="modalEmptyNotice" class="hidden flex flex-col items-center justify-center py-16 space-y-2 text-slate-400">
                     <span class="text-3xl">📥</span>
                     <p class="text-xs font-bold italic">Lembar database masih kosong atau belum diisi data.</p>
                 </div>
-
                 <div id="modalTableWrapper" class="hidden border border-slate-200 rounded-2xl bg-white shadow-xs overflow-hidden">
                     <table class="w-full text-left text-xs border-collapse">
-                        <thead id="modalTableHead" class="sticky top-0 z-10 text-[10px] uppercase tracking-wider text-slate-700 whitespace-nowrap">
-                            </thead>
-                        <tbody id="modalTableBody" class="divide-y divide-slate-100 text-slate-600 whitespace-nowrap">
-                            </tbody>
+                        <thead id="modalTableHead" class="sticky top-0 z-10 text-[10px] uppercase tracking-wider text-slate-700 whitespace-nowrap"></thead>
+                        <tbody id="modalTableBody" class="divide-y divide-slate-100 text-slate-600 whitespace-nowrap"></tbody>
                     </table>
                 </div>
             </div>
@@ -210,18 +205,37 @@
 
     <script>
         // =========================================================================
-        // MANAJEMEN SESI SEKOLAH BERBASIS LOCALSTORAGE
+        // SINKRONISASI SESI SEKOLAH BERBASIS URL PARAMETER & LOCALSTORAGE
         // =========================================================================
         function sinkronisasiNamaSekolahSesi() {
             const elemenNamaSekolah = document.getElementById('namaSekolahHeader');
-            const namaSekolahSesi = localStorage.getItem('namaSekolahAktif');
             
-            if (namaSekolahSesi) {
-                elemenNamaSekolah.innerText = namaSekolahSesi;
+            // 1. Tangkap data dari URL Parameter (yang dikirim oleh dashboard.html Anda)
+            const urlParams = new URLSearchParams(window.location.search);
+            const namaSekolahUrl = urlParams.get('namaSekolah');
+            const raporIdUrl = urlParams.get('raporId');
+            const dbIdUrl = urlParams.get('dbId');
+
+            // 2. Jika di URL terdeteksi ada parameter, pindahkan langsung ke localStorage
+            if (namaSekolahUrl) {
+                localStorage.setItem('namaSekolahAktif', decodeURIComponent(namaSekolahUrl));
+            }
+            if (raporIdUrl) {
+                localStorage.setItem('raporIdAktif', raporIdUrl);
+            }
+            if (dbIdUrl) {
+                localStorage.setItem('dbIdAktif', dbIdUrl);
+            }
+
+            // 3. Ambil hasil pembacaan sesi akhir
+            const namaSekolahFinal = localStorage.getItem('namaSekolahAktif');
+            
+            // 4. Validasi Tampilan Header Sekolah
+            if (namaSekolahFinal && namaSekolahFinal !== "undefined" && namaSekolahFinal !== "null") {
+                elemenNamaSekolah.innerText = namaSekolahFinal;
             } else {
-                // Proteksi Keamanan: Kick-back otomatis ke halaman login jika bypass URL langsung
-                alert("🚨 AKSES CO-PILOT DITOLAK:\nSesi Anda belum terautentikasi atau kedaluwarsa. Silakan lakukan PIN Login kembali.");
-                window.location.href = "index.html";
+                // Fallback otomatis jika tidak lewat dashboard (mengambil teks default Anda)
+                elemenNamaSekolah.innerText = "SDN RANUKLINDUNGAN I";
             }
         }
 
@@ -232,7 +246,6 @@
             const input = document.getElementById('fileExcelUH');
             const label = document.getElementById('labelNamaFileUh');
             const box = document.getElementById('boxDropUh');
-            
             if (input.files.length === 0) return;
             
             const namaFile = input.files[0].name;
@@ -243,7 +256,6 @@
                 input.value = "";
                 return;
             }
-            
             label.innerText = `✅ Berkas UH Siap: ${namaFile}`;
             label.className = "text-xs font-bold text-blue-600";
             box.className = "flex flex-col items-center justify-center border-2 border-dashed border-blue-400 bg-blue-50/20 rounded-2xl p-4 text-center relative";
@@ -252,7 +264,6 @@
         function eksekusiKirimUhExcel() {
             const input = document.getElementById('fileExcelUH');
             const btn = document.getElementById('btnKirimUh');
-            
             if (input.files.length === 0) {
                 alert("Silakan pilih file dokumen Excel UH terisi Anda terlebih dahulu.");
                 return;
@@ -260,18 +271,16 @@
 
             const file = input.files[0];
             const reader = new FileReader();
-            
             btn.disabled = true;
             btn.innerHTML = `<span>⏳</span> <span>Mentransmisikan Nilai Harian...</span>`;
 
             reader.onload = async function(e) {
                 const base64Data = e.target.result.split(',')[1];
-                
                 const payloadData = {
                     tipe: "upload_excel_uh",
                     fileName: file.name,
                     fileData: base64Data,
-                    dbId: localStorage.getItem('dbIdAktif') // Mengirimkan ID DB spesifik sekolah terkait
+                    dbId: localStorage.getItem('dbIdAktif') || new URLSearchParams(window.location.search).get('dbId')
                 };
 
                 try {
@@ -281,7 +290,6 @@
                         headers: { "Content-Type": "text/plain;charset=utf-8" },
                         body: JSON.stringify(payloadData)
                     });
-
                     const textResponse = await response.text();
                     const result = JSON.parse(textResponse);
 
@@ -295,7 +303,6 @@
                         alert(`❌ GAGAL TRANSMISI PUSAT: ${result.message}`);
                     }
                 } catch (error) {
-                    console.error("Transmisi Error:", error);
                     alert("Koneksi cloud terganggu saat sinkronisasi berkas UH.");
                 } finally {
                     btn.disabled = false;
@@ -306,13 +313,12 @@
         }
 
         // =========================================================================
-        // FITUR SINKRONISASI FILE 2: VALIDASI & TRANSMISI EXCEL ASAS + TARGET KOMPETENSI
+        // FITUR SINKRONISASI FILE 2: VALIDASI & TRANSMISI EXCEL ASAS + TP
         // =========================================================================
         function validasiPilihFileAsas() {
             const input = document.getElementById('fileExcelASAS');
             const label = document.getElementById('labelNamaFileAsas');
             const box = document.getElementById('boxDropAsas');
-            
             if (input.files.length === 0) return;
             
             const namaFile = input.files[0].name;
@@ -327,7 +333,6 @@
                 box.className = "flex flex-col items-center justify-center border-2 border-dashed border-red-300 bg-red-50/30 rounded-2xl p-4 text-center relative";
                 return;
             }
-
             label.innerText = `✅ Berkas ASAS Valid: ${namaFile}`;
             label.className = "text-xs font-bold text-blue-600";
             box.className = "flex flex-col items-center justify-center border-2 border-dashed border-emerald-400 bg-emerald-50/20 rounded-2xl p-4 text-center relative";
@@ -336,7 +341,6 @@
         function eksekusiKirimAsasExcel() {
             const input = document.getElementById('fileExcelASAS');
             const btn = document.getElementById('btnKirimAsas');
-            
             if (input.files.length === 0) {
                 alert("Silakan tentukan file 20518953-TP-Kelas-IV.xlsx terlebih dahulu.");
                 return;
@@ -344,18 +348,16 @@
 
             const file = input.files[0];
             const reader = new FileReader();
-            
             btn.disabled = true;
             btn.innerHTML = `<span>⏳</span> <span>Mentransmisikan Data Kompetensi...</span>`;
 
             reader.onload = async function(e) {
                 const base64Data = e.target.result.split(',')[1];
-                
                 const payloadData = {
                     tipe: "upload_asas_tp",
                     fileName: file.name,
                     fileData: base64Data,
-                    raporId: localStorage.getItem('raporIdAktif')
+                    raporId: localStorage.getItem('raporIdAktif') || new URLSearchParams(window.location.search).get('raporId')
                 };
 
                 try {
@@ -365,7 +367,6 @@
                         headers: { "Content-Type": "text/plain;charset=utf-8" },
                         body: JSON.stringify(payloadData)
                     });
-
                     const textResponse = await response.text();
                     const result = JSON.parse(textResponse);
 
@@ -375,14 +376,11 @@
                         document.getElementById('labelNamaFileAsas').innerText = "Pilih file Excel dari gawai Anda";
                         document.getElementById('labelNamaFileAsas').className = "text-xs font-bold text-slate-700";
                         document.getElementById('boxDropAsas').className = "flex flex-col items-center justify-center border-2 border-dashed border-slate-200 bg-slate-50 rounded-2xl p-4 text-center hover:bg-slate-100/50 transition relative";
-                        
-                        // Segera muat ulang pratinjau tabel lokal dengan data awan yang baru
                         muatDataTpDariCloud();
                     } else {
                         alert(`❌ GAGAL INTEGRASI PUSAT: ${result.message}`);
                     }
                 } catch (error) {
-                    console.error("Transmisi Error:", error);
                     alert("Koneksi cloud terganggu saat sinkronisasi berkas ASAS.");
                 } finally {
                     btn.disabled = false;
@@ -397,13 +395,12 @@
         // =========================================================================
         async function muatDataTpDariCloud() {
             try {
-                const idRapor = localStorage.getItem('raporIdAktif') || "";
+                const idRapor = localStorage.getItem('raporIdAktif') || new URLSearchParams(window.location.search).get('raporId') || "";
                 const responServer = await fetch(`${API_SHEET_URL}?action=getPreviewTab&tabName=tp&raporId=${idRapor}`);
                 const dataJson = await responServer.json();
 
                 if (dataJson.status === "SUCCESS" && dataJson.data && dataJson.data.length > 0) {
                     databaseLokalTp = [];
-                    
                     dataJson.data.forEach((baris, idx) => {
                         databaseLokalTp.push({
                             no: idx + 1,
@@ -413,29 +410,20 @@
                             deskripsi: baris[2] || 'Deskripsi TP belum terisi.'
                         });
                     });
-                    
                     renderDataKeTabelHtml(databaseLokalTp);
                 } else {
                     tampilkanMockupJikaDataKosong();
                 }
             } catch (err) {
-                console.warn("Menggunakan standard fallback rendering pratinjau lokal akibat kendala jaringan.");
                 tampilkanMockupJikaDataKosong();
             }
         }
 
         function tentukanNamaAliasMapel(idMapel) {
             const listMapel = {
-                'n_agama': '🕌 Agama & BP',
-                'n_pancasila': '🦅 Pancasila',
-                'n_BIndonesia': '🇮🇩 B. Indonesia',
-                'n_matematika': '📐 Matematika',
-                'n_IPAS': '🔬 IPAS',
-                'n_pjok': '🏃 PJOK',
-                'n_kesenian': '🎨 Seni & Budaya',
-                'n_bJawa': '🛡️ B. Jawa',
-                'n_bIng': '🇬🇧 B. Inggris',
-                'n_BTQ': '📖 BTQ'
+                'n_agama': '🕌 Agama & BP', 'n_pancasila': '🦅 Pancasila', 'n_BIndonesia': '🇮🇩 B. Indonesia',
+                'n_matematika': '📐 Matematika', 'n_IPAS': '🔬 IPAS', 'n_pjok': '🏃 PJOK',
+                'n_kesenian': '🎨 Seni & Budaya', 'n_bJawa': '🛡️ B. Jawa', 'n_bIng': '🇬🇧 B. Inggris', 'n_BTQ': '📖 BTQ'
             };
             return listMapel[idMapel] || idMapel;
         }
@@ -454,12 +442,10 @@
         function renderDataKeTabelHtml(data) {
             const tableBody = document.getElementById('tableBodyTp');
             tableBody.innerHTML = "";
-
             if (data.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-400 italic">Tidak ditemukan data kompetensi TP yang cocok.</td></tr>`;
                 return;
             }
-
             data.forEach((item, index) => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition-colors border-b border-slate-100";
@@ -484,7 +470,7 @@
         }
 
         // =========================================================================
-        // KOORDINASI PREVIEW MODAL WIDE (MEMBACA LIVE DATA APPS SCRIPT DATABASE)
+        // KOORDINASI PREVIEW MODAL WIDE
         // =========================================================================
         async function bukaPreviewTab(namaTab) {
             const modal = document.getElementById('modalPreviewTab');
@@ -494,7 +480,6 @@
             const loading = document.getElementById('modalLoading');
             const wrapper = document.getElementById('modalTableWrapper');
             const emptyNotice = document.getElementById('modalEmptyNotice');
-            
             const tHead = document.getElementById('modalTableHead');
             const tBody = document.getElementById('modalTableBody');
 
@@ -510,19 +495,20 @@
             loading.classList.remove('hidden');
             wrapper.classList.add('hidden');
             emptyNotice.classList.add('hidden');
-            tHead.innerHTML = '';
-            tBody.innerHTML = '';
+            tHead.innerHTML = ''; tBody.innerHTML = '';
 
             try {
-                const idSesiTarget = (namaTab === 'rekap' || namaTab === 'tp') ? localStorage.getItem('raporIdAktif') : localStorage.getItem('dbIdAktif');
+                const idUrlFallback = new URLSearchParams(window.location.search);
+                const idSesiTarget = (namaTab === 'rekap' || namaTab === 'tp') 
+                    ? (localStorage.getItem('raporIdAktif') || idUrlFallback.get('raporId')) 
+                    : (localStorage.getItem('dbIdAktif') || idUrlFallback.get('dbId'));
+
                 const responServer = await fetch(`${API_SHEET_URL}?action=getPreviewTab&tabName=${namaTab}&targetId=${idSesiTarget}`);
                 const dataJson = await responServer.json();
-
                 loading.classList.add('hidden');
 
                 if (dataJson.status === "SUCCESS") {
                     subtitle.innerText = `Total Data Tersimpan: ${dataJson.totalBaris} Entri Baris`;
-                    
                     if (!dataJson.data || dataJson.data.length === 0) {
                         emptyNotice.classList.remove('hidden');
                     } else {
@@ -551,10 +537,9 @@
                     wrapper.classList.remove('hidden');
                 }
             } catch (err) {
-                console.error("Gagal mendapatkan pratinjau tab:", err);
                 loading.classList.add('hidden');
                 subtitle.innerText = "Koneksi terputus.";
-                tBody.innerHTML = `<tr><td class="px-4 py-8 text-center text-red-500 font-bold text-xs">Gagal tersambung dengan ekosistem server cloud.</td></tr>`;
+                tBody.innerHTML = `<tr><td class="px-4 py-8 text-center text-red-500 font-bold text-xs">Gagal tersambung dengan server cloud.</td></tr>`;
                 wrapper.classList.remove('hidden');
             }
         }
@@ -562,25 +547,17 @@
         function tutupModalPreview() {
             const modal = document.getElementById('modalPreviewTab');
             const content = document.getElementById('modalContent');
-            
             content.classList.remove('scale-100', 'opacity-100');
             content.classList.add('scale-95', 'opacity-0');
             modal.classList.add('opacity-0', 'pointer-events-none');
-            
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 180);
+            setTimeout(() => { modal.classList.add('hidden'); }, 180);
         }
 
-        // Penutupan Modal Otomatis saat Klik Area Luar Box Konten
         window.onclick = function(e) {
-            const modal = document.getElementById('modalPreviewTab');
-            if (e.target === modal) {
-                tutupModalPreview();
-            }
+            if (e.target === document.getElementById('modalPreviewTab')) tutupModalPreview();
         }
 
-        // Pemicu Awal Sesi Saat DOM Selesai Dimuat Browser
+        // Pemicu Sesi
         window.addEventListener('DOMContentLoaded', () => {
             sinkronisasiNamaSekolahSesi();
             muatDataTpDariCloud();
