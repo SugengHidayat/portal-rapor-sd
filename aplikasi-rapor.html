@@ -44,7 +44,7 @@
             </div>
 
             <p class="text-xs sm:text-sm text-slate-400 leading-relaxed text-justify">
-                Evaluasi melalui <span class="font-bold text-slate-200">Ulangan Harian (UH)</span> dan <span class="font-bold text-slate-200">Asesmen Sumatif Akhir Semester (ASAS)</span> pada platform ini dirancang bukan sekadar untuk mengukur angka kuantitatif, melainkan sebagai instrumen evaluasi komprehensif untuk memetakan ketercapaian Tujuan Pembelajaran (TP) pada tiap peserta didik di <span id="namaSekolahHeader" class="font-bold text-blue-400">UPT SDN Ranuklindungan I</span>. Pengumpulan data nilai berkala serta pemetaan TP yang valid memungkinkan pendidik melakukan diagnosis dini terhadap kompetensi kognitif siswa, mengenali laju belajar anak yang heterogen, serta memberikan intervensi secara personal sebelum menuju penilaian sumatif akhir semester.
+                Evaluasi melalui <span class="font-bold text-slate-200">Ulangan Harian (UH)</span> dan <span class="font-bold text-slate-200">Asesmen Sumatif Akhir Semester (ASAS)</span> pada platform ini dirancang bukan sekadar untuk mengukur angka kuantitatif, mirainkan sebagai instrumen evaluasi komprehensif untuk memetakan ketercapaian Tujuan Pembelajaran (TP) pada tiap peserta didik di <span id="namaSekolahHeader" class="font-bold text-blue-400">UPT SDN Ranuklindungan I</span>. Pengumpulan data nilai berkala serta pemetaan TP yang valid memungkinkan pendidik melakukan diagnosis dini terhadap kompetensi kognitif siswa, mengenali laju belajar anak yang heterogen, serta memberikan intervensi secara personal sebelum menuju penilaian sumatif akhir semester.
             </p>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
@@ -75,9 +75,9 @@
                             Periksa validitas kalkulasi capaian akhir harian dan sumatif siswa secara menyeluruh sebelum mencetak lembar dokumen rapor fisik.
                         </p>
                     </div>
-                    <button onclick="bukaPreviewTab('rekap')" class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-amber-950 bg-amber-400 hover:bg-amber-500 shadow-sm transition active:scale-98 cursor-pointer">
+                    <a href="verifikasi-cetak.html" class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-amber-950 bg-amber-400 hover:bg-amber-500 shadow-sm transition active:scale-98">
                         🔑 Verifikasi Rapor Siswa
-                    </button>
+                    </a>
                 </div>
             </div>
         </header>
@@ -239,13 +239,11 @@
         function sinkronisasiNamaSekolahSesi() {
             const elemenNamaSekolah = document.getElementById('namaSekolahHeader');
             
-            // 1. Tangkap data dari URL Parameter (kiriman dari dashboard.html)
             const urlParams = new URLSearchParams(window.location.search);
             const namaSekolahUrl = urlParams.get('namaSekolah');
             const raporIdUrl = urlParams.get('raporId');
             const dbIdUrl = urlParams.get('dbId');
 
-            // 2. Jika di URL terdeteksi ada parameter, prioritaskan & kunci ke localStorage
             if (namaSekolahUrl && namaSekolahUrl !== "undefined" && namaSekolahUrl !== "null") {
                 localStorage.setItem('namaSekolahAktif', decodeURIComponent(namaSekolahUrl));
             }
@@ -256,10 +254,8 @@
                 localStorage.setItem('dbIdAktif', dbIdUrl);
             }
 
-            // 3. Ambil nilai final dari localStorage untuk validasi akhir
             const namaSekolahFinal = localStorage.getItem('namaSekolahAktif');
             
-            // 4. Validasi Tampilan Header Sekolah
             if (namaSekolahFinal && namaSekolahFinal !== "undefined" && namaSekolahFinal !== "null") {
                 elemenNamaSekolah.innerText = namaSekolahFinal;
             } else {
@@ -591,7 +587,6 @@
             if (e.target === document.getElementById('modalPreviewTab')) tutupModalPreview();
         }
 
-        // INISIALISASI UTAMA SAAT HALAMAN SELESAI DIMUAT
         window.addEventListener('DOMContentLoaded', () => {
             sinkronisasiNamaSekolahSesi();
             muatDataTpDariCloud();
