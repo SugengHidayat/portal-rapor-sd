@@ -41,7 +41,8 @@
             <div>
                 <label for="selectNpsn" class="block text-xs font-semibold tracking-wider text-slate-400 uppercase mb-2"> Pilih Lembaga / Satuan Pendidikan </label>
                 <div class="relative">
-                    <select id="selectNpsn" required class="w-full bg-[#1F2937]/50 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer transition-all appearance-none">
+                    <select id="selectNpsn" required class="w-full bg-[#1F2937] border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer transition-all appearance-none">
+                        <option value="" disabled selected class="text-slate-500">Memuat daftar lembaga...</option>
                     </select>
                     <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -51,7 +52,7 @@
 
             <div>
                 <label for="inputPin" class="block text-xs font-semibold tracking-wider text-slate-400 uppercase mb-2"> Kode Akses Ruang Kelas (PIN) </label>
-                <input type="password" id="inputPin" required maxlength="6" placeholder="Masukkan 6 digit kode PIN" class="w-full bg-[#1F2937]/50 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent tracking-widest transition-all">
+                <input type="password" id="inputPin" required maxlength="6" placeholder="Masukkan 6 digit kode PIN" class="w-full bg-[#1F2937] border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent tracking-widest transition-all">
             </div>
 
             <button type="submit" id="btnMasukPortal" class="w-full bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold py-4 px-4 rounded-xl shadow-lg shadow-blue-600/20 transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer">
@@ -67,28 +68,28 @@
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 mb-1">NPSN Sekolah</label>
-                    <input type="number" id="regNpsn" required placeholder="Contoh: 205xxxxx" class="w-full bg-[#1F2937]/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input type="number" id="regNpsn" required placeholder="Contoh: 205xxxxx" class="w-full bg-[#1F2937] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 mb-1">Nama Sekolah</label>
-                    <input type="text" id="regNamaSekolah" required placeholder="SDN 1 Pasuruan" class="w-full bg-[#1F2937]/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input type="text" id="regNamaSekolah" required placeholder="SDN 1 Pasuruan" class="w-full bg-[#1F2937] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
             </div>
 
             <div>
                 <label class="block text-xs font-semibold text-slate-400 mb-1">Email Akun Belajar.id</label>
-                <input type="email" id="regEmail" required placeholder="operator@guru.sd.belajar.id" class="w-full bg-[#1F2937]/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                <input type="email" id="regEmail" required placeholder="operator@guru.sd.belajar.id" class="w-full bg-[#1F2937] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
                 <p id="regEmailError" class="text-[11px] text-red-400 mt-1 hidden">⚠️ Email harus menggunakan domain @belajar.id</p>
             </div>
 
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 mb-1">Nama Pendaftar</label>
-                    <input type="text" id="regPendaftar" required placeholder="Nama Operator/Guru" class="w-full bg-[#1F2937]/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input type="text" id="regPendaftar" required placeholder="Nama Operator/Guru" class="w-full bg-[#1F2937] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 mb-1">No. WhatsApp</label>
-                    <input type="tel" id="regWhatsapp" required placeholder="08xxxxxxxxxx" class="w-full bg-[#1F2937]/50 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    <input type="tel" id="regWhatsapp" required placeholder="08xxxxxxxxxx" class="w-full bg-[#1F2937] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
             </div>
 
@@ -111,18 +112,18 @@
     </div>
 
     <script>
-        // PASTIKAN URL EXEC APPS SCRIPT ANDA SUDAH BENAR
         const API_REGISTRASI_URL = "https://script.google.com/macros/s/AKfycbwEpRt1PizUVTq3zatgbEX8gnce2LILCoPjEsf0FertTGfCwuhFps0wVYguPyF8XRyo/exec"; 
 
         let isRegisterState = false;
 
-        // --- SWITCHER LOGIC (Buka Tutup Form) ---
+        // Dom Selector Element
         const linkSwitcher = document.getElementById('linkFormSwitcher');
         const formLogin = document.getElementById('formLoginPortal');
         const formReg = document.getElementById('formRegistrasiLembaga');
         const portalTitle = document.getElementById('portalTitle');
         const portalSub = document.getElementById('portalSub');
 
+        // --- SWITCHER LOGIC (Buka Tutup Form) ---
         linkSwitcher.addEventListener('click', function(e) {
             e.preventDefault();
             isRegisterState = !isRegisterState;
@@ -144,21 +145,18 @@
             }
         });
 
-        // --- ENGINE 1: LOAD DROPDOWN SEKOLAH (GET - VERSI BYPASS) ---
+        // --- ENGINE 1: LOAD DROPDOWN SEKOLAH (GET) ---
         async function muatDropdownSekolah() {
             try {
-                // Tambahkan cache buster (?_=${Date.now()}) agar browser tidak membaca cache lama yang macet
                 const urlTarget = `${API_REGISTRASI_URL}?action=getDaftarSekolah&_=${Date.now()}`;
                 
                 const respon = await fetch(urlTarget, {
                     method: 'GET',
-                    redirect: 'follow', // Memaksa browser mengikuti pengalihan (redirect) server Google
-                    headers: {
-                        'Accept': 'application/json'
-                    }
+                    redirect: 'follow',
+                    headers: { 'Accept': 'application/json' }
                 });
                 
-                if (!respon.ok) throw new Error("Koneksi jaringan buruk.");
+                if (!respon.ok) throw new Error("Respon server bermasalah.");
                 
                 const hasil = await respon.json();
                 
@@ -166,6 +164,10 @@
                     const select = document.getElementById('selectNpsn');
                     select.innerHTML = '<option value="" disabled selected class="text-slate-500">-- Silakan Pilih Lembaga Sekolah --</option>';
                     
+                    if (hasil.data.length === 0) {
+                        select.innerHTML = '<option value="" disabled selected class="text-slate-500">Tidak ada lembaga sekolah aktif.</option>';
+                    }
+
                     hasil.data.forEach(sekolah => {
                         const option = document.createElement('option');
                         option.value = sekolah.npsn.toString().trim();
@@ -182,12 +184,8 @@
                 }
             } catch (error) {
                 console.error("Detail Error Dropdown:", error);
-                // Jika gagal total, paksa matikan loader dan tampilkan banner error
                 document.getElementById('loaderSekolah').classList.add('hidden');
                 document.getElementById('errorBanner').classList.remove('hidden');
-                
-                // OPSI DARURAT: Jika API Macet, setidaknya izinkan pengguna pindah ke Form Registrasi
-                alert("Koneksi ke database master melambat. Anda tetap bisa melakukan registrasi lembaga baru melalui tombol di bawah.");
             }
         }
 
@@ -220,14 +218,14 @@
                     alert(`❌ Akses Ditolak: ${hasil.message}`);
                 }
             } catch (error) {
-                alert("❌ Terjadi gangguan server.");
+                alert("❌ Terjadi gangguan komunikasi dengan Apps Script.");
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = `Buka Dashboard Admin`;
             }
         });
 
-        // --- ENGINE 3: PROSES REGISTRASI & VALIDASI (POST) ---
+        // --- ENGINE 3: PROSES REGISTRASI VIA FORMDATA (POST) ---
         formReg.addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -240,7 +238,6 @@
             const emailError = document.getElementById('regEmailError');
             const btn = document.getElementById('btnKirimRegistrasi');
 
-            // Regex Validasi @belajar.id
             const belajarIdRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.belajar\.id$/;
             if (!belajarIdRegex.test(email)) {
                 emailError.classList.remove('hidden');
@@ -249,10 +246,9 @@
             emailError.classList.add('hidden');
 
             btn.disabled = true;
-            btn.innerHTML = `Memproses Pendaftaran & Kloning DB...`;
+            btn.innerHTML = `Membangun Ruang Kelas & Kloning DB...`;
 
             try {
-                // Solusi: Gunakan FormData untuk membungkus request POST agar lolos CORS Google
                 const payload = new FormData();
                 payload.append('action', 'registrasiBaru');
                 payload.append('npsn', npsn);
@@ -261,8 +257,6 @@
                 payload.append('pendaftar', pendaftar);
                 payload.append('whatsapp', whatsapp);
 
-                // Catatan: JANGAN memasukkan 'Content-Type' di headers jika menggunakan FormData,
-                // Browser akan menentukannya secara otomatis sebagai multipart/form-data.
                 const respon = await fetch(API_REGISTRASI_URL, {
                     method: 'POST',
                     body: payload
@@ -271,21 +265,36 @@
                 const hasil = await respon.json();
 
                 if (hasil.status === "SUCCESS") {
-                    alert(`🎉 Pendaftaran Berhasil!\n\nPIN Akses Anda: ${hasil.pin}\nSilakan simpan PIN ini baik-baik untuk masuk ke dashboard.`);
+                    alert(`🎉 Pendaftaran Lembaga Sukses!\n\nKODE PIN AKSES: ${hasil.pin}\n\nSimpan PIN ini untuk masuk ke dalam sistem.`);
                     formReg.reset();
-                    linkSwitcher.click(); // Kembali ke login
-                    location.reload();    // Reload dropdown otomatis
+                    // Kembalikan ke halaman login awal
+                    isRegisterState = false;
+                    formReg.add('hidden');
+                    formLogin.classList.remove('hidden');
+                    portalTitle.innerText = "E-RAPOR DIGITAL KELAS 4";
+                    portalSub.innerText = "Kurikulum Merdeka • Fase B";
+                    linkSwitcher.innerText = "Registrasi Lembaga Baru";
+                    linkSwitcher.classList.replace('text-emerald-400', 'text-blue-400');
+                    
+                    // Segarkan list sekolah baru
+                    document.getElementById('loaderSekolah').classList.remove('hidden');
+                    formLogin.classList.add('hidden');
+                    muatDropdownSekolah();
                 } else {
                     alert(`❌ Gagal Mendaftar: ${hasil.message}`);
                 }
             } catch (error) {
                 console.error("Detail Error:", error);
-                alert("❌ Gagal terhubung ke server pendaftaran. Cek konsol browser (F12) untuk detail.");
+                alert("❌ Gagal terhubung ke server pendaftaran. Silakan periksa kembali konfigurasi hak akses Web App Anda.");
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = `Kirim Formulir Pendaftaran`;
             }
         });
+
+        // --- INITIAL RUN TRIGGER ---
+        // Menjalankan fungsi dropdown secara otomatis saat file HTML pertama kali dimuat di browser
+        document.addEventListener("DOMContentLoaded", muatDropdownSekolah);
     </script>
 </body>
 </html>
