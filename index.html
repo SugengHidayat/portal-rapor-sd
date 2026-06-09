@@ -144,10 +144,22 @@
             }
         });
 
-        // --- ENGINE 1: LOAD DROPDOWN SEKOLAH (GET) ---
+        // --- ENGINE 1: LOAD DROPDOWN SEKOLAH (GET - VERSI BYPASS) ---
         async function muatDropdownSekolah() {
             try {
-                const respon = await fetch(`${API_REGISTRASI_URL}?action=getDaftarSekolah`);
+                // Tambahkan cache buster (?_=${Date.now()}) agar browser tidak membaca cache lama yang macet
+                const urlTarget = `${API_REGISTRASI_URL}?action=getDaftarSekolah&_=${Date.now()}`;
+                
+                const respon = await fetch(urlTarget, {
+                    method: 'GET',
+                    redirect: 'follow', // Memaksa browser mengikuti pengalihan (redirect) server Google
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!respon.ok) throw new Error("Koneksi jaringan buruk.");
+                
                 const hasil = await respon.json();
                 
                 if (hasil.status === "SUCCESS") {
@@ -156,25 +168,26 @@
                     
                     hasil.data.forEach(sekolah => {
                         const option = document.createElement('option');
-                        // PERBAIKAN: Menggunakan .trim() bawaan JavaScript murni (Anti-Crash)
                         option.value = sekolah.npsn.toString().trim();
                         option.className = "text-slate-900 bg-white font-medium";
                         option.textContent = `${sekolah.nama} (${sekolah.npsn})`;
                         select.appendChild(option);
                     });
 
-                    // Sembunyikan loader dan munculkan form login
                     document.getElementById('loaderSekolah').classList.add('hidden');
                     formLogin.classList.remove('hidden');
                     document.getElementById('errorBanner').classList.add('hidden');
                 } else {
-                    throw new Error(hasil.message || "Gagal memuat data");
+                    throw new Error(hasil.message);
                 }
             } catch (error) {
                 console.error("Detail Error Dropdown:", error);
-                // Sembunyikan loader dan munculkan banner error agar terlihat permasalahannya
+                // Jika gagal total, paksa matikan loader dan tampilkan banner error
                 document.getElementById('loaderSekolah').classList.add('hidden');
                 document.getElementById('errorBanner').classList.remove('hidden');
+                
+                // OPSI DARURAT: Jika API Macet, setidaknya izinkan pengguna pindah ke Form Registrasi
+                alert("Koneksi ke database master melambat. Anda tetap bisa melakukan registrasi lembaga baru melalui tombol di bawah.");
             }
         }
 
