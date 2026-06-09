@@ -3,116 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal e-Rapor Kurikulum Merdeka - Kelas 4 SD</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Portal e-Rapor Kurikulum Merdeka - SD Kelas 4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-blue-900 via-indigo-950 to-slate-900 min-h-screen flex items-center justify-center p-4">
+<body class="bg-gradient-to-br from-[#0B132B] via-[#1C2541] to-[#3A506B] min-h-screen flex items-center justify-center p-4 relative overflow-x-hidden">
+    
+    <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
-    <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-2xl p-8 max-w-lg w-full text-center text-white transition-all duration-300 hover:border-white/30">
+    <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl p-6 sm:p-10 max-w-xl w-full text-center text-white transition-all duration-300 hover:border-white/20 relative z-10">
         
-        <div class="mx-auto bg-blue-500/20 w-20 h-20 rounded-2xl flex items-center justify-center border border-blue-400/30 shadow-inner mb-6">
-            <svg class="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <div class="mx-auto bg-gradient-to-tr from-blue-600/30 to-indigo-600/30 w-20 h-20 rounded-2xl flex items-center justify-center border border-white/10 shadow-lg mb-5">
+            <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
             </svg>
         </div>
 
-        <h1 class="text-2xl font-bold tracking-tight bg-gradient-to-r from-blue-200 to-indigo-200 bg-clip-text text-transparent">
-            E-RAPOR KURIKULUM MERDEKA
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-blue-200 via-white to-indigo-200 bg-clip-text text-transparent uppercase">
+            Sistem Informasi e-Rapor
         </h1>
-        <p class="text-sm text-slate-300 font-medium tracking-wide uppercase mt-1 mb-8">
-            Fase B • Khusus Kelas 4 Sekolah Dasar
+        <p class="text-xs text-blue-300 font-bold tracking-widest uppercase mt-1 mb-8">
+            Kurikulum Merdeka • Kelas 4 Sekolah Dasar
         </p>
 
-        <form id="portalForm" class="text-left space-y-5">
+        <div id="loaderSekolah" class="py-6 space-y-3">
+            <div class="inline-block animate-spin rounded-full h-7 w-7 border-4 border-blue-400 border-t-transparent"></div>
+            <p class="text-sm text-slate-300 font-medium animate-pulse">Menghubungkan ke Database Master Lembaga...</p>
+        </div>
+
+        <form id="formLoginPortal" class="text-left space-y-5 hidden">
             
             <div>
-                <label for="sekolah" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
-                    Pilih Lembaga Sekolah Dasar
+                <label for="selectNpsn" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                    Pilih Lembaga Sekolah (NPSN)
                 </label>
-                <select id="sekolah" required
-                    class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer transition-all appearance-none">
-                    <option value="" disabled selected class="text-slate-500">-- Silakan Pilih Sekolah Anda --</option>
-                    
-                    <option value="SKL01">SDN RANUKLINDUNGAN 1</option>
-                    <option value="SKL02">SDN RANUKLINDUNGAN 2</option>
-                    <option value="SKL03">SDN GRATITUNON 1</option>
-                    <option value="SKL04">SDN KEDAWUNG KULON 1</option>
-                    </select>
+                <div class="relative">
+                    <select id="selectNpsn" required
+                        class="w-full bg-slate-950/60 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer transition-all appearance-none">
+                        </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                </div>
             </div>
 
             <div>
-                <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-2">
-                    Kode Akses Ruang Kelas
+                <label for="inputPin" class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
+                    Kode Akses PIN Ruang Kelas
                 </label>
-                <input type="password" id="password" required placeholder="••••••"
-                    class="w-full bg-slate-900/60 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                <input type="password" id="inputPin" required maxlength="6" placeholder="Masukkan 6 digit PIN"
+                    class="w-full bg-slate-950/60 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent tracking-wide transition-all">
             </div>
 
-            <button type="submit" 
-                class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold py-3 px-4 rounded-xl shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 focus:outline-none cursor-pointer mt-2">
-                Buka Dashboard e-Rapor
+            <button type="submit" id="btnMasukPortal"
+                class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-sm font-bold py-3.5 px-4 rounded-xl shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 focus:outline-none cursor-pointer pt-3">
+                Masuk ke Ruang Rapor
             </button>
         </form>
 
-        <div class="mt-8 pt-6 border-t border-white/5 text-xs text-slate-400">
-            &copy; 2026 Korwil Bidang Pendidikan Kecamatan • All Rights Reserved
+        <div class="mt-8 pt-5 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-400">
+            <div>&copy; 2026 E-Rapor Engine Terintegrasi</div>
+            <a href="URL_GOOGLE_FORM_PENDAFTARAN_ANDA" target="_blank" class="text-blue-400 hover:text-blue-300 font-semibold flex items-center space-x-1 transition">
+                <span>📝</span> <span class="underline decoration-dotted">Registrasi Sekolah Baru (Belajar.id)</span>
+            </a>
         </div>
     </div>
 
     <script>
-        // MAPPING DATABASE TERPUSAT: Menghubungkan Kode Sekolah ke ID Spreadsheet masing-masing
-        // Guru/Operator tidak akan bisa melihat ID ini di browser secara langsung.
-        const DATABASE_MAP = {
-            "SKL01": {
-                nama: "SDN RANUKLINDUNGAN 1",
-                dbId: "1oLPWzfTdvLweg0dNGhW_3a3PhC7qJEecHaOsstFCcok", // ID Database lama Anda
-                raporId: "12lkZ9LROZc0LIhH86hgOAcW2W6YXNV4avMBXijQphqc", // ID Rapor lama Anda
-                pin: "123456" // Kode akses khusus sekolah 1
-            },
-            "SKL02": {
-                nama: "SDN RANUKLINDUNGAN 2",
-                dbId: "ID_SPREADSHEET_DB_SEKOLAH_2_DISINI",
-                raporId: "ID_SPREADSHEET_RAPOR_SEKOLAH_2_DISINI",
-                pin: "234567"
-            },
-            "SKL03": {
-                nama: "SDN GRATITUNON 1",
-                dbId: "ID_SPREADSHEET_DB_SEKOLAH_3_DISINI",
-                raporId: "ID_SPREADSHEET_RAPOR_SEKOLAH_3_DISINI",
-                pin: "345678"
-            }
-            // Seterusnya teruskan pemetaan hingga 35 sekolah
-        };
+        // PENTING: Pasang URL Web App dari Apps Script Spreadsheet "Database_E-Rapor Grati" Anda di bawah ini
+        const API_REGISTRASI_URL = "https://script.google.com/macros/s/AKfycbyf2b5M_PAxK20X_8fH-wZ8G-h7E-EX1MclDLYfOsz2I8K98C079gW-fP2Q0T4z_pE/exec"; 
 
-        document.getElementById('portalForm').addEventListener('submit', function(e) {
+        // Fungsi Memuat Daftar Lembaga Secara Dinamis Saat Halaman Dibuka
+        async function muatDropdownSekolah() {
+            try {
+                const respon = await fetch(`${API_REGISTRASI_URL}?action=getDaftarSekolah&_=${new Date().getTime()}`);
+                const hasil = await respon.json();
+                
+                if (hasil.status === "SUCCESS") {
+                    const select = document.getElementById('selectNpsn');
+                    select.innerHTML = '<option value="" disabled selected class="text-slate-500">-- Silakan Pilih Lembaga Sekolah --</option>';
+                    
+                    hasil.data.forEach(sekolah => {
+                        select.innerHTML += `<option value="${sekolah.npsn}" class="text-slate-900 bg-white font-medium">${sekolah.nama} (${sekolah.npsn})</option>`;
+                    });
+
+                    // Tampilkan form dan hilangkan loader animasi
+                    document.getElementById('loaderSekolah').classList.add('hidden');
+                    document.getElementById('formLoginPortal').classList.remove('hidden');
+                } else {
+                    throw new Error(hasil.message || "Gagal menarik repositori database sekolah.");
+                }
+            } catch (error) {
+                console.error(error);
+                document.getElementById('loaderSekolah').innerHTML = `
+                    <div class="p-3 bg-red-500/20 border border-red-500/30 text-red-200 text-xs rounded-xl font-medium inline-block max-w-sm text-left">
+                        <p class="font-bold">⚠️ Gangguan Alur Pipeline Database</p>
+                        <p class="mt-1 text-[11px] opacity-80">Detail: Kesalahan konfigurasi otorisasi server atau URL Apps Script tidak valid.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Fungsi Eksekusi Validasi Akun Login Ke Ruang Rapor Sekolah
+        document.getElementById('formLoginPortal').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const kodeSekolah = document.getElementById('sekolah').value;
-            const inputPin = document.getElementById('password').value;
+            const npsn = document.getElementById('selectNpsn').value;
+            const pin = document.getElementById('inputPin').value;
+            const btn = document.getElementById('btnMasukPortal');
             
-            const sekolahTerpilih = DATABASE_MAP[kodeSekolah];
-            
-            if (sekolahTerpilih) {
-                // Validasi PIN Keamanan
-                if (inputPin === sekolahTerpilih.pin) {
-                    
-                    // Alihkan ke halaman kerja data siswa dengan melempar parameter ID secara terpusat
-                    // Gantilah 'data-siswa.html' dengan nama file dashboard kerja Anda.
-                    const urlTujuan = `data-siswa.html?dbId=${sekolahTerpilih.dbId}&raporId=${sekolahTerpilih.raporId}&namaSekolah=${encodeURIComponent(sekolahTerpilih.nama)}`;
-                    
+            btn.disabled = true;
+            btn.innerHTML = `<span>⏳</span> <span>Memvalidasi Otentikasi...</span>`;
+
+            try {
+                // Menembak Rute validasi login ke Apps Script terpusat
+                const respon = await fetch(`${API_REGISTRASI_URL}?action=loginSekolah&npsn=${npsn}&pin=${pin}`);
+                const hasil = await respon.json();
+
+                if (hasil.status === "SUCCESS") {
+                    // Alihkan guru ke halaman kerja utama dengan melemparkan data parameter ID Spreadsheet unik miliknya
+                    const urlTujuan = `dashboard-hub.html?dbId=${hasil.dbId}&raporId=${hasil.raporId}&namaSekolah=${encodeURIComponent(hasil.namaSekolah)}`;
                     window.location.href = urlTujuan;
-                    
                 } else {
-                    alert('❌ Kode Akses Ruang Kelas salah! Silakan hubungi admin sekolah.');
+                    alert(`❌ Akses Ditolak: ${hasil.message}`);
                 }
-            } else {
-                alert('❌ Silakan pilih lembaga sekolah terlebih dahulu.');
+            } catch (error) {
+                console.error(error);
+                alert("❌ Gagal terhubung ke server autentikasi. Pastikan koneksi internet stabil.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `Masuk ke Ruang Rapor`;
             }
         });
+
+        // Trigger Pemuatan Pertama
+        window.onload = muatDropdownSekolah;
     </script>
 </body>
 </html>
