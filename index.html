@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Informasi E-Rapor Terintegrasi - SD Kelas 4</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -42,7 +42,7 @@
                 <label for="selectNpsn" class="block text-xs font-semibold tracking-wider text-slate-400 uppercase mb-2"> Pilih Lembaga / Satuan Pendidikan </label>
                 <div class="relative">
                     <select id="selectNpsn" required class="w-full bg-[#1F2937]/50 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer transition-all appearance-none">
-                        </select>
+                    </select>
                     <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                     </div>
@@ -73,34 +73,43 @@
     </div>
 
     <script>
-        // PENTING: Ganti dengan URL Deploy Web App dari Google Spreadsheet "Database_E-Rapor Grati" Anda
-        const API_REGISTRASI_URL = "PASANG_URL_EXEC_APPS_SCRIPT_DI_SINI"; 
+        // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT ANDA DI SINI
+        const API_REGISTRASI_URL = "URL_DEPLOY_APPS_SCRIPT_ANDA"; 
 
+        // 1. Memuat Daftar Sekolah via GET Request (Hanya membaca data publik, aman menggunakan GET)
         async function muatDropdownSekolah() {
             try {
                 const respon = await fetch(`${API_REGISTRASI_URL}?action=getDaftarSekolah`);
-                if(!respon.ok) throw new Error("Network Response Fail");
+                if(!respon.ok) throw new Error("Gagal mengambil data dari server.");
                 const hasil = await respon.json();
                 
                 if (hasil.status === "SUCCESS") {
                     const select = document.getElementById('selectNpsn');
+                    
+                    // Bersihkan dan set opsi default
                     select.innerHTML = '<option value="" disabled selected class="text-slate-500">-- Silakan Pilih Lembaga Sekolah --</option>';
                     
                     hasil.data.forEach(sekolah => {
-                        select.innerHTML += `<option value="${sekolah.npsn}" class="text-slate-900 bg-white font-medium">${sekolah.nama} (${sekolah.npsn})</option>`;
+                        const option = document.createElement('option');
+                        option.value = sekolah.npsn;
+                        option.className = "text-slate-900 bg-white font-medium";
+                        option.textContent = `${sekolah.nama} (${sekolah.npsn})`;
+                        select.appendChild(option);
                     });
 
                     document.getElementById('loaderSekolah').classList.add('hidden');
                     document.getElementById('formLoginPortal').classList.remove('hidden');
                 } else {
-                    throw new Error();
+                    throw new Error(hasil.message || "Gagal memproses data.");
                 }
             } catch (error) {
+                console.error("Error:", error);
                 document.getElementById('loaderSekolah').classList.add('hidden');
                 document.getElementById('errorBanner').classList.remove('hidden');
             }
         }
 
+        // 2. Proses Autentikasi via POST Request (Lebih aman karena payload PIN disembunyikan di dalam body)
         document.getElementById('formLoginPortal').addEventListener('submit', async function(e) {
             e.preventDefault();
             const npsn = document.getElementById('selectNpsn').value;
@@ -111,24 +120,39 @@
             btn.innerHTML = `Memvalidasi Autentikasi...`;
 
             try {
-                const respon = await fetch(`${API_REGISTRASI_URL}?action=loginSekolah&npsn=${npsn}&pin=${pin}`);
+                // Konfigurasi Payload menggunakan URLSearchParams untuk kompatibilitas doPost Apps Script
+                const payload = new URLSearchParams();
+                payload.append('action', 'loginSekolah');
+                payload.append('npsn', npsn);
+                payload.append('pin', pin);
+
+                const respon = await fetch(API_REGISTRASI_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: payload
+                });
+
                 const hasil = await respon.json();
 
                 if (hasil.status === "SUCCESS") {
-                    // Alihkan ke halaman dashboard utama pengerjaan nilai
+                    // Berhasil login, arahkan ke dashboard
                     window.location.href = `dashboard.html?dbId=${hasil.dbId}&raporId=${hasil.raporId}&namaSekolah=${encodeURIComponent(hasil.namaSekolah)}`;
                 } else {
                     alert(`❌ Akses Ditolak: ${hasil.message}`);
                 }
             } catch (error) {
-                alert("❌ Terjadi gangguan server. Cek jaringan atau setelan otorisasi Apps Script.");
+                alert("❌ Terjadi gangguan server. Periksa jaringan Anda atau konfigurasi Google Apps Script.");
+                console.error("Error Login:", error);
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = `Buka Dashboard Admin`;
             }
         });
 
-        window.onload = muatDropdownSekolah;
+        // Jalankan fungsi saat halaman selesai dimuat
+        window.addEventListener('DOMContentLoaded', muatDropdownSekolah);
     </script>
 </body>
 </html>
