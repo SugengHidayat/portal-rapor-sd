@@ -88,20 +88,29 @@
             alert("Akses Ilegal! Anda akan dialihkan kembali ke gerbang login utama.");
             window.location.href = "index.html";
         } else {
-            // 3. Suntikkan Data Terjemahan ke Element HTML
-            document.getElementById('txtNamaSekolah').innerText = decodeURIComponent(namaSekolah || "SEKOLAH TERDAFTAR");
+            // Dekode nama sekolah agar teks rapi (tidak berantakan karena format URL)
+            const namaSekolahBersih = decodeURIComponent(namaSekolah || "SEKOLAH TERDAFTAR");
+
+            // 3. Suntikkan Data Terjemahan ke Element HTML Dashboard
+            document.getElementById('txtNamaSekolah').innerText = namaSekolahBersih;
             
-            // 4. Bangun Jalur Navigasi Baru
+            // 4. JEMBATAN INTEGRASI UTAMA: Amankan Sesi ke LocalStorage Browser
+            localStorage.setItem("namaSekolahAktif", namaSekolahBersih);
+            localStorage.setItem("dbIdAktif", dbId);
+            localStorage.setItem("raporIdAktif", raporId);
+            
+            // 5. Bangun Jalur Navigasi Baru
             // Tautan 1: Tetap membuka Google Spreadsheet Database Siswa di tab baru
             document.getElementById('lnkDbSiswa').href = `https://docs.google.com/spreadsheets/d/${dbId}/edit`;
             
             // Tautan 2: Diarahkan ke halaman internal aplikasi-rapor.html membawa query parameter
-            document.getElementById('lnkRapor').href = `aplikasi-rapor.html?raporId=${raporId}&namaSekolah=${encodeURIComponent(namaSekolah)}`;
+            document.getElementById('lnkRapor').href = `aplikasi-rapor.html?raporId=${raporId}&namaSekolah=${encodeURIComponent(namaSekolahBersih)}`;
         }
 
-        // Fungsi Logout Bersih
+        // Fungsi Logout Bersih (Menghapus jejak sesi saat keluar)
         function logout() {
             if(confirm("Apakah Anda yakin ingin keluar dari sesi administrasi sekolah ini?")) {
+                localStorage.clear(); // Membersihkan data penyimpanan lokal browser
                 window.location.href = "index.html";
             }
         }
