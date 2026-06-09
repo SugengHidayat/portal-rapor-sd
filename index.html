@@ -156,18 +156,23 @@
                     
                     hasil.data.forEach(sekolah => {
                         const option = document.createElement('option');
-                        option.value = $.trim(sekolah.npsn) || sekolah.npsn;
+                        // PERBAIKAN: Menggunakan .trim() bawaan JavaScript murni (Anti-Crash)
+                        option.value = sekolah.npsn.toString().trim();
                         option.className = "text-slate-900 bg-white font-medium";
                         option.textContent = `${sekolah.nama} (${sekolah.npsn})`;
                         select.appendChild(option);
                     });
 
+                    // Sembunyikan loader dan munculkan form login
                     document.getElementById('loaderSekolah').classList.add('hidden');
                     formLogin.classList.remove('hidden');
+                    document.getElementById('errorBanner').classList.add('hidden');
                 } else {
-                    throw new Error();
+                    throw new Error(hasil.message || "Gagal memuat data");
                 }
             } catch (error) {
+                console.error("Detail Error Dropdown:", error);
+                // Sembunyikan loader dan munculkan banner error agar terlihat permasalahannya
                 document.getElementById('loaderSekolah').classList.add('hidden');
                 document.getElementById('errorBanner').classList.remove('hidden');
             }
