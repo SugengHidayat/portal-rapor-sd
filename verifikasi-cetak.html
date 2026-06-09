@@ -6,11 +6,11 @@
   <title>Cetak Lembar Rapor Peserta Didik</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    /* Optimasi khusus untuk cetak printer kertas A4 */
+    /* Optimasi cetak printer khusus kertas A4 potret */
     @media print {
       body {
-        background-color: #ffffff;
-        padding: 0;
+        background-color: #ffffff !important;
+        padding: 0 !important;
       }
       .no-print {
         display: none !important;
@@ -21,6 +21,12 @@
         margin: 0 !important;
         padding: 0 !important;
         width: 100% !important;
+        max-width: 100% !important;
+        min-height: auto !important;
+      }
+      /* Mencegah pemotongan baris tabel secara janggal di tengah halaman */
+      tr {
+        page-break-inside: avoid;
       }
     }
   </style>
@@ -30,25 +36,25 @@
   <div class="no-print w-full max-w-4xl bg-slate-900 text-white p-4 rounded-t-2xl flex justify-between items-center shadow-lg border-b border-slate-700">
     <div>
       <h1 class="text-sm font-bold flex items-center gap-2 text-amber-400">
-        🖨️ Mode Pratinjau Dokumen Cetak
+        🖨️ Mode Pratinjau Dokumen Cetak Rapor
       </h1>
-      <p class="text-xs text-slate-400 mt-0.5">Pastikan data di bawah ini sudah benar sebelum mencetak.</p>
+      <p class="text-xs text-slate-400 mt-0.5">Sistem otomatis mengambil data hasil kalkulasi akhir secara real-time.</p>
     </div>
     <div class="flex gap-2">
       <button onclick="window.close()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-xs font-bold rounded-lg transition">
-        Tutup
+        Tutup Halaman
       </button>
       <button onclick="window.print()" class="px-4 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold rounded-lg shadow transition flex items-center gap-1">
-        ⚡ Cetak Sekarang
+        ⚡ Cetak Dokumen
       </button>
     </div>
   </div>
 
   <div id="lembarRapor" class="print-page w-full max-w-4xl bg-white p-12 sm:rounded-b-2xl shadow-2xl border border-slate-300 min-h-[297mm] flex flex-col justify-between text-slate-900">
     
-    <div id="loadingState" class="py-20 text-center space-y-3">
+    <div id="loadingState" class="py-32 text-center space-y-3">
       <div class="animate-spin text-3xl inline-block">🔄</div>
-      <p class="text-sm font-semibold text-slate-500 animate-pulse">Menghubungkan ke Engine Rapor & Menarik Data Final...</p>
+      <p class="text-sm font-semibold text-slate-500 animate-pulse">Menghubungkan ke Engine Rapor & Sinkronisasi Nilai Akhir...</p>
     </div>
 
     <div id="kontenRapor" class="hidden space-y-6 flex-1 flex flex-col justify-between">
@@ -85,7 +91,7 @@
                 <th class="p-2.5 border-r border-slate-400 w-12">No</th>
                 <th class="p-2.5 border-r border-slate-400 text-left">Mata Pelajaran</th>
                 <th class="p-2.5 border-r border-slate-400 w-24">Nilai Akhir</th>
-                <th class="p-2.5 w-32">Capaian Kompetensi</th>
+                <th class="p-2.5 text-left">Capaian Kompetensi (Deskripsi)</th>
               </tr>
             </thead>
             <tbody id="tabelRaporFinal" class="divide-y divide-slate-300">
@@ -122,79 +128,96 @@
   </div>
 
   <script>
-    // Ambil parameter konfigurasi yang dilempar dari Dashboard utama
+    // Ambil seluruh parameter database yang dilempar dari dashboard induk
     const urlParams = new URLSearchParams(window.location.search);
     const apiURL = urlParams.get('api_url');
     const noAbsen = urlParams.get('no_absen');
     const dbProfil = urlParams.get('db_profil');
     const dbNilai = urlParams.get('db_nilai');
 
+    // Komponen urutan mata pelajaran baku sekolah
     const listMapel = ["Agama", "Pancasila", "B. Indonesia", "Matematika", "IPAS", "PJOK", "Kesenian", "B. Inggris", "B. Jawa", "BTQ"];
 
     window.addEventListener('DOMContentLoaded', () => {
+      // Validasi awal kelengkapan jalur koneksi URL parameter
       if(!apiURL || !noAbsen || !dbProfil || !dbNilai) {
-        document.getElementById('loadingState').innerHTML = `<p class="text-red-500 font-bold">🛑 ERROR: Parameter URL tidak lengkap!</p>`;
+        document.getElementById('loadingState').innerHTML = `
+          <div class="p-4 bg-red-50 border border-red-200 rounded-xl max-w-md mx-auto">
+            <p class="text-red-600 font-bold text-sm">🛑 Sinkronisasi Gagal</p>
+            <p class="text-xs text-red-500 mt-1">Parameter interkoneksi URL multi-tenant tidak terbaca sempurna atau sesi kedaluwarsa.</p>
+          </div>
+        `;
         return;
       }
-      tarikDataRaporFinal();
+      MuatDokumenCetakFinal();
     });
 
-    function tarikDataRaporFinal() {
-      // Menembak Apps Script dengan aksi khusus untuk mengambil data cetak final siswa terpilih
-      const urlAksi = `${apiURL}?action=get_data_cetak&no_absen=${noAbsen}&db_profil=${encodeURIComponent(dbProfil)}&db_nilai=${encodeURIComponent(dbNilai)}`;
+    function MuatDokumenCetakFinal() {
+      // Membaca database dinamis via Apps Script menggunakan parameter terenkripsi URL
+      const urlFetchData = `${apiURL}?action=get_data_cetak&no_absen=${noAbsen}&db_profil=${encodeURIComponent(dbProfil)}&db_nilai=${encodeURIComponent(dbNilai)}`;
 
-      fetch(urlAksi)
+      fetch(urlFetchData)
         .then(res => res.json())
         .then(resObj => {
           if(resObj.status === "SUCCESS" && resObj.dataRapor) {
+            const data = resObj.dataRapor;
             
-            // 1. Isi Profil & Biodata Siswa
-            document.getElementById('lblNama').innerText = resObj.dataRapor.nama;
-            document.getElementById('lblKelas').innerText = resObj.dataRapor.kelas || "-";
-            document.getElementById('lblNis').innerText = `${resObj.dataRapor.nisn || "-"} / ${resObj.dataRapor.nis || "-"}`;
-            document.getElementById('lblSemester').innerText = `${resObj.dataRapor.semester || "-"} / ${resObj.dataRapor.tp || "-"}`;
+            // Inject Biodata
+            document.getElementById('lblNama').innerText = data.nama || "-";
+            document.getElementById('lblKelas').innerText = data.kelas || "-";
+            document.getElementById('lblNis').innerText = `${data.nisn || "-"} / ${data.nis || "-"}`;
+            document.getElementById('lblSemester').innerText = `${data.semester || "-"} / ${data.tp || "-"}`;
             
-            // Info Sekolah & Tanda Tangan
-            document.getElementById('txtNamaSekolah').innerText = resObj.dataRapor.nama_sekolah || "Nama Sekolah Belum Set";
-            document.getElementById('txtNamaWali').innerText = resObj.dataRapor.nama_wali || "-";
-            document.getElementById('txtNipWali').innerText = resObj.dataRapor.nip_wali ? `NIP. ${resObj.dataRapor.nip_wali}` : "NIP. -";
-            document.getElementById('txtNamaKepsek').innerText = resObj.dataRapor.nama_kepsek || "-";
-            document.getElementById('txtNipKepsek').innerText = resObj.dataRapor.nip_kepsek ? `NIP. ${resObj.dataRapor.nip_kepsek}` : "NIP. -";
-            document.getElementById('txtTempatTanggal').innerText = `${resObj.dataRapor.tempat_cetak || "-"}, ${resObj.dataRapor.tanggal_cetak || "-"}`;
+            // Inject Atribut Lembaga & Tanda Tangan Kantor Sekolah
+            document.getElementById('txtNamaSekolah').innerText = data.nama_sekolah || "UPT SDN Ranuklindungan I";
+            document.getElementById('txtNamaWali').innerText = data.nama_wali || "-";
+            document.getElementById('txtNipWali').innerText = data.nip_wali ? `NIP. ${data.nip_wali}` : "NIP. -";
+            document.getElementById('txtNamaKepsek').innerText = data.nama_kepsek || "-";
+            document.getElementById('txtNipKepsek').innerText = data.nip_kepsek ? `NIP. ${data.nip_kepsek}` : "NIP. -";
+            document.getElementById('txtTempatTanggal').innerText = `${data.tempat_cetak || "Pasuruan"}, ${data.tanggal_cetak || "-"}`;
 
-            // 2. Render Baris Nilai Rapor Final ke Tabel
+            // Render Baris Nilai Akhir
             const tbody = document.getElementById('tabelRaporFinal');
             tbody.innerHTML = "";
 
             listMapel.forEach((mapel, index) => {
-              // Mengambil objek nilai per mapel dari respons server
-              const mapelKey = mapel.toLowerCase().replace(/[^a-z0-9]/g, "_"); // konversi aman key objek jika diperlukan
-              const detailNilai = resObj.dataRapor.nilaiMapel && resObj.dataRapor.nilaiMapel[mapel] 
-                                  ? resObj.dataRapor.nilaiMapel[mapel] 
-                                  : { nilai: "-", capaian: "Belum dikalkulasi" };
+              // Menghindari crash jika struktur properti penamaan mapel memiliki objek khusus
+              const nilaiDetail = data.nilaiMapel && data.nilaiMapel[mapel] 
+                                  ? data.nilaiMapel[mapel] 
+                                  : { nilai: "-", capaian: "Kompetensi dasar belum dihitung/dihasilkan." };
 
               const tr = document.createElement('tr');
-              tr.className = "border-b border-slate-400";
+              tr.className = "border-b border-slate-400 hover:bg-slate-50/50 transition";
               tr.innerHTML = `
-                <td class="p-2 text-center border-r border-slate-400 font-mono">${index + 1}</td>
-                <td class="p-2 border-r border-slate-400 font-semibold">${mapel}</td>
-                <td class="p-2 text-center border-r border-slate-400 font-extrabold text-sm text-blue-900">${detailNilai.nilai}</td>
-                <td class="p-2 text-[11px] leading-relaxed text-slate-700">${detailNilai.capaian}</td>
+                <td class="p-2.5 text-center border-r border-slate-400 font-mono">${index + 1}</td>
+                <td class="p-2.5 border-r border-slate-400 font-bold text-slate-800">${mapel}</td>
+                <td class="p-2.5 text-center border-r border-slate-400 font-extrabold text-base text-blue-900 bg-slate-50/30">${nilaiDetail.nilai}</td>
+                <td class="p-2.5 text-[11px] leading-relaxed text-slate-700 font-medium">${nilaiDetail.capaian}</td>
               `;
               tbody.appendChild(tr);
             });
 
-            // 3. Matikan Loading & Tampilkan Konten Rapor
+            // Ganti status loading menjadi tampilan cetak utama
             document.getElementById('loadingState').classList.add('hidden');
             document.getElementById('kontenRapor').classList.remove('hidden');
 
           } else {
-            document.getElementById('loadingState').innerHTML = `<p class="text-red-500 font-bold">🛑 Gagal memuat dokumen: ${resObj.message}</p>`;
+             TampilkanPesanGagal(resObj.message || "Data siswa di tab rapor_siswa kosong.");
           }
         })
         .catch(err => {
-          document.getElementById('loadingState').innerHTML = `<p class="text-red-500 font-bold">🛑 Terjadi kegagalan jaringan saat mengambil data rapor.</p>`;
+          TampilkanPesanGagal("Terjadi gangguan interkoneksi jaringan server.");
         });
+    }
+
+    function TampilkanPesanGagal(pesan) {
+      document.getElementById('loadingState').innerHTML = `
+        <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl max-w-md mx-auto text-center">
+          <p class="text-amber-700 font-bold text-sm">⚠️ Dokumen Belum Siap</p>
+          <p class="text-xs text-amber-600 mt-1">${pesan}</p>
+          <p class="text-[10px] text-slate-400 mt-2">Pastikan Anda telah melakukan klik tombol <b>'Buat Rapor'</b> pada panel kontrol sebelum membuka halaman ini.</p>
+        </div>
+      `;
     }
   </script>
 </body>
