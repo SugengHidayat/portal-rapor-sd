@@ -35,33 +35,73 @@
        NARASI & HEADER SECTION (8 PROFIL LULUSAN MURID)
        ========================================================================= */
     .header-section {
-      text-align: center;
-      margin-bottom: 40px;
+      position: relative;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.08);
       padding: 30px;
       border-radius: 16px;
       backdrop-filter: blur(10px);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      margin-bottom: 40px;
+    }
+
+    /* Pengaturan Baris Atas Header (Judul & Tombol Kembali) */
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 15px;
     }
 
     .header-section h1 {
       font-size: 2.2rem;
       font-weight: 700;
       color: #ffffff;
-      margin-bottom: 15px;
       letter-spacing: -0.5px;
       background: linear-gradient(45deg, #fff, #94a3b8);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Tombol Kembali ke Hub Utama (Pojok Kanan Atas) */
+    .btn-kembali {
+      background: rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+
+    .btn-kembali:hover {
+      background: #ffffff;
+      color: #0f172a;
+      border-color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-kembali:active {
+      transform: translateY(0);
     }
 
     .narasi-profil {
       text-align: left;
       font-size: 0.95rem;
       color: #94a3b8;
-      max-width: 1200px;
-      margin: 0 auto;
+      width: 100%;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
       padding-top: 20px;
     }
@@ -80,7 +120,7 @@
 
     .info-card {
       background: rgba(255, 255, 255, 0.02);
-      border-left: 3px solid #3b82f6;
+      border-left: 3px solid #a855f7; /* Menggunakan aksen ungu senada dashboard */
       padding: 12px 15px;
       border-radius: 4px 8px 8px 4px;
     }
@@ -105,7 +145,7 @@
       border: 1px solid rgba(255, 255, 255, 0.06);
       border-radius: 16px;
       overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(20px);
     }
 
@@ -121,7 +161,7 @@
     .table-title {
       font-size: 1.1rem;
       font-weight: 600;
-      color: #3b82f6;
+      color: #a855f7;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -202,8 +242,8 @@
     }
 
     .select-predikat:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+      border-color: #a855f7;
+      box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
     }
 
     /* State Hijau saat Sukses Tersimpan */
@@ -243,7 +283,7 @@
       transform: translateY(1px);
     }
 
-    /* Animasi Loading saat diklik */
+    /* Animasi Loading Spinner pada Tombol */
     .btn-simpan.loading {
       background: #854d0e !important;
       color: #e2e8f0;
@@ -269,7 +309,7 @@
     
     .page-loader i {
       font-size: 2rem;
-      color: #3b82f6;
+      color: #a855f7;
       margin-bottom: 10px;
       display: block;
       animation: putarSpiner 1s linear infinite;
@@ -309,7 +349,12 @@
   <div class="container">
     
     <div class="header-section">
-      <h1><i class="fa-solid fa-graduation-cap"></i> Evaluasi 8 Profil Lulusan Murid (DPL)</h1>
+      <div class="header-top">
+        <h1><i class="fa-solid fa-graduation-cap"></i> Evaluasi 8 Profil Lulusan Murid (DPL)</h1>
+        <a id="btnKembaliHub" class="btn-kembali">
+          <i class="fa-solid fa-arrow-left"></i> Kembali ke Hub Utama
+        </a>
+      </div>
       
       <div class="narasi-profil">
         <p>
@@ -396,27 +441,39 @@
   <div class="toast-container" id="toastContainer"></div>
 
   <script>
-    // URL Web App Apps Script Anda (Sesuaikan dengan URL Eksekusi hasil deployment Anda)
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6...REPLACE_WITH_YOUR_ACTUAL_ID.../exec";
+    // URL Web App Apps Script Utama yang Baru Sesuai Permintaan Anda
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEpRt1PizUVTq3zatgbEX8gnce2LILCoPjEsf0FertTGfCwuhFps0wVYguPyF8XRyo/exec";
     
-    // ID Rapor Sekolah aktif (diambil dinamis dari session/localstorage paska login sekolah)
-    const ACTIVE_RAPOR_ID = localStorage.getItem("raporId") || ""; 
+    // Mengambil parameter sesi aktif dari URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const dbId = urlParams.get('dbId') || localStorage.getItem("dbIdAktif") || "";
+    const raporId = urlParams.get('raporId') || localStorage.getItem("raporIdAktif") || "";
+    const namaSekolah = urlParams.get('namaSekolah') || localStorage.getItem("namaSekolahAktif") || "";
 
     document.addEventListener("DOMContentLoaded", function() {
+      // Set link tombol kembali agar parameter sesi aman dan tidak hilang
+      const btnKembali = document.getElementById('btnKembaliHub');
+      if (dbId && raporId) {
+        btnKembali.href = `dashboard.html?dbId=${dbId}&raporId=${raporId}&namaSekolah=${encodeURIComponent(namaSekolah)}`;
+      } else {
+        btnKembali.href = `dashboard.html`;
+      }
+
       muatDaftarSiswaRapor();
     });
 
     /**
-     * Membaca struktur nama murid dari aksi internal backend get_status_cetak
+     * Membaca struktur nama murid dari backend menggunakan parameter raporId aktif
      */
     function muatDaftarSiswaRapor() {
-      if(!ACTIVE_RAPOR_ID) {
-        tampilkanToast("ID Rapor tidak terdeteksi! Silakan login ulang pada halaman utama.", "error");
-        document.getElementById("loaderData").innerHTML = `<i class="fa-solid fa-circle-xmark" style="color:#ef4444; animation:none;"></i> Gagal memuat data. ID Spreadsheet Rapor Kosong.`;
+      if(!raporId) {
+        tampilkanToast("ID Rapor tidak terdeteksi! Silakan masuk kembali melalui dashboard.", "error");
+        document.getElementById("loaderData").innerHTML = `<i class="fa-solid fa-circle-xmark" style="color:#ef4444; animation:none;"></i> Gagal memuat data. Sesi Rapor Kosong.`;
         return;
       }
 
-      const urlTarget = `${APPS_SCRIPT_URL}?action=get_status_cetak&raporId=${ACTIVE_RAPOR_ID}`;
+      // Memanggil fungsi get_status_cetak untuk mendapatkan array dataSiswa bawaan
+      const urlTarget = `${APPS_SCRIPT_URL}?action=get_status_cetak&raporId=${raporId}`;
       
       fetch(urlTarget)
         .then(response => response.json())
@@ -424,21 +481,26 @@
           if (res.status === "SUCCESS") {
             renderTabelDpl(res.dataSiswa);
           } else {
-            document.getElementById("loaderData").innerText = "Gagal memuat: " + res.message;
+            document.getElementById("loaderData").innerText = "Gagal memuat database: " + res.message;
           }
         })
         .catch(err => {
           console.error(err);
-          document.getElementById("loaderData").innerText = "Terjadi gangguan koneksi jaringan cloud.";
+          document.getElementById("loaderData").innerText = "Terjadi interupsi jaringan cloud spreadsheet.";
         });
     }
 
     /**
-     * Membentuk elemen HTML tr td berdasarkan payload data array siswa
+     * Membentuk elemen baris tabel berdasarkan data siswa
      */
     function renderTabelDpl(siswaArray) {
       const tbody = document.getElementById("bodyDataSiswa");
       tbody.innerHTML = "";
+
+      if(!siswaArray || siswaArray.length === 0) {
+        document.getElementById("loaderData").innerText = "Tidak ada data siswa ditemukan.";
+        return;
+      }
 
       siswaArray.forEach(siswa => {
         const tr = document.createElement("tr");
@@ -450,7 +512,7 @@
           <td style="font-weight:500;">${siswa.nama}</td>
         `;
 
-        // Loop pembuatan kolom dropdown interaktif DPL_1 sampai DPL_8
+        // Pembuatan otomatis kolom dropdown interaktif DPL_1 sampai DPL_8
         for (let i = 1; i <= 8; i++) {
           const tdControl = document.createElement("td");
           tdControl.innerHTML = `
@@ -472,20 +534,20 @@
         tbody.appendChild(tr);
       });
 
-      // Hilangkan loader, hidupkan visual tabel
+      // Sembunyikan loader, tampilkan tabel
       document.getElementById("loaderData").style.display = "none";
       document.getElementById("tabelDplSiswa").style.display = "table";
     }
 
     /**
-     * Menghapus kelas warna hijau jika dropdown sengaja diubah kembali oleh guru sebelum disimpan ulang
+     * Menghapus warna hijau berpendar jika dropdown diubah kembali oleh guru sebelum disimpan ulang
      */
     function deteksiPerubahanSkema(elemenSelect) {
       elemenSelect.classList.remove("saved-success");
     }
 
     /**
-     * Mengirimkan parameter nilai predikat terpilih secara realtime ke backend Apps Script (tab predikat_dpl)
+     * Mengirimkan nilai predikat terpilih ke fungsi penanganan khusus di Apps Script
      */
     function simpanPredikatKomponen(btnElement, noAbsen, namaKomponenDpl) {
       const cellContainer = btnElement.parentElement;
@@ -493,51 +555,51 @@
       const nilaiPredikatDipilih = selectElement.value;
 
       if (!nilaiPredikatDipilih) {
-        tampilkanToast("Pilihan predikat masih kosong! Tentukan nilai terlebih dahulu.", "error");
+        tampilkanToast("Pilih tingkat predikat terlebih dahulu!", "error");
         return;
       }
 
-      // Aktifkan animasi modern loading spinner pada button kuning
+      // Aktifkan animasi spinner micro-loading pada button kuning
       btnElement.classList.add("loading");
       btnElement.innerHTML = `<i class="fa-solid fa-circle-notch"></i> Menyimpan...`;
 
-      // Payload parameter pengiriman (Disesuaikan dengan rute aksi POST/GET Web App)
+      // Konstruksi parameter payload data
       const payloadData = {
-        action: "update_predikat_dpl_satuan", // Tambahkan fungsi penanganan aksi ini di Apps Script Anda jika diperlukan
-        raporId: ACTIVE_RAPOR_ID,
+        action: "update_predikat_dpl_satuan",
+        raporId: raporId,
         no_absen: noAbsen,
         komponen: namaKomponenDpl,
         predikat: nilaiPredikatDipilih
       };
 
-      // Contoh eksekusi transmisi data terpadu via POST/GET method
+      // Transmisi pengiriman data via POST method ke Google Apps Script Engine
       fetch(APPS_SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify(payloadData),
-        mode: "no-cors" // Menggunakan no-cors jika domain web hosting Anda berbeda dengan google script
+        mode: "no-cors"
       })
       .then(() => {
-        // Karena no-cors tidak membaca balikan response body, kita asumsikan transmisi berhasil terkirim pasca tuntas
+        // Mode no-cors mengabaikan pembacaan response body, langsung eksekusi penanda sukses pasca transmisi selesai
         setTimeout(() => {
-          // Kembalikan visual tombol kuning ke sedia kala
+          // Kembalikan tombol kuning ke sedia kala
           btnElement.classList.remove("loading");
-          btnElement.innerHTML = `<i class="fa-solid fa-check"></i> Tersimpan`;
+          btnElement.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Simpan`;
           
-          // Transformasikan warna dropdown menjadi HIJAU pendar tanda data sukses terkunci di sheet cloud
+          // Ubah dropdown menjadi hijau penanda data sukses terkunci di sheet cloud
           selectElement.classList.add("saved-success");
-          tampilkanToast(`Berhasil menyimpan nilai ${namaKomponenDpl.toUpperCase()} Absen ${noAbsen}!`, "success");
-        }, 1000);
+          tampilkanToast(`Nilai ${namaKomponenDpl.toUpperCase()} Siswa Absen ${noAbsen} Berhasil Disimpan!`, "success");
+        }, 800);
       })
       .catch(error => {
         console.error(error);
         btnElement.classList.remove("loading");
         btnElement.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Simpan`;
-        tampilkanToast("Terjadi kendala interupsi server cloud.", "error");
+        tampilkanToast("Koneksi terputus atau server cloud sibuk.", "error");
       });
     }
 
     /**
-     * Sistem Utility Alert Toast Kecil Elegan di Pojok Layar
+     * Utilitas Notifikasi Toast Popup Ringan
      */
     function tampilkanToast(pesanText, tipe) {
       const container = document.getElementById("toastContainer");
@@ -554,11 +616,10 @@
       container.appendChild(toast);
       setTimeout(() => toast.classList.add("show"), 50);
       
-      // Hapus toast otomatis dalam 4 detik
       setTimeout(() => {
         toast.classList.remove("show");
         setTimeout(() => toast.remove(), 400);
-      }, 4000);
+      }, 3500);
     }
   </script>
 </body>
