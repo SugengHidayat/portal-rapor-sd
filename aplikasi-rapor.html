@@ -326,6 +326,8 @@ function eksekusiKirimUhExcel() {
                 binaryString += String.fromCharCode(bytes[i]);
             }
             const base64Data = btoa(binaryString);
+            
+            // 1. Deteksi NPSN secara lokal dari nama file yang diunggah guru
             const npsnMurni = ekstrakNpsnDariNamaFile(file.name);
 
             const payloadData = {
@@ -345,13 +347,15 @@ function eksekusiKirimUhExcel() {
 
             if (result.status === "SUCCESS") {
                 // =========================================================================
-                // PERBAIKAN DI SINI: Mengantisipasi perbedaan properti variabel dari backend
+                // LOGIKA PINTAR: Mengambil data lokal agar terbebas dari error 'undefined'
                 // =========================================================================
-                const namaSekolah = result.nama_sekolah || result.namaSekolah || localStorage.getItem('namaSekolahAktif') || "Sekolah Terdaftar";
-                const npsnTerdeteksi = result.npsn_terdeteksi || result.npsn || npsnMurni || "Terdeteksi";
-                const totalSiswa = result.total_siswa || result.totalSiswa || "Semua";
+                const namaSekolahAktif = localStorage.getItem('namaSekolahAktif') || "UPT SDN Ranuklindungan I";
+                const npsnFinal = npsnMurni || "Terdeteksi";
+                
+                // Jika backend mengirimkan total_siswa gunakan itu, jika tidak tampilkan pesan sukses umum
+                const infoSiswa = (result.total_siswa || result.totalSiswa) ? `${result.total_siswa || result.totalSiswa} anak` : "Seluruh siswa";
 
-                alert(`🎉 SINKRONISASI BERHASIL!\n\nLembaga: ${namaSekolah}\nNPSN Terdeteksi: ${npsnTerdeteksi}\nJumlah Siswa Riil: ${totalSiswa} anak terproses.`);
+                alert(`🎉 SINKRONISASI BERHASIL!\n\nLembaga: ${namaSekolahAktif}\nNPSN Terdeteksi: ${npsnFinal}\nStatus: ${infoSiswa} berhasil diperbarui di database utama.`);
                 
                 input.value = "";
                 document.getElementById('labelNamaFileUh').innerText = "Pilih file Excel dari gawai Anda";
