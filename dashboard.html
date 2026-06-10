@@ -110,6 +110,13 @@
                 <b class="text-amber-200">Informasi Alur Sinkronisasi:</b> Data Nilai yang diinput pada <span class="underline">Spreadsheet Nilai</span> akan ditarik secara otomatis oleh rumus internal ke dalam <span class="underline">Aplikasi Rapor</span>. Pastikan Anda tidak mengubah struktur kolom bawaan template agar relasi data antar file tidak terputus.
             </div>
         </div>
+
+        <div class="pt-8 pb-4 border-t border-white/5 text-center">
+            <p class="text-xs tracking-wider text-slate-500 font-medium">
+                Engine E-rapor Kec. Grati &copy; 2026 | Created by <span class="text-slate-400 font-semibold hover:text-blue-400 transition-colors">Sugeng Hidayat</span>
+            </p>
+        </div>
+
     </div>
 
     <script>
@@ -124,7 +131,7 @@
             alert("Akses Ilegal! Anda akan dialihkan kembali ke gerbang login utama.");
             window.location.href = "index.html";
         } else {
-            // Dekode nama sekolah agar teks rapi
+            // Dekode nama sekolah agar teks rapi (tidak berantakan karena format URL)
             const namaSekolahBersih = decodeURIComponent(namaSekolah || "SEKOLAH TERDAFTAR");
 
             // 3. Suntikkan Data Terjemahan ke Element HTML Dashboard
@@ -136,7 +143,7 @@
             localStorage.setItem("raporIdAktif", raporId);
             
             // 5. Bangun Jalur Navigasi Baru
-            // Tautan 3: Membuka Google Spreadsheet Rapor untuk mengedit TP/KKM
+            // Tautan 3: Membuka Google Spreadsheet Rapor (Target: id_spreadsheet_rapor) untuk mengedit TP/KKM
             document.getElementById('lnkRaporSpreadsheet').href = `https://docs.google.com/spreadsheets/d/${raporId}/edit`;
 
             // Tautan 1: Tetap membuka Google Spreadsheet Database Siswa di tab baru
@@ -145,14 +152,14 @@
             // Tautan 2: Diarahkan ke halaman internal aplikasi-rapor.html membawa query parameter
             document.getElementById('lnkRapor').href = `aplikasi-rapor.html?raporId=${raporId}&namaSekolah=${encodeURIComponent(namaSekolahBersih)}`;
 
-            // Tautan 4: Navigasi Menu Baru DPL Murid
+            // Tautan 4: Diarahkan ke halaman lembar karakter delapan-profil-lulusanmurid.html
             document.getElementById('lnkDplMurid').href = `delapan-profil-lulusanmurid.html?raporId=${raporId}&namaSekolah=${encodeURIComponent(namaSekolahBersih)}`;
         }
 
-        // Fungsi Logout Bersih
+        // Fungsi Logout Bersih (Menghapus jejak sesi saat keluar)
         function logout() {
             if(confirm("Apakah Anda yakin ingin keluar dari sesi administrasi sekolah ini?")) {
-                localStorage.clear();
+                localStorage.clear(); // Membersihkan data penyimpanan lokal browser
                 window.location.href = "index.html";
             }
         }
