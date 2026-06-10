@@ -325,11 +325,9 @@ function eksekusiKirimUhExcel() {
             for (let i = 0; i < bytes.byteLength; i++) {
                 binaryString += String.fromCharCode(bytes[i]);
             }
-            // Konversi file Excel harian menjadi Base64 string murni
             const base64Data = btoa(binaryString);
             const npsnMurni = ekstrakNpsnDariNamaFile(file.name);
 
-            // Payload diselaraskan dengan fungsi 'upload_uh_tp' backend pusat
             const payloadData = {
                 action: "upload_uh_tp",
                 fileName: file.name,
@@ -346,8 +344,14 @@ function eksekusiKirimUhExcel() {
             const result = JSON.parse(textResponse);
 
             if (result.status === "SUCCESS") {
-                // Menampilkan nama sekolah dan jumlah siswa riil dinamis umpan balik dari backend
-                alert(`🎉 SINKRONISASI BERHASIL!\n\nLembaga: ${result.nama_sekolah}\nNPSN Terdeteksi: ${result.npsn_terdeteksi}\nJumlah Siswa Riil: ${result.total_siswa} anak terproses.`);
+                // =========================================================================
+                // PERBAIKAN DI SINI: Mengantisipasi perbedaan properti variabel dari backend
+                // =========================================================================
+                const namaSekolah = result.nama_sekolah || result.namaSekolah || localStorage.getItem('namaSekolahAktif') || "Sekolah Terdaftar";
+                const npsnTerdeteksi = result.npsn_terdeteksi || result.npsn || npsnMurni || "Terdeteksi";
+                const totalSiswa = result.total_siswa || result.totalSiswa || "Semua";
+
+                alert(`🎉 SINKRONISASI BERHASIL!\n\nLembaga: ${namaSekolah}\nNPSN Terdeteksi: ${npsnTerdeteksi}\nJumlah Siswa Riil: ${totalSiswa} anak terproses.`);
                 
                 input.value = "";
                 document.getElementById('labelNamaFileUh').innerText = "Pilih file Excel dari gawai Anda";
