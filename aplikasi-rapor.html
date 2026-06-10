@@ -32,7 +32,7 @@
             <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
                 <div class="space-y-3 flex-1">
                     <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-950/60 border border-blue-800 text-[10px] font-extrabold text-blue-400 uppercase tracking-wider">
-                        📖 Kerangka Kerja Kurikulum Merdeka
+                        <h1>📖 Kerangka Kerja Kurikulum Merdeka</h1>
                     </div>
                     <h1 class="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
                         Konsep Evaluasi Berkelanjutan & Capaian Pembelajaran
@@ -44,7 +44,7 @@
             </div>
 
             <p class="text-xs sm:text-sm text-slate-400 leading-relaxed text-justify">
-                Evaluasi melalui <span class="font-bold text-slate-200">Ulangan Harian (UH)</span> dan <span class="font-bold text-slate-200">Asesmen Sumatif Akhir Semester (ASAS)</span> pada platform ini dirancang bukan sekadar untuk mengukur angka kuantitatif, melainkan sebagai instrumen evaluasi komprehensif untuk memetakan ketercapaian Tujuan Pembelajaran (TP) pada tiap peserta didik di <span id="namaSekolahHeader" class="font-bold text-blue-400">UPT SDN Ranuklindungan I</span>. Pengumpulan data nilai berkala serta pemetaan TP yang valid memungkinkan pendidik melakukan diagnosis dini terhadap kompetensi kognitif siswa, mengenali laju belajar anak yang heterogen, serta memberikan intervensi secara personal sebelum menuju penilaian sumatif akhir semester.
+                Evaluasi melalui <span class="font-bold text-slate-200">Ulangan Harian (UH)</span> dan <span class="font-bold text-slate-200">Asesmen Sumatif Akhir Semester (ASAS)</span> pada platform ini dirancang bukan sekadar untuk mengukur angka kuantitatif, melainkan sebagai instrumen evaluasi komprehensif untuk memetakan ketercapaian Tujuan Pembelajaran (TP) pada tiap peserta didik di <span id="namaSekolahHeader" class="font-bold text-blue-400">Memuat nama lembaga...</span>. Pengumpulan data nilai berkala serta pemetaan TP yang valid memungkinkan pendidik melakukan diagnosis dini terhadap kompetensi kognitif siswa, mengenali laju belajar anak yang heterogen, serta memberikan intervensi secara personal sebelum menuju penilaian sumatif akhir semester.
             </p>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
@@ -132,7 +132,7 @@
                         <span class="text-xs mt-0.5">⚠️</span>
                         <p class="text-[10px] font-bold text-red-400 leading-relaxed">
                             Sistem Pusat menolak otomatis berkas jika nama tidak presisi: <br>
-                            <span class="font-mono bg-slate-950 px-1 py-0.5 rounded border border-red-900 inline-block mt-1 text-red-300">20518953-TP-Kelas-IV.xlsx</span>
+                            <span class="font-mono bg-slate-950 px-1 py-0.5 rounded border border-red-900 inline-block mt-1 text-red-300">NPSN-TP-Kelas-IV.xlsx</span>
                         </p>
                     </div>
 
@@ -267,6 +267,12 @@
             }
         }
 
+        // Helper untuk mendeteksi NPSN dari string nama file
+        function ekstrakNpsnDariNamaFile(namaFile) {
+            const match = namaFile.match(/^\d+/);
+            return match ? match[0] : "";
+        }
+
         // =========================================================================
         // FITUR SINKRONISASI FILE 1: VALIDASI & TRANSMISI EXCEL SUMATIF HARIAN (UH)
         // =========================================================================
@@ -284,6 +290,14 @@
                 input.value = "";
                 return;
             }
+
+            const npsnFile = ekstrakNpsnDariNamaFile(namaFile);
+            if (!npsnFile) {
+                alert("🚨 NAMA BERKAS SALAH:\nNama file Excel UH harus diawali dengan nomor NPSN Lembaga Anda! Contoh: 20518953_uh_siswa.xlsx");
+                input.value = "";
+                return;
+            }
+
             label.innerText = `✅ Berkas UH Siap: ${namaFile}`;
             label.className = "text-xs font-bold text-blue-400";
             box.className = "flex flex-col items-center justify-center border-2 border-dashed border-blue-500 bg-blue-950/20 rounded-2xl p-4 text-center relative";
@@ -303,7 +317,6 @@
             btn.innerHTML = `<span>⏳</span> <span>Mentransmisikan Nilai Harian...</span>`;
 
             reader.onload = async function(e) {
-                // Konversi ArrayBuffer ke Base64 murni yang aman untuk berkas biner Excel
                 const arrayBuffer = e.target.result;
                 const bytes = new Uint8Array(arrayBuffer);
                 let binaryString = "";
@@ -313,7 +326,7 @@
                 const base64Data = btoa(binaryString);
 
                 const payloadData = {
-                    action: "upload_asas_tp", // Diselaraskan ke modul pintar backend untuk rekap_harian
+                    action: "upload_uh_tp", // Perbaikan: Diarahkan ke aksi penampung UH 10-tab
                     fileName: file.name,
                     fileData: base64Data,
                     raporId: localStorage.getItem('raporIdAktif') || new URLSearchParams(window.location.search).get('raporId') || ""
@@ -329,7 +342,11 @@
                     const result = JSON.parse(textResponse);
 
                     if (result.status === "SUCCESS") {
-                        alert(`🎉 SUKSES INTEGRASI HARIAN!\n\n${result.message}`);
+                        // Perbaikan: Format notifikasi dinamis sesuai permintaan user
+                        const namaLembagaAktif = localStorage.getItem('namaSekolahAktif') || "Lembaga";
+                        const jumlahSiswa = result.total_siswa || result.jumlahMurid || "0";
+                        alert(`berhasil kirim Nilai harian sejumlah ${jumlahSiswa} ke ${namaLembagaAktif}`);
+                        
                         input.value = "";
                         document.getElementById('labelNamaFileUh').innerText = "Pilih file Excel dari gawai Anda";
                         document.getElementById('labelNamaFileUh').className = "text-xs font-bold text-slate-300";
@@ -358,17 +375,14 @@
             if (input.files.length === 0) return;
             
             const namaFile = input.files[0].name;
-            const namaWajib = "20518953-TP-Kelas-IV.xlsx";
-            const namaWajibAlternatif = "20518953-TP-Kelas-IV.xls";
-            
-            if (namaFile !== namaWajib && namaFile !== namaWajibAlternatif) {
-                alert(`🚨 PENOLAKAN UNGGAH ASAS:\nNama berkas wajib presisi "${namaWajib}"`);
+            const npsnFile = ekstrakNpsnDariNamaFile(namaFile);
+
+            if (!npsnFile) {
+                alert(`🚨 PENOLAKAN UNGGAH ASAS:\nNama berkas wajib menggunakan nomor NPSN diawal kata.\nContoh format: NPSN-TP-Kelas-IV.xlsx`);
                 input.value = "";
-                label.innerText = "Pilih file Excel dari gawai Anda";
-                label.className = "text-xs font-bold text-slate-300";
-                box.className = "flex flex-col items-center justify-center border-2 border-dashed border-red-800 bg-red-950/20 rounded-2xl p-4 text-center relative";
                 return;
             }
+            
             label.innerText = `✅ Berkas ASAS Valid: ${namaFile}`;
             label.className = "text-xs font-bold text-emerald-400";
             box.className = "flex flex-col items-center justify-center border-2 border-dashed border-emerald-500 bg-emerald-950/20 rounded-2xl p-4 text-center relative";
@@ -378,7 +392,7 @@
             const input = document.getElementById('fileExcelASAS');
             const btn = document.getElementById('btnKirimAsas');
             if (input.files.length === 0) {
-                alert("Silakan tentukan file 20518953-TP-Kelas-IV.xlsx terlebih dahulu.");
+                alert("Silakan tentukan file Excel rekapitulasi ASAS lembaga Anda terlebih dahulu.");
                 return;
             }
 
@@ -388,7 +402,6 @@
             btn.innerHTML = `<span>⏳</span> <span>Mentransmisikan Data Kompetensi...</span>`;
 
             reader.onload = async function(e) {
-                // Konversi ArrayBuffer ke Base64 murni yang aman untuk berkas biner Excel
                 const arrayBuffer = e.target.result;
                 const bytes = new Uint8Array(arrayBuffer);
                 let binaryString = "";
@@ -451,7 +464,6 @@
                 const res = await response.json();
                 
                 if (res.status === "SUCCESS" && res.data && res.data.length > 0) {
-                    // Simpan ke database lokal untuk kebutuhan filter client-side
                     databaseLokalTp = res.data;
                     filterDataTabelTp();
                 } else {
@@ -470,7 +482,6 @@
 
             let nomorUrut = 1;
             databaseLokalTp.forEach(row => {
-                // Format Kolom Sheet TP: [0] No, [1] Kode TP, [2] Mata Pelajaran, [3] Uraian Kompetensi
                 const mapelRow = row[2] ? row[2].toString().trim().toUpperCase() : "";
                 const filterMatch = filterValue === "all" || mapelRow.includes(filterValue.toUpperCase());
 
