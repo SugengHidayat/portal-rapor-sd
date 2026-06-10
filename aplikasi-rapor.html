@@ -312,57 +312,108 @@
             }
 
             const file = input.files[0];
-            const reader = new FileReader();
             btn.disabled = true;
-            btn.innerHTML = `<span>⏳</span> <span>Mentransmisikan Nilai Harian...</span>`;
+            btn.innerHTML = `<span>⏳</span> <span>Membongkar 10 Tab Nilai...</span>`;
 
+            // Memuat Library Pembaca Excel (SheetJS) secara dinamis jika belum ada
+            if (typeof XLSX === 'undefined') {
+                const script = document.createElement('script');
+                script.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
+                script.onload = () => prosesBongkarMultiTabExcel(file, btn, input);
+                document.head.appendChild(script);
+            } else {
+                prosesBongkarMultiTabExcel(file, btn, input);
+            }
+        }
+
+        function prosesBongkarMultiTabExcel(file, btn, input) {
+            const reader = new FileReader();
+            
             reader.onload = async function(e) {
-                const arrayBuffer = e.target.result;
-                const bytes = new Uint8Array(arrayBuffer);
-                let binaryString = "";
-                for (let i = 0; i < bytes.byteLength; i++) {
-                    binaryString += String.fromCharCode(bytes[i]);
-                }
-                const base64Data = btoa(binaryString);
-
-                const payloadData = {
-                    action: "upload_uh_tp", // Perbaikan: Diarahkan ke aksi penampung UH 10-tab
-                    fileName: file.name,
-                    fileData: base64Data,
-                    raporId: localStorage.getItem('raporIdAktif') || new URLSearchParams(window.location.search).get('raporId') || ""
-                };
-
                 try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    // Daftar 10 Tab wajib yang akan dicari di dalam file Excel Anda
+                    const daftarTabWajib = [
+                        'n_agama', 'n_BIndonesia', 'n_pancasila', 'n_matematika', 
+                        'n_IPAS', 'n_pjok', 'n_kesenian', 'n_bIng', 'n_bJawa', 'n_BTQ'
+                    ];
+
+                    let paketDataMultiTab = {};
+                    let totalMuridTerdeteksi = 0;
+
+                    // Ekstraksi data dari setiap sheet secara otomatis
+                    workbook.SheetNames.forEach(namaSheet => {
+                        // Cari kecocokan nama tanpa mempedulikan huruf besar/kecil (case-insensitive)
+                        const namaSheetCocok = daftarTabWajib.find(tab => tab.toLowerCase() === namaSheet.trim().toLowerCase());
+                        
+                        if (namaSheetCocok) {
+                            const sheet = workbook.Sheets[namaSheet];
+                            // Konversi sheet Excel menjadi Array 2 Dimensi (Baris & Kolom)
+                            const dataArray = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                            paketDataMultiTab[namaSheetCocok] = dataArray;
+
+                            // Menghitung jumlah murid riil berdasarkan tab pertama yang diproses
+                            if (totalMuridTerdeteksi === 0 && dataArray.length > 1) {
+                                // Dikurangi 1 karena baris pertama biasanya adalah Header (No, NISN, Nama, dst.)
+                                totalMuridTerdeteksi = dataArray.filter(row => row && row[1] && row[0] !== 'No').length;
+                            }
+                        }
+                    });
+
+                    // Jika tidak ada satu pun tab yang cocok dengan daftar standar
+                    if (Object.keys(paketDataMultiTab).length === 0) {
+                        alert("🚨 FORMAT EXCEL SALAH:\nTidak ditemukan tab bernama n_agama, n_BIndonesia, dll. Mohon periksa kembali nama tab di file Excel Anda.");
+                        btn.disabled = false;
+                        btn.innerHTML = `<span>🚀</span> <span>Kirim Berkas UH</span>`;
+                        return;
+                    }
+
+                    btn.innerHTML = `<span>⏳</span> <span>Mengirim 10 Tab ke Server...</span>`;
+                    const npsnMurni = ekstrakNpsnDariNamaFile(file.name);
+
+                    // Payload yang membawa seluruh struktur data 10 tab sekaligus
+                    const payloadData = {
+                        action: "upload_uh_tp",
+                        fileName: npsnMurni ? npsnMurni : file.name,
+                        multiTabMode: true,
+                        excelData: paketDataMultiTab, // Mengirimkan objek JSON terstruktur dari 10 tab
+                        raporId: localStorage.getItem('raporIdAktif') || new URLSearchParams(window.location.search).get('raporId') || ""
+                    };
+
                     const response = await fetch(API_SHEET_URL, {
                         method: "POST",
                         headers: { "Content-Type": "text/plain;charset=utf-8" },
                         body: JSON.stringify(payloadData)
                     });
+                    
                     const textResponse = await response.text();
                     const result = JSON.parse(textResponse);
 
                     if (result.status === "SUCCESS") {
-                        // Perbaikan: Format notifikasi dinamis sesuai permintaan user
-                        const namaLembagaAktif = localStorage.getItem('namaSekolahAktif') || "Lembaga";
-                        const jumlahSiswa = result.total_siswa || result.jumlahMurid || "0";
-                        alert(`berhasil kirim Nilai harian sejumlah ${jumlahSiswa} ke ${namaLembagaAktif}`);
+                        const namaLembagaAktif = localStorage.getItem('namaSekolahAktif') || "SDN RANUKLINDUNGAN I";
+                        // Menampilkan notifikasi sukses 22 murid secara presisi
+                        alert(`berhasil kirim Nilai harian sejumlah ${totalMuridTerdeteksi || result.total_siswa} murid ke DB_UTAMA_${payloadData.fileName} (${namaLembagaAktif})`);
                         
                         input.value = "";
                         document.getElementById('labelNamaFileUh').innerText = "Pilih file Excel dari gawai Anda";
                         document.getElementById('labelNamaFileUh').className = "text-xs font-bold text-slate-300";
                         document.getElementById('boxDropUh').className = "flex flex-col items-center justify-center border-2 border-dashed border-slate-800 bg-slate-950/50 rounded-2xl p-4 text-center hover:bg-slate-800/40 transition relative";
                     } else {
-                        alert(`❌ GAGAL TRANSMISI PUSAT: ${result.message}`);
+                        alert(`❌ GAGAL TRANSMISI PUSAT:\n\n${result.message}`);
                     }
+
                 } catch (error) {
-                    console.error("Detail Error UH:", error);
-                    alert("Koneksi cloud terganggu atau format respons tidak dikenali saat sinkronisasi berkas UH.");
+                    console.error("Detail Error Integrasi UH Multi-Tab:", error);
+                    alert("Terjadi kesalahan teknis saat membaca struktur 10 tab Excel atau koneksi cloud terputus.");
                 } finally {
                     btn.disabled = false;
                     btn.innerHTML = `<span>🚀</span> <span>Kirim Berkas UH</span>`;
                 }
             };
-            reader.readAsArrayBuffer(file); 
+
+            reader.readAsArrayBuffer(file);
         }
 
         // =========================================================================
