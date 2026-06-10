@@ -95,7 +95,7 @@
                                 <p class="text-[10px] text-slate-500 font-medium">Mendukung format berkas xlsx/xls</p>
                             </div>
                         </div>
-                        <button onclick="bukaPreviewTab('n_agama')" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-blue-400 bg-blue-950/60 border border-blue-900 hover:bg-blue-900 transition">
+                        <button onclick="bukaPreviewTab('rekap_harian')" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[10px] font-bold text-blue-400 bg-blue-950/60 border border-blue-900 hover:bg-blue-900 transition">
                             <span>🔍</span> Database
                         </button>
                     </div>
@@ -161,16 +161,16 @@
                     <div>
                         <select id="selectFilterMapel" onchange="filterDataTabelTp()" class="w-full sm:w-auto text-xs font-bold text-slate-300 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500 shadow-sm transition">
                             <option value="all">🌐 Semua Mata Pelajaran</option>
-                            <option value="n_agama">🕌 Agama & BP</option>
-                            <option value="n_pancasila">🦅 Pancasila</option>
-                            <option value="n_BIndonesia">🇮🇩 B. Indonesia</option>
-                            <option value="n_matematika">📐 Matematika</option>
-                            <option value="n_IPAS">🔬 IPAS</option>
-                            <option value="n_pjok">🏃 PJOK</option>
-                            <option value="n_kesenian">🎨 Seni & Budaya</option>
-                            <option value="n_bJawa">🛡️ B. Jawa</option>
-                            <option value="n_bIng">🇬🇧 B. Inggris</option>
-                            <option value="n_BTQ">📖 BTQ</option>
+                            <option value="AGAMA">🕌 Agama & BP</option>
+                            <option value="PANCASILA">🦅 Pancasila</option>
+                            <option value="BAHASA INDONESIA">🇮🇩 B. Indonesia</option>
+                            <option value="MATEMATIKA">📐 Matematika</option>
+                            <option value="IPAS">🔬 IPAS</option>
+                            <option value="PJOK">🏃 PJOK</option>
+                            <option value="KESENIAN">🎨 Seni & Budaya</option>
+                            <option value="BAHASA JAWA">🛡️ B. Jawa</option>
+                            <option value="BAHASA INGGRIS">🇬🇧 B. Inggris</option>
+                            <option value="BTQ">📖 BTQ</option>
                         </select>
                     </div>
                 </div>
@@ -185,7 +185,10 @@
                                 <th class="p-3 text-[10px] font-extrabold text-slate-500 uppercase tracking-wider pr-4">Uraian Kompetensi Capaian</th>
                             </tr>
                         </thead>
-                        <tbody id="tableBodyTp" class="divide-y divide-slate-800/60 text-xs">
+                        <tbody id="tableBodyTp" class="divide-y divide-slate-800/60 text-xs text-slate-400">
+                            <tr>
+                                <td colspan="4" class="p-8 text-center text-slate-500 italic">Memuat data kompetensi dari cloud...</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -300,12 +303,20 @@
             btn.innerHTML = `<span>⏳</span> <span>Mentransmisikan Nilai Harian...</span>`;
 
             reader.onload = async function(e) {
-                const base64Data = e.target.result.split(',')[1];
+                // Konversi ArrayBuffer ke Base64 murni yang aman untuk berkas biner Excel
+                const arrayBuffer = e.target.result;
+                const bytes = new Uint8Array(arrayBuffer);
+                let binaryString = "";
+                for (let i = 0; i < bytes.byteLength; i++) {
+                    binaryString += String.fromCharCode(bytes[i]);
+                }
+                const base64Data = btoa(binaryString);
+
                 const payloadData = {
-                    action: "upload_excel_uh", // Menyelaraskan nama key request backend
+                    action: "upload_asas_tp", // Diselaraskan ke modul pintar backend untuk rekap_harian
                     fileName: file.name,
                     fileData: base64Data,
-                    dbId: localStorage.getItem('dbIdAktif') || new URLSearchParams(window.location.search).get('dbId') || ""
+                    raporId: localStorage.getItem('raporIdAktif') || new URLSearchParams(window.location.search).get('raporId') || ""
                 };
 
                 try {
@@ -318,7 +329,7 @@
                     const result = JSON.parse(textResponse);
 
                     if (result.status === "SUCCESS") {
-                        alert(`🎉 SUKSES INTEGRASI HARIAN!\n\nSeluruh nilai sumatif siswa berhasil diunggah secara realtime.`);
+                        alert(`🎉 SUKSES INTEGRASI HARIAN!\n\n${result.message}`);
                         input.value = "";
                         document.getElementById('labelNamaFileUh').innerText = "Pilih file Excel dari gawai Anda";
                         document.getElementById('labelNamaFileUh').className = "text-xs font-bold text-slate-300";
@@ -328,13 +339,13 @@
                     }
                 } catch (error) {
                     console.error("Detail Error UH:", error);
-                    alert("Koneksi cloud terganggu saat sinkronisasi berkas UH.");
+                    alert("Koneksi cloud terganggu atau format respons tidak dikenali saat sinkronisasi berkas UH.");
                 } finally {
                     btn.disabled = false;
                     btn.innerHTML = `<span>🚀</span> <span>Kirim Berkas UH</span>`;
                 }
             };
-            reader.readAsDataURL(file);
+            reader.readAsArrayBuffer(file); 
         }
 
         // =========================================================================
@@ -351,7 +362,7 @@
             const namaWajibAlternatif = "20518953-TP-Kelas-IV.xls";
             
             if (namaFile !== namaWajib && namaFile !== namaWajibAlternatif) {
-                alert(`🚨 PENOLAKAN UNGHAH ASAS:\nNama berkas wajib presisi "${namaWajib}"`);
+                alert(`🚨 PENOLAKAN UNGGAH ASAS:\nNama berkas wajib presisi "${namaWajib}"`);
                 input.value = "";
                 label.innerText = "Pilih file Excel dari gawai Anda";
                 label.className = "text-xs font-bold text-slate-300";
@@ -377,9 +388,17 @@
             btn.innerHTML = `<span>⏳</span> <span>Mentransmisikan Data Kompetensi...</span>`;
 
             reader.onload = async function(e) {
-                const base64Data = e.target.result.split(',')[1];
+                // Konversi ArrayBuffer ke Base64 murni yang aman untuk berkas biner Excel
+                const arrayBuffer = e.target.result;
+                const bytes = new Uint8Array(arrayBuffer);
+                let binaryString = "";
+                for (let i = 0; i < bytes.byteLength; i++) {
+                    binaryString += String.fromCharCode(bytes[i]);
+                }
+                const base64Data = btoa(binaryString);
+
                 const payloadData = {
-                    action: "upload_asas_tp", // Menyelaraskan nama key request backend
+                    action: "upload_asas_tp",
                     fileName: file.name,
                     fileData: base64Data,
                     raporId: localStorage.getItem('raporIdAktif') || new URLSearchParams(window.location.search).get('raporId') || ""
@@ -395,7 +414,7 @@
                     const result = JSON.parse(textResponse);
 
                     if (result.status === "SUCCESS") {
-                        alert(`🎉 SUKSES TRANSKRIP ASAS!\n\nBerhasil tersimpan di lembar sheet "tp" database Rapor.`);
+                        alert(`🎉 SUKSES TRANSKRIP ASAS!\n\n${result.message}`);
                         input.value = "";
                         document.getElementById('labelNamaFileAsas').innerText = "Pilih file Excel dari gawai Anda";
                         document.getElementById('labelNamaFileAsas').className = "text-xs font-bold text-slate-300";
@@ -406,17 +425,75 @@
                     }
                 } catch (error) {
                     console.error("Detail Error ASAS:", error);
-                    alert("Koneksi cloud terganggu saat sinkronisasi berkas ASAS.");
+                    alert("Koneksi cloud terganggu atau format respons tidak dikenali saat sinkronisasi berkas ASAS.");
                 } finally {
                     btn.disabled = false;
                     btn.innerHTML = `<span>🚀</span> <span>Kirim Berkas ASAS</span>`;
                 }
             };
-            reader.readAsDataURL(file);
+            reader.readAsArrayBuffer(file);
         }
 
         // =========================================================================
-        // KOORDINASI PREVIEW MODAL WIDE
+        // MENGAMBIL DATA TUJUAN PEMBELAJARAN (TP) UNTUK TABEL SISI KANAN
+        // =========================================================================
+        async function muatDataTpDariCloud() {
+            const tbody = document.getElementById('tableBodyTp');
+            const idRaporTarget = localStorage.getItem('raporIdAktif') || new URLSearchParams(window.location.search).get('raporId') || "";
+            
+            if (!idRaporTarget) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-amber-400 font-medium">Sesi Rapor ID kosong. Buka kembali halaman dari hub utama.</td></tr>`;
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_SHEET_URL}?action=getPreviewTab&tabName=tp&targetId=${idRaporTarget}`);
+                const res = await response.json();
+                
+                if (res.status === "SUCCESS" && res.data && res.data.length > 0) {
+                    // Simpan ke database lokal untuk kebutuhan filter client-side
+                    databaseLokalTp = res.data;
+                    filterDataTabelTp();
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500 italic">Tidak ada entri data tujuan pembelajaran di sheet "tp".</td></tr>`;
+                }
+            } catch (err) {
+                console.error("Gagal muat data TP:", err);
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-400 font-semibold">Gagal memuat pratinjau otomatis dari cloud.</td></tr>`;
+            }
+        }
+
+        function filterDataTabelTp() {
+            const filterValue = document.getElementById('selectFilterMapel').value;
+            const tbody = document.getElementById('tableBodyTp');
+            tbody.innerHTML = "";
+
+            let nomorUrut = 1;
+            databaseLokalTp.forEach(row => {
+                // Format Kolom Sheet TP: [0] No, [1] Kode TP, [2] Mata Pelajaran, [3] Uraian Kompetensi
+                const mapelRow = row[2] ? row[2].toString().trim().toUpperCase() : "";
+                const filterMatch = filterValue === "all" || mapelRow.includes(filterValue.toUpperCase());
+
+                if (filterMatch) {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-800/40 transition-colors border-b border-slate-800/50";
+                    tr.innerHTML = `
+                        <td class="p-3 text-center font-mono text-slate-500">${nomorUrut++}</td>
+                        <td class="p-3 font-bold text-blue-400 font-mono">${row[1] || '-'}</td>
+                        <td class="p-3 font-semibold text-slate-300">${row[2] || '-'}</td>
+                        <td class="p-3 text-slate-400 pr-4 max-w-xs truncate">${row[3] || '-'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            });
+
+            if (tbody.children.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-500 italic">Tidak ada data kompetensi yang cocok dengan filter ini.</td></tr>`;
+            }
+        }
+
+        // =========================================================================
+        // KOORDINASI PREVIEW MODAL WIDE (UNTUK TOMBOL DATABASE MODUL)
         // =========================================================================
         async function bukaPreviewTab(namaTab) {
             const modal = document.getElementById('modalPreviewTab');
@@ -445,11 +522,8 @@
 
             try {
                 const idUrlFallback = new URLSearchParams(window.location.search);
-                const idSesiTarget = (namaTab === 'rekap' || namaTab === 'tp') 
-                    ? (localStorage.getItem('raporIdAktif') || idUrlFallback.get('raporId') || "") 
-                    : (localStorage.getItem('dbIdAktif') || idUrlFallback.get('dbId') || "");
+                const idSesiTarget = localStorage.getItem('raporIdAktif') || idUrlFallback.get('raporId') || "";
 
-                // Pastikan pemanggilan parameter GET sesuai dengan penanganan doGet di Apps Script
                 const responServer = await fetch(`${API_SHEET_URL}?action=getPreviewTab&tabName=${namaTab}&targetId=${idSesiTarget}`);
                 const dataJson = await responServer.json();
                 loading.classList.add('hidden');
