@@ -373,7 +373,7 @@
         </div>
         <div class="meta-item">
           <i class="fa-solid fa-chalkboard-user"></i>
-          <span id="lblNamaGuru">Wali Kelas: Memuat Data Guru...</span>
+          <span id="lblNamaGuru">Wali Kelas: Memuat Data Wali Kelas...</span>
         </div>
       </div>
       
@@ -463,18 +463,18 @@
   <script>
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEpRt1PizUVTq3zatgbEX8gnce2LILCoPjEsf0FertTGfCwuhFps0wVYguPyF8XRyo/exec";
     
-    // Sinkronisasi Parameter URL / LocalStorage Sesi Login Aktif
+    // Sinkronisasi Sesi Login Aktif via URL Params atau LocalStorage
     const urlParams = new URLSearchParams(window.location.search);
     const dbId = urlParams.get('dbId') || localStorage.getItem("dbIdAktif") || "";
     const raporId = urlParams.get('raporId') || localStorage.getItem("raporIdAktif") || "";
     const namaSekolah = urlParams.get('namaSekolah') || localStorage.getItem("namaSekolahAktif") || "";
 
     document.addEventListener("DOMContentLoaded", function() {
-      // 1. Render Nama Sekolah Pilihan Saat Login
+      // 1. Render Nama Sekolah Pilihan
       const namaSekolahBersih = decodeURIComponent(namaSekolah || "SEKOLAH TERDAFTAR");
       document.getElementById('lblNamaSekolah').innerText = namaSekolahBersih;
 
-      // 2. Kunci Jalur Navigasi Tombol Kembali agar Parameter Tidak Hilang
+      // 2. Kunci Parameter Navigasi Tombol Kembali ke Dashboard
       const btnKembali = document.getElementById('btnKembaliHub');
       if (dbId && raporId) {
         btnKembali.href = `dashboard.html?dbId=${dbId}&raporId=${raporId}&namaSekolah=${encodeURIComponent(namaSekolahBersih)}`;
@@ -482,16 +482,16 @@
         btnKembali.href = `dashboard.html`;
       }
 
-      // 3. Tarik Database Siswa & Informasi Guru dari Sheet Induk
+      // 3. Ambil Data Murid & Guru Pengampu
       muatDaftarSiswaDanGuru();
     });
 
     /**
-     * Memanggil Web App untuk Membaca Profil Murid Sekaligus Informasi Nama Guru
+     * Mengambil Berkas Nilai Siswa Beserta Mencari Properti 'nama_pendaftar' dari Server
      */
     function muatDaftarSiswaDanGuru() {
       if(!raporId) {
-        tampilkanToast("ID Rapor tidak ditemukan! Sesi dibatalkan.", "error");
+        tampilkanToast("ID Rapor tidak terdeteksi! Silakan login ulang.", "error");
         document.getElementById("loaderData").innerHTML = `<i class="fa-solid fa-circle-xmark" style="color:#ef4444; animation:none;"></i> Gagal memuat data.`;
         return;
       }
@@ -502,13 +502,16 @@
         .then(response => response.json())
         .then(res => {
           if (res.status === "SUCCESS") {
-            // Suntikkan Nama Guru secara dinamis dari response sheet induk backend
-            if(res.namaGuru) {
+            
+            // LOGIKA UPDATE: Membaca kolom nama_pendaftar sebagai Wali Kelas utama
+            if(res.nama_pendaftar) {
+              document.getElementById('lblNamaGuru').innerText = `Wali Kelas: ${res.nama_pendaftar}`;
+            } else if (res.namaGuru) {
               document.getElementById('lblNamaGuru').innerText = `Wali Kelas: ${res.namaGuru}`;
             } else if (res.nama_guru) {
               document.getElementById('lblNamaGuru').innerText = `Wali Kelas: ${res.nama_guru}`;
             } else {
-              document.getElementById('lblNamaGuru').innerText = `Wali Kelas: -`;
+              document.getElementById('lblNamaGuru').innerText = `Wali Kelas: (Belum Terdata)`;
             }
 
             renderTabelDpl(res.dataSiswa);
@@ -573,7 +576,7 @@
     }
 
     /**
-     * Kirim Data Hasil Evaluasi ke Cloud Spreadsheet secara Real-Time per Komponen Siswa
+     * Kirim Hasil Evaluasi Ke Sheet predikat_dpl Melalui POST Method Satuan
      */
     function simpanPredikatKomponen(btnElement, noAbsen, namaKomponenDpl) {
       const cellContainer = btnElement.parentElement;
