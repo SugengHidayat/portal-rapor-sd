@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&family=JetBrains+Mono:wght=400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -18,7 +18,7 @@
     </style>
     <script>
         // URL API Gateway Google Apps Script Anda (Sesuai Hasil Deploy Web App)
-        const API_SHEET_URL = "https://script.google.com/macros/s/AKfycbz_XXXXXXXXX/exec"; 
+        const API_SHEET_URL = "https://script.google.com/macros/s/AKfycbwEpRt1PizUVTq3zatgbEX8gnce2LILCoPjEsf0FertTGfCwuhFps0wVYguPyF8XRyo/exec"; 
         
         // Database Lokal Sementara untuk Penampung Filter & Render Tabel
         let databaseLokalTp = [];
@@ -44,7 +44,7 @@
             </div>
 
             <p class="text-xs sm:text-sm text-slate-400 leading-relaxed text-justify">
-                Evaluasi melalui <span class="font-bold text-slate-200">Ulangan Harian (UH)</span> dan <span class="font-bold text-slate-200">Asesmen Sumatif Akhir Semester (ASAS)</span> pada platform ini dirancang bukan sekadar untuk mengukur angka kuantitatif, mirainkan sebagai instrumen evaluasi komprehensif untuk memetakan ketercapaian Tujuan Pembelajaran (TP) pada tiap peserta didik di <span id="namaSekolahHeader" class="font-bold text-blue-400">UPT SDN Ranuklindungan I</span>. Pengumpulan data nilai berkala serta pemetaan TP yang valid memungkinkan pendidik melakukan diagnosis dini terhadap kompetensi kognitif siswa, mengenali laju belajar anak yang heterogen, serta memberikan intervensi secara personal sebelum menuju penilaian sumatif akhir semester.
+                Evaluasi melalui <span class="font-bold text-slate-200">Ulangan Harian (UH)</span> dan <span class="font-bold text-slate-200">Asesmen Sumatif Akhir Semester (ASAS)</span> pada platform ini dirancang bukan sekadar untuk mengukur angka kuantitatif, melainkan sebagai instrumen evaluasi komprehensif untuk memetakan ketercapaian Tujuan Pembelajaran (TP) pada tiap peserta didik di <span id="namaSekolahHeader" class="font-bold text-blue-400">UPT SDN Ranuklindungan I</span>. Pengumpulan data nilai berkala serta pemetaan TP yang valid memungkinkan pendidik melakukan diagnosis dini terhadap kompetensi kognitif siswa, mengenali laju belajar anak yang heterogen, serta memberikan intervensi secara personal sebelum menuju penilaian sumatif akhir semester.
             </p>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
@@ -155,7 +155,7 @@
                 
                 <div class="p-4 bg-slate-950/40 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
                     <div>
-                        <h2 class="text-xs font-extrabold text-slate-200 uppercase tracking-wide">Pratinjau Target Kompetensi Local</h2>
+                        <h2 class="text-xs font-extrabold text-slate-200 uppercase tracking-wide">Pratinjau Target Kompetensi Lokal</h2>
                         <p class="text-[10px] text-slate-500 font-medium">Sinkronisasi data Tujuan Pembelajaran terkini</p>
                     </div>
                     <div>
@@ -186,14 +186,14 @@
                             </tr>
                         </thead>
                         <tbody id="tableBodyTp" class="divide-y divide-slate-800/60 text-xs">
-                            </tbody>
+                        </tbody>
                     </table>
                 </div>
             </section>
         </main>
     </div>
 
-    <div id="modalPreviewTab" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xs z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200 hidden">
+    <div id="modalPreviewTab" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200 hidden">
         <div id="modalContent" class="bg-slate-900 w-full max-w-5xl rounded-3xl shadow-2xl border border-slate-800 overflow-hidden transform scale-95 opacity-0 transition-all duration-200 flex flex-col max-h-[85vh]">
             
             <div class="p-4 bg-slate-950/40 border-b border-slate-800 flex items-center justify-between shrink-0">
@@ -204,12 +204,12 @@
                         <p id="modalSubtitle" class="text-[10px] text-slate-500 font-medium">Menghubungkan ke API Gateway...</p>
                     </div>
                 </div>
-                <button onclick="tutupModalPreview()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center border border-slate-700 shadow-xs transition active:scale-95 cursor-pointer font-bold">✕</button>
+                <button onclick="tutupModalPreview()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center border border-slate-700 shadow-sm transition active:scale-95 cursor-pointer font-bold">✕</button>
             </div>
 
             <div class="flex-1 overflow-auto p-4 bg-slate-900 content-start min-h-[250px]">
                 <div id="modalLoading" class="flex flex-col items-center justify-center py-16 space-y-3">
-                    <div class="w-8 h-8 border-3 border-blue-600/20 border-t-blue-500 rounded-full animate-spin"></div>
+                    <div class="w-8 h-8 border-4 border-blue-600/20 border-t-blue-500 rounded-full animate-spin"></div>
                     <p class="text-xs font-bold text-slate-500 animate-pulse">Sedang mengunduh struktur data dari cloud server...</p>
                 </div>
                 <div id="modalEmptyNotice" class="hidden flex flex-col items-center justify-center py-16 space-y-2 text-slate-500">
@@ -302,16 +302,15 @@
             reader.onload = async function(e) {
                 const base64Data = e.target.result.split(',')[1];
                 const payloadData = {
-                    tipe: "upload_excel_uh",
+                    action: "upload_excel_uh", // Menyelaraskan nama key request backend
                     fileName: file.name,
                     fileData: base64Data,
-                    dbId: localStorage.getItem('dbIdAktif') || new URLSearchParams(window.location.search).get('dbId')
+                    dbId: localStorage.getItem('dbIdAktif') || new URLSearchParams(window.location.search).get('dbId') || ""
                 };
 
                 try {
                     const response = await fetch(API_SHEET_URL, {
                         method: "POST",
-                        mode: "cors",
                         headers: { "Content-Type": "text/plain;charset=utf-8" },
                         body: JSON.stringify(payloadData)
                     });
@@ -328,6 +327,7 @@
                         alert(`❌ GAGAL TRANSMISI PUSAT: ${result.message}`);
                     }
                 } catch (error) {
+                    console.error("Detail Error UH:", error);
                     alert("Koneksi cloud terganggu saat sinkronisasi berkas UH.");
                 } finally {
                     btn.disabled = false;
@@ -379,16 +379,15 @@
             reader.onload = async function(e) {
                 const base64Data = e.target.result.split(',')[1];
                 const payloadData = {
-                    tipe: "upload_asas_tp",
+                    action: "upload_asas_tp", // Menyelaraskan nama key request backend
                     fileName: file.name,
                     fileData: base64Data,
-                    raporId: localStorage.getItem('raporIdAktif') || new URLSearchParams(window.location.search).get('raporId')
+                    raporId: localStorage.getItem('raporIdAktif') || new URLSearchParams(window.location.search).get('raporId') || ""
                 };
 
                 try {
                     const response = await fetch(API_SHEET_URL, {
                         method: "POST",
-                        mode: "cors",
                         headers: { "Content-Type": "text/plain;charset=utf-8" },
                         body: JSON.stringify(payloadData)
                     });
@@ -400,12 +399,13 @@
                         input.value = "";
                         document.getElementById('labelNamaFileAsas').innerText = "Pilih file Excel dari gawai Anda";
                         document.getElementById('labelNamaFileAsas').className = "text-xs font-bold text-slate-300";
-                        document.getElementById('boxDropAsas').className = "flex flex-col items-center justify-center border-2 border-dashed border-slate-200 bg-slate-50 rounded-2xl p-4 text-center hover:bg-slate-100/50 transition relative";
+                        document.getElementById('boxDropAsas').className = "flex flex-col items-center justify-center border-2 border-dashed border-slate-800 bg-slate-950/50 rounded-2xl p-4 text-center hover:bg-slate-800/40 transition relative";
                         muatDataTpDariCloud();
                     } else {
                         alert(`❌ GAGAL INTEGRASI PUSAT: ${result.message}`);
                     }
                 } catch (error) {
+                    console.error("Detail Error ASAS:", error);
                     alert("Koneksi cloud terganggu saat sinkronisasi berkas ASAS.");
                 } finally {
                     btn.disabled = false;
@@ -413,90 +413,6 @@
                 }
             };
             reader.readAsDataURL(file);
-        }
-
-        // =========================================================================
-        // LOGIKA PENARIKAN & RENDERING DAFTAR CAPAIAN TUJUAN PEMBELAJARAN (TP)
-        // =========================================================================
-        async function muatDataTpDariCloud() {
-            try {
-                const idRapor = localStorage.getItem('raporIdAktif') || new URLSearchParams(window.location.search).get('raporId') || "";
-                if (!idRapor || idRapor === "null" || idRapor === "undefined") {
-                    tampilkanMockupJikaDataKosong();
-                    return;
-                }
-                
-                const responServer = await fetch(`${API_SHEET_URL}?action=getPreviewTab&tabName=tp&targetId=${idRapor}`);
-                const dataJson = await responServer.json();
-
-                if (dataJson.status === "SUCCESS" && dataJson.data && dataJson.data.length > 0) {
-                    databaseLokalTp = [];
-                    dataJson.data.forEach((baris, idx) => {
-                        databaseLokalTp.push({
-                            no: idx + 1,
-                            kode: baris[0] || `TP-0${idx+1}`, 
-                            mapel: baris[1] || 'all', 
-                            namaMapel: tentukanNamaAliasMapel(baris[1]),
-                            deskripsi: baris[2] || 'Deskripsi TP belum terisi.'
-                        });
-                    });
-                    renderDataKeTabelHtml(databaseLokalTp);
-                } else {
-                    tampilkanMockupJikaDataKosong();
-                }
-            } catch (err) {
-                tampilkanMockupJikaDataKosong();
-            }
-        }
-
-        function tentukanNamaAliasMapel(idMapel) {
-            const listMapel = {
-                'n_agama': '🕌 Agama & BP', 'n_pancasila': '🦅 Pancasila', 'n_BIndonesia': '🇮🇩 B. Indonesia',
-                'n_matematika': '📐 Matematika', 'n_IPAS': '🔬 IPAS', 'n_pjok': '🏃 PJOK',
-                'n_kesenian': '🎨 Seni & Budaya', 'n_bJawa': '🛡️ B. Jawa', 'n_bIng': '🇬🇧 B. Inggris', 'n_BTQ': '📖 BTQ'
-            };
-            return listMapel[idMapel] || idMapel;
-        }
-
-        function tampilkanMockupJikaDataKosong() {
-            databaseLokalTp = [
-                { no: 1, kode: "TP-AGM-01", mapel: "n_agama", namaMapel: "🕌 Agama & BP", deskripsi: "Memahami rukun iman dan implementasi akhlak mulia dalam kehidupan sehari-hari." },
-                { no: 2, kode: "TP-PNC-01", mapel: "n_pancasila", namaMapel: "🦅 Pancasila", deskripsi: "Mengidentifikasi simbol sila Pancasila di lingkungan sekolah dan keluarga." },
-                { no: 3, kode: "TP-IND-01", mapel: "n_BIndonesia", namaMapel: "🇮🇩 B. Indonesia", deskripsi: "Memahami gagasan pokok teks informatif serta menyampaikan ide secara tertulis." },
-                { no: 4, kode: "TP-MTK-01", mapel: "n_matematika", namaMapel: "📐 Matematika", deskripsi: "Menghitung pecahan senilai dan melakukan konversi satuan desimal." },
-                { no: 5, kode: "TP-IPAS-01", mapel: "n_IPAS", namaMapel: "🔬 IPAS", deskripsi: "Menganalisis siklus hidup makhluk hidup dan ekosistem di lingkungan sekitar." }
-            ];
-            renderDataKeTabelHtml(databaseLokalTp);
-        }
-
-        function renderDataKeTabelHtml(data) {
-            const tableBody = document.getElementById('tableBodyTp');
-            tableBody.innerHTML = "";
-            if (data.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500 italic">Tidak ditemukan data kompetensi TP yang cocok.</td></tr>`;
-                return;
-            }
-            data.forEach((item, index) => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-800/30 transition-colors border-b border-slate-800/60";
-                tr.innerHTML = `
-                    <td class="p-2.5 text-center text-slate-500 font-bold">${index + 1}</td>
-                    <td class="p-2.5 font-mono text-blue-400 font-bold tracking-tight">${item.kode}</td>
-                    <td class="p-2.5 text-slate-400 font-bold text-[11px]">${item.namaMapel}</td>
-                    <td class="p-2.5 text-slate-300 text-justify leading-normal pr-4">${item.deskripsi}</td>
-                `;
-                tableBody.appendChild(tr);
-            });
-        }
-
-        function filterDataTabelTp() {
-            const filterValue = document.getElementById('selectFilterMapel').value;
-            if (filterValue === "all") {
-                renderDataKeTabelHtml(databaseLokalTp);
-            } else {
-                const dataSaring = databaseLokalTp.filter(item => item.mapel === filterValue);
-                renderDataKeTabelHtml(dataSaring);
-            }
         }
 
         // =========================================================================
@@ -530,22 +446,25 @@
             try {
                 const idUrlFallback = new URLSearchParams(window.location.search);
                 const idSesiTarget = (namaTab === 'rekap' || namaTab === 'tp') 
-                    ? (localStorage.getItem('raporIdAktif') || idUrlFallback.get('raporId')) 
-                    : (localStorage.getItem('dbIdAktif') || idUrlFallback.get('dbId'));
+                    ? (localStorage.getItem('raporIdAktif') || idUrlFallback.get('raporId') || "") 
+                    : (localStorage.getItem('dbIdAktif') || idUrlFallback.get('dbId') || "");
 
+                // Pastikan pemanggilan parameter GET sesuai dengan penanganan doGet di Apps Script
                 const responServer = await fetch(`${API_SHEET_URL}?action=getPreviewTab&tabName=${namaTab}&targetId=${idSesiTarget}`);
                 const dataJson = await responServer.json();
                 loading.classList.add('hidden');
 
                 if (dataJson.status === "SUCCESS") {
-                    subtitle.innerText = `Total Data Tersimpan: ${dataJson.totalBaris} Entri Baris`;
+                    subtitle.innerText = `Total Data Tersimpan: ${dataJson.totalBaris || 0} Entri Baris`;
                     if (!dataJson.data || dataJson.data.length === 0) {
                         emptyNotice.classList.remove('hidden');
                     } else {
                         let barisHeaderHtml = '<tr>';
-                        dataJson.headers.forEach(headKolom => {
-                            barisHeaderHtml += `<th class="px-4 py-2.5 border-b border-slate-800 font-bold bg-slate-950 text-slate-300 text-xs">${headKolom}</th>`;
-                        });
+                        if (dataJson.headers && dataJson.headers.length > 0) {
+                            dataJson.headers.forEach(headKolom => {
+                                barisHeaderHtml += `<th class="px-4 py-2.5 border-b border-slate-800 font-bold bg-slate-950 text-slate-300 text-xs">${headKolom}</th>`;
+                            });
+                        }
                         barisHeaderHtml += '</tr>';
                         tHead.innerHTML = barisHeaderHtml;
 
@@ -553,7 +472,7 @@
                         dataJson.data.forEach(itemBaris => {
                             barisDataHtml += '<tr class="hover:bg-slate-800/50 transition-colors border-b border-slate-800/60">';
                             itemBaris.forEach(itemSel => {
-                                let isiSel = itemSel !== "" ? itemSel : "-";
+                                let isiSel = (itemSel !== null && itemSel !== undefined && itemSel !== "") ? itemSel : "-";
                                 barisDataHtml += `<td class="px-4 py-2 max-w-[150px] truncate">${isiSel}</td>`;
                             });
                             barisDataHtml += '</tr>';
@@ -567,6 +486,7 @@
                     wrapper.classList.remove('hidden');
                 }
             } catch (err) {
+                console.error("Detail Error Preview:", err);
                 loading.classList.add('hidden');
                 subtitle.innerText = "Koneksi terputus.";
                 tBody.innerHTML = `<tr><td class="px-4 py-8 text-center text-red-400 font-bold text-xs">Gagal tersambung dengan server cloud.</td></tr>`;
