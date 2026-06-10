@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>8 Profil Lulusan Murid - E-Rapor Pusat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* =========================================================================
+       CORE STYLES & LUXURY DARK GRADIENT BACKGROUND (Sama persis index.html)
+       ========================================================================= */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 0%, #1a1f3c 0%, #0d111d 100%);
+      color: #f1f5f9;
+      min-height: 100vh;
+      padding: 40px 20px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* =========================================================================
+       NARASI & HEADER SECTION (8 PROFIL LULUSAN MURID)
+       ========================================================================= */
+    .header-section {
+      text-align: center;
+      margin-bottom: 40px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 30px;
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .header-section h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 15px;
+      letter-spacing: -0.5px;
+      background: linear-gradient(45deg, #fff, #94a3b8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .narasi-profil {
+      text-align: left;
+      font-size: 0.95rem;
+      color: #94a3b8;
+      max-width: 1200px;
+      margin: 0 auto;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 20px;
+    }
+
+    .narasi-profil p {
+      margin-bottom: 12px;
+      text-align: justify;
+    }
+
+    .grid-profil-info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .info-card {
+      background: rgba(255, 255, 255, 0.02);
+      border-left: 3px solid #3b82f6;
+      padding: 12px 15px;
+      border-radius: 4px 8px 8px 4px;
+    }
+
+    .info-card strong {
+      color: #e2e8f0;
+      display: block;
+      margin-bottom: 4px;
+      font-size: 0.9rem;
+    }
+
+    .info-card span {
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    /* =========================================================================
+       DYNAMIC DATA TABLE WRAPPER
+       ========================================================================= */
+    .table-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      backdrop-filter: blur(20px);
+    }
+
+    .table-header-tool {
+      padding: 20px 24px;
+      background: rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .table-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #3b82f6;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+
+    th {
+      background: #111524;
+      color: #94a3b8;
+      font-weight: 600;
+      padding: 14px 16px;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #e2e8f0;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .sticky-col {
+      position: sticky;
+      left: 0;
+      background: #0f1322;
+      z-index: 2;
+      box-shadow: 4px 0 10px rgba(0,0,0,0.3);
+    }
+    
+    th.sticky-col {
+      z-index: 3;
+      background: #111524;
+    }
+
+    /* =========================================================================
+       MODERN INTERACTIVE DROPDOWN & KUNING/HIJAU SAVE BUTTONS + ANIMATIONS
+       ========================================================================= */
+    .control-cell {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 210px;
+    }
+
+    /* Dropdown Default Style */
+    .select-predikat {
+      flex: 1;
+      background: #161b2c;
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .select-predikat:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    /* State Hijau saat Sukses Tersimpan */
+    .select-predikat.saved-success {
+      background: rgba(16, 185, 129, 0.15) !important;
+      color: #10b981 !important;
+      border-color: #10b981 !important;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.2);
+    }
+
+    /* Tombol Simpan Warna Kuning */
+    .btn-simpan {
+      background: #eab308;
+      color: #0f172a;
+      border: none;
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(234, 179, 8, 0.2);
+    }
+
+    .btn-simpan:hover {
+      background: #facc15;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(234, 179, 8, 0.35);
+    }
+
+    .btn-simpan:active {
+      transform: translateY(1px);
+    }
+
+    /* Animasi Loading saat diklik */
+    .btn-simpan.loading {
+      background: #854d0e !important;
+      color: #e2e8f0;
+      pointer-events: none;
+    }
+
+    .btn-simpan.loading i {
+      animation: putarSpiner 0.8s linear infinite;
+    }
+
+    @keyframes putarSpiner {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Loader global saat muat halaman */
+    .page-loader {
+      text-align: center;
+      padding: 50px 0;
+      color: #94a3b8;
+      font-size: 1rem;
+    }
+    
+    .page-loader i {
+      font-size: 2rem;
+      color: #3b82f6;
+      margin-bottom: 10px;
+      display: block;
+      animation: putarSpiner 1s linear infinite;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      z-index: 9999;
+    }
+
+    .toast {
+      background: #1e293b;
+      border-left: 4px solid #10b981;
+      color: #f8fafc;
+      padding: 14px 22px;
+      border-radius: 8px;
+      margin-top: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      transform: translateX(120%);
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <div class="header-section">
+      <h1><i class="fa-solid fa-graduation-cap"></i> Evaluasi 8 Profil Lulusan Murid (DPL)</h1>
+      
+      <div class="narasi-profil">
+        <p>
+          <strong>8 Profil Lulusan Murid (DPL)</strong> merupakan kerangka kompetensi holistik yang dirancang guna memastikan setiap peserta didik tidak hanya unggul dalam kapasitas akademik, namun juga matang secara emosional, sosial, spiritual, dan berkarakter mulia. Penilaian predikat ini dikonsolidasikan langsung ke dalam lembar <em>predikat_dpl</em> sebagai variabel utama dalam menyusun konstruksi deskripsi otomatis e-rapor.
+        </p>
+        <p>
+          Silakan tentukan tingkat pencapaian ananda murid pada masing-masing dimensi komponen di bawah ini (DPL_1 sampai DPL_8). Klik tombol <strong>Simpan</strong> berwarna kuning di setiap kolom komponen untuk merekam perubahan secara individual ke sistem cloud. Sel yang berhasil diverifikasi akan otomatis bertransformasi warna menjadi hijau berpendar.
+        </p>
+        
+        <div class="grid-profil-info">
+          <div class="info-card">
+            <strong>DPL_1: Beriman & Bertakwa</strong>
+            <span>Keagamaan, akhlak mulia, kepatuhan ritual ibadah sehari-hari.</span>
+          </div>
+          <div class="info-card">
+            <strong>DPL_2: Bernalar Kritis</strong>
+            <span>Objektivitas memproses informasi, analisis data, & pemecahan masalah.</span>
+          </div>
+          <div class="info-card">
+            <strong>DPL_3: Kreatif & Inovatif</strong>
+            <span>Modifikasi gagasan orisinal dan kemampuan melahirkan alternatif solusi.</span>
+          </div>
+          <div class="info-card">
+            <strong>DPL_4: Gotong Royong</strong>
+            <span>Kapasitas kolaborasi, kepedulian sosial, dan keaktifan berbagi peran.</span>
+          </div>
+          <div class="info-card">
+            <strong>DPL_5: Kebinekaan Global</strong>
+            <span>Mempertahankan budaya luhur sekaligus terbuka interaksi lintas kultur.</span>
+          </div>
+          <div class="info-card">
+            <strong>DPL_6: Kemandirian</strong>
+            <span>Penuh regulasi diri, tanggung jawab belajar, dan kendali emosi cerdas.</span>
+          </div>
+          <div class="info-card">
+            <strong>DPL_7: Literasi Komunikasi</strong>
+            <span>Kecakapan menyampaikan gagasan secara terstruktur, lisan maupun tulisan.</span>
+          </div>
+          <div class="info-card">
+            <strong>DPL_8: Logika Numerasi</strong>
+            <span>Ketepatan memformulasikan kesimpulan berbasis pola matematis logis.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header-tool">
+        <div class="table-title">
+          <i class="fa-solid fa-users-viewfinder"></i> Lembar Kerja Penilaian Karakter Murid
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <div id="loaderData" class="page-loader">
+          <i class="fa-solid fa-circle-notch"></i>
+          Menghubungkan ke Server Cloud. Membaca Database Rapor Siswa...
+        </div>
+
+        <table id="tabelDplSiswa" style="display: none;">
+          <thead>
+            <tr>
+              <th class="sticky-col">No Absen</th>
+              <th>NISN</th>
+              <th>Nama Siswa</th>
+              <th>DPL_1</th>
+              <th>DPL_2</th>
+              <th>DPL_3</th>
+              <th>DPL_4</th>
+              <th>DPL_5</th>
+              <th>DPL_6</th>
+              <th>DPL_7</th>
+              <th>DPL_8</th>
+            </tr>
+          </thead>
+          <tbody id="bodyDataSiswa">
+            </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    // URL Web App Apps Script Anda (Sesuaikan dengan URL Eksekusi hasil deployment Anda)
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw6...REPLACE_WITH_YOUR_ACTUAL_ID.../exec";
+    
+    // ID Rapor Sekolah aktif (diambil dinamis dari session/localstorage paska login sekolah)
+    const ACTIVE_RAPOR_ID = localStorage.getItem("raporId") || ""; 
+
+    document.addEventListener("DOMContentLoaded", function() {
+      muatDaftarSiswaRapor();
+    });
+
+    /**
+     * Membaca struktur nama murid dari aksi internal backend get_status_cetak
+     */
+    function muatDaftarSiswaRapor() {
+      if(!ACTIVE_RAPOR_ID) {
+        tampilkanToast("ID Rapor tidak terdeteksi! Silakan login ulang pada halaman utama.", "error");
+        document.getElementById("loaderData").innerHTML = `<i class="fa-solid fa-circle-xmark" style="color:#ef4444; animation:none;"></i> Gagal memuat data. ID Spreadsheet Rapor Kosong.`;
+        return;
+      }
+
+      const urlTarget = `${APPS_SCRIPT_URL}?action=get_status_cetak&raporId=${ACTIVE_RAPOR_ID}`;
+      
+      fetch(urlTarget)
+        .then(response => response.json())
+        .then(res => {
+          if (res.status === "SUCCESS") {
+            renderTabelDpl(res.dataSiswa);
+          } else {
+            document.getElementById("loaderData").innerText = "Gagal memuat: " + res.message;
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById("loaderData").innerText = "Terjadi gangguan koneksi jaringan cloud.";
+        });
+    }
+
+    /**
+     * Membentuk elemen HTML tr td berdasarkan payload data array siswa
+     */
+    function renderTabelDpl(siswaArray) {
+      const tbody = document.getElementById("bodyDataSiswa");
+      tbody.innerHTML = "";
+
+      siswaArray.forEach(siswa => {
+        const tr = document.createElement("tr");
+        
+        // Buat kolom identitas pokok
+        tr.innerHTML = `
+          <td class="sticky-col" style="font-weight:600; text-align:center;">${siswa.no_absen}</td>
+          <td style="color:#94a3b8;">${siswa.nisn || '-'}</td>
+          <td style="font-weight:500;">${siswa.nama}</td>
+        `;
+
+        // Loop pembuatan kolom dropdown interaktif DPL_1 sampai DPL_8
+        for (let i = 1; i <= 8; i++) {
+          const tdControl = document.createElement("td");
+          tdControl.innerHTML = `
+            <div class="control-cell">
+              <select class="select-predikat" id="sel_${siswa.no_absen}_dpl${i}" onchange="deteksiPerubahanSkema(this)">
+                <option value="">- Pilih Predikat -</option>
+                <option value="Sangat Baik">Sangat Baik</option>
+                <option value="Baik">Baik</option>
+                <option value="Cukup">Cukup</option>
+                <option value="Perlu bimbingan">Perlu bimbingan</option>
+              </select>
+              <button class="btn-simpan" onclick="simpanPredikatKomponen(this, '${siswa.no_absen}', 'dpl_${i}')">
+                <i class="fa-solid fa-floppy-disk"></i> Simpan
+              </button>
+            </div>
+          `;
+          tr.appendChild(tdControl);
+        }
+        tbody.appendChild(tr);
+      });
+
+      // Hilangkan loader, hidupkan visual tabel
+      document.getElementById("loaderData").style.display = "none";
+      document.getElementById("tabelDplSiswa").style.display = "table";
+    }
+
+    /**
+     * Menghapus kelas warna hijau jika dropdown sengaja diubah kembali oleh guru sebelum disimpan ulang
+     */
+    function deteksiPerubahanSkema(elemenSelect) {
+      elemenSelect.classList.remove("saved-success");
+    }
+
+    /**
+     * Mengirimkan parameter nilai predikat terpilih secara realtime ke backend Apps Script (tab predikat_dpl)
+     */
+    function simpanPredikatKomponen(btnElement, noAbsen, namaKomponenDpl) {
+      const cellContainer = btnElement.parentElement;
+      const selectElement = cellContainer.querySelector(".select-predikat");
+      const nilaiPredikatDipilih = selectElement.value;
+
+      if (!nilaiPredikatDipilih) {
+        tampilkanToast("Pilihan predikat masih kosong! Tentukan nilai terlebih dahulu.", "error");
+        return;
+      }
+
+      // Aktifkan animasi modern loading spinner pada button kuning
+      btnElement.classList.add("loading");
+      btnElement.innerHTML = `<i class="fa-solid fa-circle-notch"></i> Menyimpan...`;
+
+      // Payload parameter pengiriman (Disesuaikan dengan rute aksi POST/GET Web App)
+      const payloadData = {
+        action: "update_predikat_dpl_satuan", // Tambahkan fungsi penanganan aksi ini di Apps Script Anda jika diperlukan
+        raporId: ACTIVE_RAPOR_ID,
+        no_absen: noAbsen,
+        komponen: namaKomponenDpl,
+        predikat: nilaiPredikatDipilih
+      };
+
+      // Contoh eksekusi transmisi data terpadu via POST/GET method
+      fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify(payloadData),
+        mode: "no-cors" // Menggunakan no-cors jika domain web hosting Anda berbeda dengan google script
+      })
+      .then(() => {
+        // Karena no-cors tidak membaca balikan response body, kita asumsikan transmisi berhasil terkirim pasca tuntas
+        setTimeout(() => {
+          // Kembalikan visual tombol kuning ke sedia kala
+          btnElement.classList.remove("loading");
+          btnElement.innerHTML = `<i class="fa-solid fa-check"></i> Tersimpan`;
+          
+          // Transformasikan warna dropdown menjadi HIJAU pendar tanda data sukses terkunci di sheet cloud
+          selectElement.classList.add("saved-success");
+          tampilkanToast(`Berhasil menyimpan nilai ${namaKomponenDpl.toUpperCase()} Absen ${noAbsen}!`, "success");
+        }, 1000);
+      })
+      .catch(error => {
+        console.error(error);
+        btnElement.classList.remove("loading");
+        btnElement.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Simpan`;
+        tampilkanToast("Terjadi kendala interupsi server cloud.", "error");
+      });
+    }
+
+    /**
+     * Sistem Utility Alert Toast Kecil Elegan di Pojok Layar
+     */
+    function tampilkanToast(pesanText, tipe) {
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      
+      if (tipe === "error") {
+        toast.style.borderLeftColor = "#ef4444";
+        toast.innerHTML = `<i class="fa-solid fa-circle-exclamation" style="color:#ef4444"></i> ${pesanText}`;
+      } else {
+        toast.innerHTML = `<i class="fa-solid fa-circle-check" style="color:#10b981"></i> ${pesanText}`;
+      }
+      
+      container.appendChild(toast);
+      setTimeout(() => toast.classList.add("show"), 50);
+      
+      // Hapus toast otomatis dalam 4 detik
+      setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 400);
+      }, 4000);
+    }
+  </script>
+</body>
+</html>
