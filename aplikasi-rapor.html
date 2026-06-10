@@ -410,12 +410,18 @@
                 }
                 const base64Data = btoa(binaryString);
 
+                // SOLUSI: Ekstrak hanya NPSN murni (angka saja) untuk dicocokkan ke database pusat
+                const npsnMurni = ekstrakNpsnDariNamaFile(file.name);
+
                 const payloadData = {
                     action: "upload_asas_tp",
-                    fileName: file.name,
+                    fileName: npsnMurni ? `${npsnMurni}-TP-Kelas-IV.xlsx` : file.name, // Menjaga standarisasi nama di server
                     fileData: base64Data,
                     raporId: localStorage.getItem('raporIdAktif') || new URLSearchParams(window.location.search).get('raporId') || ""
                 };
+
+                // Catatan Log untuk mempermudah Anda melakukan debug di konsol browser
+                console.log("Mengirim Payload ASAS:", { npsnMurni: npsnMurni, raporId: payloadData.raporId });
 
                 try {
                     const response = await fetch(API_SHEET_URL, {
@@ -434,7 +440,8 @@
                         document.getElementById('boxDropAsas').className = "flex flex-col items-center justify-center border-2 border-dashed border-slate-800 bg-slate-950/50 rounded-2xl p-4 text-center hover:bg-slate-800/40 transition relative";
                         muatDataTpDariCloud();
                     } else {
-                        alert(`❌ GAGAL INTEGRASI PUSAT: ${result.message}`);
+                        // Jika server masih komplain, kita tampilkan detail untuk pelacakan
+                        alert(`❌ GAGAL INTEGRASI PUSAT:\n\n${result.message}\n\n(Tips: Pastikan Rapor ID untuk NPSN ${npsnMurni} sudah dipetakan di Sheet Pendaftaran)`);
                     }
                 } catch (error) {
                     console.error("Detail Error ASAS:", error);
