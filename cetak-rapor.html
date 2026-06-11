@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pratinjau Rapor Resmi - UPT SDN Ranuklindungan I</title>
+  <title>Pratinjau Rapor Resmi - E-Rapor Kecamatan Grati</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { 
@@ -51,7 +51,6 @@
         width: 210mm !important; 
         min-height: auto !important; 
       }
-      /* Arsitektur Pencegahan Dokumen Terpotong Tengah */
       .blok-anti-pisah {
         page-break-inside: avoid !important;
         break-inside: avoid !important;
@@ -62,30 +61,26 @@
 <body>
 
   <div id="navigasiAtas" class="no-print bg-slate-900 p-4 text-white flex justify-between items-center sticky top-0 shadow-md z-50">
-    <div class="text-xs font-bold font-sans tracking-wide">📄 RAPOR ELEKTRONIK (ISOLATED CHARIVA SYSTEM V14.5)</div>
+    <div class="text-xs font-bold font-sans tracking-wide">📄 RAPOR ELEKTRONIK (ENGINE V15.0 MULTI-SEKOLAH)</div>
     <button onclick="window.print()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow transition">🖨️ Cetak Lembaran Rapor</button>
   </div>
 
   <div class="lembar-rapor" id="kontenRapor">
     
     <div id="loader" class="text-center text-slate-500 font-bold text-sm pt-20 animate-pulse font-sans">
-      🔄 Mengakses jalur data terisolasi 'cetak_github'... Memetakan lembar rapor...
+      🔄 Menghubungi Server Apps Script... Memetakan Relasi Database Induk...
     </div>
 
     <div id="coreRapor" class="hidden">
       
-      <!-- HEADER RAPOR -->
       <div class="flex items-center justify-start gap-6 border-b-2 border-black pb-4 mb-4">
-       <img src="img/Logo_SD_Ranu_1.png" 
-            class="w-16 h-auto object-contain" 
-            alt="Logo SDN Ranuklindungan I">
-       <div class="text-center flex-1 pr-16">
-         <h1 class="text-lg font-bold tracking-wide">LAPORAN HASIL BELAJAR</h1>
-         <h2 class="text-base font-bold tracking-wider">(RAPOR)</h2>
-       </div>
+        <div class="text-center flex-1">
+          <h1 id="lblHeaderNamaSekolah" class="text-base font-bold tracking-wide uppercase">-</h1>
+          <h1 class="text-lg font-bold tracking-wide">LAPORAN HASIL BELAJAR</h1>
+          <h2 class="text-base font-bold tracking-wider">(RAPOR)</h2>
+        </div>
       </div>
 
-      <!-- BIODATA / IDENTITAS SISWA -->
       <div class="grid grid-cols-2 gap-x-8 text-[12.5px] leading-relaxed mb-4">
         <table class="w-full">
           <tr>
@@ -133,7 +128,6 @@
         </table>
       </div>
 
-      <!-- TABEL A: MATAPELAJARAN UTAMA -->
       <div class="mb-4">
         <table class="w-full tabel-border-tegas text-xs text-left">
           <thead>
@@ -148,7 +142,6 @@
         </table>
       </div>
 
-      <!-- TABEL B: MUATAN LOKAL -->
       <div class="mb-5">
         <h3 class="font-bold text-xs uppercase mb-1 tracking-wide">MUATAN LOKAL</h3>
         <table class="w-full tabel-border-tegas text-xs text-left">
@@ -164,8 +157,7 @@
         </table>
       </div>
 
-      <!-- TABEL C: EKSTRAKURIKULER (TURUN 5 BARIS DENGAN MT-20 & REGISTER ANTI-PISAH) -->
-      <div class="mt-20 mb-5 blok-anti-pisah">
+      <div class="mt-10 mb-5 blok-anti-pisah">
         <h3 class="font-bold text-xs uppercase mb-1 tracking-wide">EKSTRAKURIKULER</h3>
         <table class="w-full tabel-border-tegas text-xs text-left">
           <thead>
@@ -180,7 +172,6 @@
         </table>
       </div>
 
-      <!-- TABEL D: KETIDAKHADIRAN -->
       <div class="mb-6 w-[260px] blok-anti-pisah">
         <h3 class="font-bold text-xs uppercase mb-1 tracking-wide">KETIDAKHADIRAN</h3>
         <table class="w-full tabel-border-tegas text-xs text-left">
@@ -204,9 +195,7 @@
         </table>
       </div>
 
-      <!-- BLOK TANDA TANGAN (AUTOMATICALLY SEJALUR) -->
       <div class="blok-anti-pisah text-xs mt-12 leading-relaxed">
-        
         <div class="flex justify-between items-end text-center mb-16 px-4">
           <div class="w-64">
             <p class="mb-20 font-medium text-sm">Orang Tua,</p>
@@ -214,7 +203,7 @@
             <p class="text-xs text-transparent select-none">NIP. -</p> 
           </div>
           <div class="w-64">
-            <p class="mb-20 font-medium text-sm"><span id="lblTempatTanggal">-</span><br>Wali Kelas 4 (empat)</p>
+            <p class="mb-20 font-medium text-sm"><span id="lblTempatTanggal">-</span><br>Wali Kelas</p>
             <p id="lblNamaGuru" class="font-bold text-sm capitalize">-</p>
             <div class="border-b border-black w-48 mx-auto my-0.5"></div>
             <p id="lblNipGuru" class="text-xs text-slate-700">-</p>
@@ -227,7 +216,6 @@
           <div class="border-b border-black w-56 mx-auto my-0.5"></div>
           <p id="lblNipKepsek" class="text-xs text-slate-700">-</p>
         </div>
-
       </div>
       
     </div>
@@ -235,211 +223,137 @@
 
   <script>
     // =========================================================================
-    // GLOBAL CONFIGURATION (ISOLATED CHARIVA SYSTEM MULTI-TENANCY V14.5)
+    // CONFIGURATION ENGINE V15.0 MULTI-SEKOLAH
     // =========================================================================
-    const API_KEY = 'MASUKKAN_GOOGLE_SHEETS_API_KEY_ANDA';
-    const SPREADSHEET_INDUK_ID = 'MASUKKAN_ID_SPREADSHEET_INDUK_UTAMA_ANDA';
+    // Tempelkan URL Web App dari Apps Script Deployment Anda di sini:
+    const BASE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxpKAZzJ2P3Mj7BTGkMsdLulOQkIDqRbXGhTjrGZeyvIVFsUwBdhSJcyeBOXk4zDpd_/exec"; 
 
-    // Menangkap parameter npsn dan nisn dari URL. 
-    // Contoh URL Baru: cetak-rapor.html?npsn=20518953&nisn=3159717464
+    // Menangkap parameter dari URL browser
     const urlParams = new URLSearchParams(window.location.search);
     const npsnTarget = urlParams.get('npsn');
-    const nisnTarget = urlParams.get('nisn');
+    const absenTarget = urlParams.get('absen') || urlParams.get('no_absen');
 
     window.addEventListener('DOMContentLoaded', function() {
-      if (!npsnTarget || !nisnTarget) {
-        document.getElementById('loader').className = "text-center p-10 text-sm font-sans text-amber-600 font-bold bg-amber-50 rounded-xl border border-amber-200 m-5";
-        document.getElementById('loader').innerHTML = "⚠️ PARAMETER DOKUMEN BELUM LENGKAP (Membutuhkan 'npsn' dan 'nisn').";
+      if (!npsnTarget || !absenTarget) {
+        tampilkanPesanKhusus("⚠️ PARAMETER LINK TIDAK LENGKAP", "Gunakan pola link baru: cetak-rapor.html?npsn=NPSN_SEKOLAH&absen=NOMOR_ABSEN", "amber");
         return;
       }
-      
-      executeMultiTenancyEngine();
+      ambilDataDariAppsScript();
     });
 
-    async function executeMultiTenancyEngine() {
+    async function ambilDataDariAppsScript() {
       try {
-        // 1. Fetching Database Induk untuk Isolasi Jalur Data Sekolah
-        const responInduk = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_INDUK_ID}/values/induk!A2:J100?key=${API_KEY}`);
-        if (!responInduk.ok) throw new Error("Gagal menghubungi server database induk.");
-        const dataInduk = await responInduk.json();
+        // Eksekusi pemanggilan ke Apps Script Engine V15.0 menggunakan metode JSONP/CORS Fetch aman
+        const urlTembakan = `${BASE_WEB_APP_URL}?action=cetak_github&npsn=${npsnTarget}&no_absen=${absenTarget}`;
         
-        if (!dataInduk.values) throw new Error("Spreadsheet Induk kosong atau data belum terisi.");
+        const respon = await fetch(urlTembakan);
+        if (!respon.ok) throw new Error("Server Apps Script memberikan respon tidak valid atau terblokir CORS.");
+        
+        const resJson = await respon.json();
 
-        // Cari sekolah yang aktif berdasarkan NPSN (Kolom B = indeks 1, Status = indeks 9)
-        const barisSekolah = dataInduk.values.find(row => row[1] === npsnTarget && row[9] === 'AKTIF');
-        if (!barisSekolah) throw new Error(`Sekolah dengan NPSN ${npsnTarget} tidak terdaftar atau status NONAKTIF.`);
-
-        const idSpreadsheetDb = barisSekolah[6];    // Kolom G (id_spreadsheet_db)
-        const idSpreadsheetRapor = barisSekolah[7]; // Kolom H (id_spreadsheet_rapor)
-
-        if (!idSpreadsheetDb || !idSpreadsheetRapor) {
-          throw new Error("Konektor ID Spreadsheet DB / Rapor sekolah ini belum diset di induk.");
+        if (resJson.status === "ERROR") {
+          throw new Error(resJson.message);
         }
 
-        // 2. Parallel Fetching Data dari Spesifik Spreadsheet Sekolah (Menghemat Kuota & Waktu Tunggu)
-        const [responIdentitas, responSiswa, responRapor] = await Promise.all([
-          fetch(`https://sheets.googleapis.com/v4/spreadsheets/${idSpreadsheetDb}/values/identitas_sekolah!A2:B30?key=${API_KEY}`).then(res => res.json()),
-          fetch(`https://sheets.googleapis.com/v4/spreadsheets/${idSpreadsheetDb}/values/data_siswa!A2:O500?key=${API_KEY}`).then(res => res.json()),
-          fetch(`https://sheets.googleapis.com/v4/spreadsheets/${idSpreadsheetRapor}/values/rapor_siswa!A2:Z500?key=${API_KEY}`).then(res => res.json())
-        ]);
-
-        // 3. Matriks Parsing - Tab Identitas Sekolah (Vertikal)
-        const sekolahObj = {};
-        if (responIdentitas.values) {
-          responIdentitas.values.forEach(row => {
-            if (row[0]) sekolahObj[row[0].trim()] = row[1] ? row[1].trim() : '';
-          });
-        }
-
-        // 4. Matriks Parsing - Tab Data Siswa (Horizontal, Cari Berdasarkan NISN di Kolom C / Indeks 2)
-        if (!responSiswa.values) throw new Error("Sheet database 'data_siswa' kosong.");
-        const dataSiswaRow = responSiswa.values.find(row => row[2] === nisnTarget);
-        if (!dataSiswaRow) throw new Error(`Siswa dengan NISN ${nisnTarget} tidak ditemukan di database sekolah.`);
-
-        // 5. Matriks Parsing - Tab Rapor Siswa (Horizontal, Cari Berdasarkan NISN di Kolom B / Indeks 1)
-        if (!responRapor.values) throw new Error("Sheet nilai 'rapor_siswa' kosong.");
-        const raporRow = responRapor.values.find(row => row[1] === nisnTarget);
-        if (!raporRow) throw new Error(`Data nilai rapor untuk NISN ${nisnTarget} belum diisi oleh guru.`);
-
-        // 6. Restrukturisasi Data ke Format 'Bundle' Agar Sesuai dengan Fungsi Render Asli Anda
-        const bundle = {
-          profil: {
-            nama: dataSiswaRow[3], // Kolom D (Nama Siswa)
-            nis: dataSiswaRow[1],  // Kolom B (NIS)
-            nisn: dataSiswaRow[2], // Kolom C (NISN)
-            kelas: sekolahObj['Kelas'] || '-',
-            fase:  sekolahObj['Fase'] || '-',
-            semester: sekolahObj['Semester'] || '-'
-          },
-          sekolah: {
-            nama_sekolah: sekolahObj['Nama Sekolah'] || '-',
-            alamat: sekolahObj['Alamat Sekolah'] || '-',
-            tp: sekolahObj['Tahun Pelajaran'] || '-'
-          },
-          // Memisahkan Muatan Pelajaran Utama (Sesuai Urutan Kurikulum Merdeka SD)
-          payloadNilai: [
-            { no: 1, mapel: "Pendidikan Agama dan Budi Pekerti", nilai: raporRow[3], deskripsi: raporRow[4] },
-            { no: 2, mapel: "Pendidikan Pancasila", nilai: raporRow[7], deskripsi: raporRow[8] },
-            { no: 3, mapel: "Bahasa Indonesia", nilai: raporRow[5], deskripsi: raporRow[6] },
-            { no: 4, mapel: "Matematika", nilai: raporRow[9], deskripsi: raporRow[10] },
-            { no: 5, mapel: "Ilmu Pengetahuan Alam dan Sosial", nilai: raporRow[11], deskripsi: raporRow[12] },
-            { no: 6, mapel: "Pendidikan Jasmani, Olahraga dan Kesehatan", nilai: raporRow[15], deskripsi: raporRow[16] },
-            { no: 7, mapel: "Seni dan Budaya (Kesenian)", nilai: raporRow[13], deskripsi: raporRow[14] || '-' },
-            { no: 8, mapel: "Bahasa Inggris", nilai: raporRow[17], deskripsi: raporRow[18] }
-          ],
-          // Memisahkan Muatan Lokal (Bahasa Jawa & BTQ) ke Tabel B
-          payloadMulok: [
-            { no: 1, mapel: "Bahasa Jawa", nilai: raporRow[19], deskripsi: raporRow[20] },
-            { no: 2, mapel: "BTQ (Baca Tulis Al-Qur'an)", nilai: raporRow[21], deskripsi: raporRow[22] || '-' }
-          ],
-          // Mengambil Data Ekstrakurikuler Dinamis (Kolom X, Y, Z jika ada, atau fallback default)
-          ekstra: {
-            nama: raporRow[23] || "Pramuka Wajib",
-            predikat: raporRow[24] || "Baik",
-            keterangan: raporRow[25] || "Menunjukkan partisipasi aktif dalam kegiatan kepramukaan."
-          },
-          // Mengambil Data Absensi Berdasarkan Kolom Terakhir di Sheet rapor_siswa Anda
-          kehadiran: {
-            sakit: raporRow[26] || "0",
-            izin: raporRow[27] || "0",
-            alfa: raporRow[28] || "0"
-          },
-          ttd: {
-            tanggal_cetak: sekolahObj['Tempat/Tanggal Rapor'] || "Pasuruan, .........................",
-            guru_kelas: sekolahObj['Nama Guru Kelas'] || "-",
-            nip_guru: sekolahObj['NIP Guru Kelas'] || null,
-            kepala_sekolah: sekolahObj['Nama Kepala Sekolah'] || "-",
-            nip_kepala: sekolahObj['NIP Kepala Sekolah'] || null
-          }
-        };
-
-        // 7. Panggil Fungsi Utama Renderer Bawaan Anda Tanpa Ada Perubahan Layout HTML
-        renderBundleKeRapor(bundle);
+        // Jika status SUCCESS, kirim objek data ke fungsi render
+        renderDataKeRapor(resJson.data);
 
       } catch (err) {
         tampilkanPesanGagal(err.toString());
       }
     }
 
-    function renderBundleKeRapor(bundle) {
+    function renderDataKeRapor(data) {
+      // Sembunyikan loader, tampilkan core rapor
       document.getElementById('loader').classList.add('hidden');
       document.getElementById('coreRapor').classList.remove('hidden');
       
-      // 1. Injeksi Data Identitas Utama
-      document.getElementById('lblNama').innerText = bundle.profil.nama || "-";
-      document.getElementById('lblMurniNis').innerText = bundle.profil.nis || "-";
-      document.getElementById('lblMurniNisn').innerText = bundle.profil.nisn || "-";
-      document.getElementById('lblKelas').innerText = bundle.profil.kelas || "IV";
-      document.getElementById('lblFase').innerText = bundle.profil.fase || "B";
-      document.getElementById('lblSemester').innerText = bundle.profil.semester || "II";
+      // 1. Injeksi Data Sekolah di Header & Profil
+      document.getElementById('lblHeaderNamaSekolah').innerText = data.sekolah.nama_sekolah || "-";
+      document.getElementById('lblSekolah').innerText = data.sekolah.nama_sekolah || "-";
+      document.getElementById('lblAlamat').innerText = data.sekolah.alamat || "-";
+      document.getElementById('lblTp').innerText = data.sekolah.tp || "-";
+
+      // 2. Injeksi Data Profil Siswa
+      document.getElementById('lblNama').innerText = data.profil.nama || "-";
+      document.getElementById('lblMurniNis').innerText = data.profil.nis || "-";
+      document.getElementById('lblMurniNisn').innerText = data.profil.nisn || "-";
+      document.getElementById('lblKelas').innerText = data.profil.kelas || "-";
+      document.getElementById('lblFase').innerText = data.profil.fase || "-";
+      document.getElementById('lblSemester').innerText = data.profil.semester || "-";
       
-      document.getElementById('lblSekolah').innerText = bundle.sekolah.nama_sekolah || "UPT SDN RANUKLINDUNGAN I";
-      document.getElementById('lblAlamat').innerText = bundle.sekolah.alamat || "Bandilan, Ranuklindungan";
-      document.getElementById('lblTp').innerText = bundle.sekolah.tp || "2025/2026";
-      
-      // 2. Render Tabel A: Muatan Pelajaran Utama
+      // 3. Render Tabel A: Muatan Pelajaran Utama
       const tbodyUtama = document.getElementById('bodyTabelRapor');
       tbodyUtama.innerHTML = "";
-      if (bundle.payloadNilai && bundle.payloadNilai.length > 0) {
-        bundle.payloadNilai.forEach(item => {
+      if (data.payloadNilai && data.payloadNilai.length > 0) {
+        data.payloadNilai.forEach(item => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td class="p-2 text-center font-semibold align-top">${item.no}</td>
             <td class="p-2 font-semibold align-top">${item.mapel}</td>
-            <td class="p-2 text-center font-bold text-sm align-top bg-slate-50">${item.nilai}</td>
-            <td class="p-2 text-justify leading-relaxed text-[11px] align-top whitespace-pre-line">${item.deskripsi}</td>
+            <td class="p-2 text-center font-bold text-sm align-top bg-slate-50">${item.nilai !== "" ? item.nilai : "-"}</td>
+            <td class="p-2 text-justify leading-relaxed text-[11px] align-top whitespace-pre-line">${item.deskripsi || "-"}</td>
           `;
           tbodyUtama.appendChild(tr);
         });
       }
 
-      // 3. Render Tabel B: Muatan Lokal
+      // 4. Render Tabel B: Muatan Lokal
       const tbodyMulok = document.getElementById('bodyTabelMulok');
       tbodyMulok.innerHTML = "";
-      if (bundle.payloadMulok && bundle.payloadMulok.length > 0) {
-        bundle.payloadMulok.forEach(item => {
+      if (data.payloadMulok && data.payloadMulok.length > 0) {
+        data.payloadMulok.forEach(item => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
             <td class="p-2 text-center font-semibold align-top">${item.no}</td>
             <td class="p-2 font-semibold align-top">${item.mapel}</td>
-            <td class="p-2 text-center font-bold text-sm align-top bg-slate-50">${item.nilai}</td>
-            <td class="p-2 text-justify leading-relaxed text-[11px] align-top whitespace-pre-line">${item.deskripsi}</td>
+            <td class="p-2 text-center font-bold text-sm align-top bg-slate-50">${item.nilai !== "" ? item.nilai : "-"}</td>
+            <td class="p-2 text-justify leading-relaxed text-[11px] align-top whitespace-pre-line">${item.deskripsi || "-"}</td>
           `;
           tbodyMulok.appendChild(tr);
         });
       }
 
-      // 4. Render Tabel C: Ekstrakurikuler
+      // 5. Render Tabel C: Ekstrakurikuler
       const tbodyEkstra = document.getElementById('bodyTabelEkstra');
       tbodyEkstra.innerHTML = "";
-      const namaEkskul = (bundle.ekstra && bundle.ekstra.nama) ? bundle.ekstra.nama : "Pramuka";
-      const predikatEkskul = (bundle.ekstra && bundle.ekstra.predikat) ? bundle.ekstra.predikat : "-";
-      const keteranganEkskul = (bundle.ekstra && bundle.ekstra.keterangan) ? bundle.ekstra.keterangan : "-";
-
-      const trEx = document.createElement('tr');
-      trEx.innerHTML = `
-        <td class="p-2 text-center font-semibold align-top">1</td>
-        <td class="p-2 font-semibold align-top">${namaEkskul}</td>
-        <td class="p-2 text-center font-bold text-sm align-top bg-slate-50">${predikatEkskul}</td>
-        <td class="p-2 text-justify leading-relaxed text-[11px] align-top whitespace-pre-line">${keteranganEkskul}</td>
-      `;
-      tbodyEkstra.appendChild(trEx);
-
-      // 5. Render Tabel D: Rekap Ketidakhadiran (Absensi)
-      if (bundle.kehadiran) {
-        document.getElementById('lblSakit').innerText = bundle.kehadiran.sakit !== "" ? bundle.kehadiran.sakit : "-";
-        document.getElementById('lblIzin').innerText = bundle.kehadiran.izin !== "" ? bundle.kehadiran.izin : "-";
-        document.getElementById('lblAlfa').innerText = bundle.kehadiran.alfa !== "" ? bundle.kehadiran.alfa : "-";
+      if (data.ekstra && data.ekstra.length > 0) {
+        data.ekstra.forEach(item => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="p-2 text-center font-semibold align-top">${item.no}</td>
+            <td class="p-2 font-semibold align-top">${item.nama}</td>
+            <td class="p-2 text-center font-bold text-sm align-top bg-slate-50">${item.predikat !== "" ? item.predikat : "-"}</td>
+            <td class="p-2 text-justify leading-relaxed text-[11px] align-top whitespace-pre-line">${item.keterangan || "-"}</td>
+          `;
+          tbodyEkstra.appendChild(tr);
+        });
+      } else {
+        tbodyEkstra.innerHTML = `<tr><td colspan="4" class="p-2 text-center text-slate-400 italic">Tidak mengikuti kegiatan ekstrakurikuler</td></tr>`;
       }
 
-      // 6. Injeksi Dinamis Blok Tanda Tangan Sesuai Request
-      if (bundle.ttd) {
-        document.getElementById('lblTempatTanggal').innerText = bundle.ttd.tanggal_cetak || "Pasuruan, .........................";
-        document.getElementById('lblNamaGuru').innerText = bundle.ttd.guru_kelas || "-";
-        document.getElementById('lblNipGuru').innerText = bundle.ttd.nip_guru ? "NIP. " + bundle.ttd.nip_guru : "NIP. ...........................";
-        document.getElementById('lblNamaKepsek').innerText = bundle.ttd.kepala_sekolah || "-";
-        document.getElementById('lblNipKepsek').innerText = bundle.ttd.nip_kepala ? "NIP. " + bundle.ttd.nip_kepala : "NIP. ...........................";
+      // 6. Render Tabel D: Rekap Ketidakhadiran (Absensi)
+      if (data.kehadiran) {
+        document.getElementById('lblSakit').innerText = data.kehadiran.sakit !== "" ? data.kehadiran.sakit : "0";
+        document.getElementById('lblIzin').innerText = data.kehadiran.izin !== "" ? data.kehadiran.izin : "0";
+        document.getElementById('lblAlfa').innerText = data.kehadiran.alfa !== "" ? data.kehadiran.alfa : "0";
       }
+
+      // 7. Injeksi Blok Tanda Tangan
+      if (data.ttd) {
+        document.getElementById('lblTempatTanggal').innerText = data.ttd.tanggal_cetak || "Pasuruan, .........................";
+        document.getElementById('lblNamaGuru').innerText = data.ttd.guru_kelas || "-";
+        document.getElementById('lblNipGuru').innerText = data.ttd.nip_guru ? "NIP. " + data.ttd.nip_guru : "NIP. ...........................";
+        document.getElementById('lblNamaKepsek').innerText = data.ttd.kepala_sekolah || "-";
+        document.getElementById('lblNipKepsek').innerText = data.ttd.nip_kepala ? "NIP. " + data.ttd.nip_kepala : "NIP. ...........................";
+      }
+    }
+
+    function tampilkanPesanKhusus(judul, subPesan, warna) {
+      const loader = document.getElementById('loader');
+      loader.removeAttribute('class');
+      loader.className = `text-center p-8 text-sm font-sans text-${warna}-600 font-bold bg-${warna}-50 rounded-xl border border-${warna}-200 m-5`;
+      loader.innerHTML = `${judul}<br><span class='font-normal text-xs text-slate-600 block my-2'>${subPesan}</span>`;
     }
 
     function tampilkanPesanGagal(pesanError) {
