@@ -112,6 +112,10 @@
                     <button id="btnKirimUh" onclick="eksekusiKirimUhExcel()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-extrabold shadow-md shadow-blue-900/50 transition active:scale-98 cursor-pointer">
                         <span>🚀</span> Kirim Berkas UH
                     </button>
+
+                    <button id="btnHitungRataUH" onclick="eksekusiKalkulasiRataRataUH()" class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold shadow-md shadow-emerald-900/50 transition active:scale-98 cursor-pointer mt-2">
+                        <span>📊</span> Kirim Nilai Rata-rata UH
+                    </button>
                 </div>
 
                 <div class="bg-slate-900 rounded-3xl p-5 shadow-xl border border-slate-800 space-y-4">
@@ -151,7 +155,7 @@
                 </div>
             </section>
 
-            <section class="lg:col-span-7 bg-slate-900 rounded-3xl shadow-xl border border-slate-800 overflow-hidden flex flex-col h-[575px]">
+            <section class="lg:col-span-7 bg-slate-900 rounded-3xl shadow-xl border border-slate-800 overflow-hidden flex flex-col h-[635px]">
                 
                 <div class="p-4 bg-slate-950/40 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
                     <div>
@@ -237,378 +241,405 @@
 
     <script>
         // =========================================================================
-// SINKRONISASI SESI SEKOLAH BERBASIS URL PARAMETER & LOCALSTORAGE
-// =========================================================================
-function sinkronisasiNamaSekolahSesi() {
-    const elemenNamaSekolah = document.getElementById('namaSekolahHeader');
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const namaSekolahUrl = urlParams.get('namaSekolah');
-    const raporIdUrl = urlParams.get('raporId');
-    const dbIdUrl = urlParams.get('dbId');
-
-    if (namaSekolahUrl && namaSekolahUrl !== "undefined" && namaSekolahUrl !== "null") {
-        localStorage.setItem('namaSekolahAktif', decodeURIComponent(namaSekolahUrl));
-    }
-    if (raporIdUrl && raporIdUrl !== "undefined" && raporIdUrl !== "null") {
-        localStorage.setItem('raporIdAktif', raporIdUrl);
-    }
-    if (dbIdUrl && dbIdUrl !== "undefined" && dbIdUrl !== "null") {
-        localStorage.setItem('dbIdAktif', dbIdUrl);
-    }
-
-    const namaSekolahFinal = localStorage.getItem('namaSekolahAktif');
-    
-    if (namaSekolahFinal && namaSekolahFinal !== "undefined" && namaSekolahFinal !== "null") {
-        elemenNamaSekolah.innerText = namaSekolahFinal;
-    } else {
-        elemenNamaSekolah.innerText = "UPT SDN Ranuklindungan I";
-        localStorage.setItem('namaSekolahAktif', "UPT SDN Ranuklindungan I");
-    }
-}
-
-// Helper untuk mendeteksi NPSN dari string nama file
-function ekstrakNpsnDariNamaFile(namaFile) {
-    const match = namaFile.match(/^\d+/);
-    return match ? match[0] : "";
-}
-
-// =========================================================================
-// FITUR SINKRONISASI FILE 1: VALIDASI & TRANSMISI EXCEL SUMATIF HARIAN (UH) - FIXED
-// =========================================================================
-function validasiPilihFileUh() {
-    const input = document.getElementById('fileExcelUH');
-    const label = document.getElementById('labelNamaFileUh');
-    const box = document.getElementById('boxDropUh');
-    if (input.files.length === 0) return;
-    
-    const namaFile = input.files[0].name;
-    const ext = namaFile.split('.').pop().toLowerCase();
-    
-    if (ext !== 'xlsx' && ext !== 'xls') {
-        alert("🚨 FORMAT BERKAS DITOLAK:\nWajib mengunggah dokumen spreadsheet berformat Microsoft Excel (.xlsx / .xls)");
-        input.value = "";
-        return;
-    }
-
-    const npsnFile = ekstrakNpsnDariNamaFile(namaFile);
-    if (!npsnFile) {
-        alert("🚨 NAMA BERKAS SALAH:\nNama file Excel UH harus diawali dengan nomor NPSN Lembaga Anda! Contoh: 20518953_uh_siswa.xlsx");
-        input.value = "";
-        return;
-    }
-
-    label.innerText = `✅ Berkas UH Siap: ${namaFile}`;
-    label.className = "text-xs font-bold text-blue-400";
-    box.className = "flex flex-col items-center justify-center border-2 border-dashed border-blue-500 bg-blue-950/20 rounded-2xl p-4 text-center relative";
-}
-
-function eksekusiKirimUhExcel() {
-    const input = document.getElementById('fileExcelUH');
-    const btn = document.getElementById('btnKirimUh');
-    if (input.files.length === 0) {
-        alert("Silakan pilih file dokumen Excel UH terisi Anda terlebih dahulu.");
-        return;
-    }
-
-    const file = input.files[0];
-    btn.disabled = true;
-    btn.innerHTML = `<span>⏳</span> <span>Mentransmisikan Berkas UH...</span>`;
-
-    const reader = new FileReader();
-    
-    reader.onload = async function(e) {
-        try {
-            const arrayBuffer = e.target.result;
-            const bytes = new Uint8Array(arrayBuffer);
-            let binaryString = "";
-            for (let i = 0; i < bytes.byteLength; i++) {
-                binaryString += String.fromCharCode(bytes[i]);
-            }
-            const base64Data = btoa(binaryString);
+        // SINKRONISASI SESI SEKOLAH BERBASIS URL PARAMETER & LOCALSTORAGE
+        // =========================================================================
+        function sinkronisasiNamaSekolahSesi() {
+            const elemenNamaSekolah = document.getElementById('namaSekolahHeader');
             
-            // 1. Deteksi NPSN secara lokal dari nama file yang diunggah guru
-            const npsnMurni = ekstrakNpsnDariNamaFile(file.name);
+            const urlParams = new URLSearchParams(window.location.search);
+            const namaSekolahUrl = urlParams.get('namaSekolah');
+            const raporIdUrl = urlParams.get('raporId');
+            const dbIdUrl = urlParams.get('dbId');
 
-            const payloadData = {
-                action: "upload_uh_tp",
-                fileName: file.name,
-                fileData: base64Data
-            };
+            if (namaSekolahUrl && namaSekolahUrl !== "undefined" && namaSekolahUrl !== "null") {
+                localStorage.setItem('namaSekolahAktif', decodeURIComponent(namaSekolahUrl));
+            }
+            if (raporIdUrl && raporIdUrl !== "undefined" && raporIdUrl !== "null") {
+                localStorage.setItem('raporIdAktif', raporIdUrl);
+            }
+            if (dbIdUrl && dbIdUrl !== "undefined" && dbIdUrl !== "null") {
+                localStorage.setItem('dbIdAktif', dbIdUrl);
+            }
 
-            const response = await fetch(API_SHEET_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(payloadData)
-            });
+            const namaSekolahFinal = localStorage.getItem('namaSekolahAktif');
             
-            const textResponse = await response.text();
-            const result = JSON.parse(textResponse);
+            if (namaSekolahFinal && namaSekolahFinal !== "undefined" && namaSekolahFinal !== "null") {
+                elemenNamaSekolah.innerText = namaSekolahFinal;
+            } else {
+                elemenNamaSekolah.innerText = "UPT SDN Ranuklindungan I";
+                localStorage.setItem('namaSekolahAktif', "UPT SDN Ranuklindungan I");
+            }
+        }
 
-            if (result.status === "SUCCESS") {
-                // =========================================================================
-                // LOGIKA PINTAR: Mengambil data lokal agar terbebas dari error 'undefined'
-                // =========================================================================
-                const namaSekolahAktif = localStorage.getItem('namaSekolahAktif') || "UPT SDN Ranuklindungan I";
-                const npsnFinal = npsnMurni || "Terdeteksi";
-                
-                // Jika backend mengirimkan total_siswa gunakan itu, jika tidak tampilkan pesan sukses umum
-                const infoSiswa = (result.total_siswa || result.totalSiswa) ? `${result.total_siswa || result.totalSiswa} anak` : "Seluruh siswa";
+        // Helper untuk mendeteksi NPSN dari string nama file
+        function ekstrakNpsnDariNamaFile(namaFile) {
+            const match = namaFile.match(/^\d+/);
+            return match ? match[0] : "";
+        }
 
-                alert(`🎉 SINKRONISASI BERHASIL!\n\nLembaga: ${namaSekolahAktif}\nNPSN Terdeteksi: ${npsnFinal}\nStatus: ${infoSiswa} berhasil diperbarui di database utama.`);
-                
+        // =========================================================================
+        // FITUR SINKRONISASI FILE 1: VALIDASI & TRANSMISI EXCEL SUMATIF HARIAN (UH)
+        // =========================================================================
+        function validasiPilihFileUh() {
+            const input = document.getElementById('fileExcelUH');
+            const label = document.getElementById('labelNamaFileUh');
+            const box = document.getElementById('boxDropUh');
+            if (input.files.length === 0) return;
+            
+            const namaFile = input.files[0].name;
+            const ext = namaFile.split('.').pop().toLowerCase();
+            
+            if (ext !== 'xlsx' && ext !== 'xls') {
+                alert("🚨 FORMAT BERKAS DITOLAK:\nWajib mengunggah dokumen spreadsheet berformat Microsoft Excel (.xlsx / .xls)");
                 input.value = "";
-                document.getElementById('labelNamaFileUh').innerText = "Pilih file Excel dari gawai Anda";
-                document.getElementById('labelNamaFileUh').className = "text-xs font-bold text-slate-300";
-                document.getElementById('boxDropUh').className = "flex flex-col items-center justify-center border-2 border-dashed border-slate-800 bg-slate-950/50 rounded-2xl p-4 text-center hover:bg-slate-800/40 transition relative";
-            } else {
-                alert(`❌ GAGAL TRANSMISI PUSAT:\n\n${result.message}`);
+                return;
             }
 
-        } catch (error) {
-            console.error("Detail Error Integrasi UH:", error);
-            alert("Terjadi kesalahan teknis saat enkripsi transmisi berkas UH atau koneksi cloud terputus.");
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = `<span>🚀</span> <span>Kirim Berkas UH</span>`;
-        }
-    };
-
-    reader.readAsArrayBuffer(file);
-}
-
-// =========================================================================
-// FITUR SINKRONISASI FILE 2: VALIDASI & TRANSMISI EXCEL ASAS + TP
-// =========================================================================
-function validasiPilihFileAsas() {
-    const input = document.getElementById('fileExcelASAS');
-    const label = document.getElementById('labelNamaFileAsas');
-    const box = document.getElementById('boxDropAsas');
-    if (input.files.length === 0) return;
-    
-    const namaFile = input.files[0].name;
-    const npsnFile = ekstrakNpsnDariNamaFile(namaFile);
-
-    if (!npsnFile) {
-        alert(`🚨 PENOLAKAN UNGGAH ASAS:\nNama berkas wajib menggunakan nomor NPSN diawal kata.\nContoh format: NPSN-TP-Kelas-IV.xlsx`);
-        input.value = "";
-        return;
-    }
-    
-    label.innerText = `✅ Berkas ASAS Valid: ${namaFile}`;
-    label.className = "text-xs font-bold text-emerald-400";
-    box.className = "flex flex-col items-center justify-center border-2 border-dashed border-emerald-500 bg-emerald-950/20 rounded-2xl p-4 text-center relative";
-}
-
-function eksekusiKirimAsasExcel() {
-    const input = document.getElementById('fileExcelASAS');
-    const btn = document.getElementById('btnKirimAsas');
-    if (input.files.length === 0) {
-        alert("Silakan tentukan file Excel rekapitulasi ASAS lembaga Anda terlebih dahulu.");
-        return;
-    }
-
-    const file = input.files[0];
-    const reader = new FileReader();
-    btn.disabled = true;
-    btn.innerHTML = `<span>⏳</span> <span>Mentransmisikan Data Kompetensi...</span>`;
-
-    reader.onload = async function(e) {
-        try {
-            const arrayBuffer = e.target.result;
-            const bytes = new Uint8Array(arrayBuffer);
-            let binaryString = "";
-            for (let i = 0; i < bytes.byteLength; i++) {
-                binaryString += String.fromCharCode(bytes[i]);
-            }
-            const base64Data = btoa(binaryString);
-            const npsnMurni = ekstrakNpsnDariNamaFile(file.name);
-
-            const payloadData = {
-                action: "upload_asas_tp",
-                fileName: file.name, 
-                fileData: base64Data,
-                raporId: localStorage.getItem('raporIdAktif') || new URLSearchParams(window.location.search).get('raporId') || ""
-            };
-
-            const response = await fetch(API_SHEET_URL, {
-                method: "POST",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(payloadData)
-            });
-            const textResponse = await response.text();
-            const result = JSON.parse(textResponse);
-
-            if (result.status === "SUCCESS") {
-                alert(`🎉 SUKSES TRANSKRIP ASAS!\n\nLembaga: ${result.nama_sekolah}\nTotal Siswa: ${result.total_siswa} anak.\n\n${result.message}`);
+            const npsnFile = ekstrakNpsnDariNamaFile(namaFile);
+            if (!npsnFile) {
+                alert("🚨 NAMA BERKAS SALAH:\nNama file Excel UH harus diawali dengan nomor NPSN Lembaga Anda! Contoh: 20518953_uh_siswa.xlsx");
                 input.value = "";
-                document.getElementById('labelNamaFileAsas').innerText = "Pilih file Excel dari gawai Anda";
-                document.getElementById('labelNamaFileAsas').className = "text-xs font-bold text-slate-300";
-                document.getElementById('boxDropAsas').className = "flex flex-col items-center justify-center border-2 border-dashed border-slate-800 bg-slate-950/50 rounded-2xl p-4 text-center hover:bg-slate-800/40 transition relative";
-                muatDataTpDariCloud();
-            } else {
-                alert(`❌ GAGAL INTEGRASI PUSAT:\n\n${result.message}`);
+                return;
             }
-        } catch (error) {
-            console.error("Detail Error ASAS:", error);
-            alert("Koneksi cloud terganggu atau format respons tidak dikenali saat sinkronisasi berkas ASAS.");
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = `<span>🚀</span> <span>Kirim Berkas ASAS</span>`;
+
+            label.innerText = `✅ Berkas UH Siap: ${namaFile}`;
+            label.className = "text-xs font-bold text-blue-400";
+            box.className = "flex flex-col items-center justify-center border-2 border-dashed border-blue-500 bg-blue-950/20 rounded-2xl p-4 text-center relative";
         }
-    };
-    reader.readAsArrayBuffer(file);
-}
 
-// =========================================================================
-// MENGAMBIL DATA TUJUAN PEMBELAJARAN (TP) UNTUK TABEL SISI KANAN
-// =========================================================================
-async function muatDataTpDariCloud() {
-    const tbody = document.getElementById('tableBodyTp');
-    const idRaporTarget = localStorage.getItem('raporIdAktif') || new URLSearchParams(window.location.search).get('raporId') || "";
-    
-    if (!idRaporTarget) {
-        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-amber-400 font-medium">Sesi Rapor ID kosong. Buka kembali halaman dari hub utama.</td></tr>`;
-        return;
-    }
+        function eksekusiKirimUhExcel() {
+            const input = document.getElementById('fileExcelUH');
+            const btn = document.getElementById('btnKirimUh');
+            if (input.files.length === 0) {
+                alert("Silakan pilih file dokumen Excel UH terisi Anda terlebih dahulu.");
+                return;
+            }
 
-    try {
-        const response = await fetch(`${API_SHEET_URL}?action=getPreviewTab&tabName=tp&targetId=${idRaporTarget}`);
-        const res = await response.json();
-        
-        if (res.status === "SUCCESS" && res.data && res.data.length > 0) {
-            databaseLokalTp = res.data;
-            filterDataTabelTp();
-        } else {
-            tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500 italic">Tidak ada entri data tujuan pembelajaran di sheet "tp".</td></tr>`;
-        }
-    } catch (err) {
-        console.error("Gagal muat data TP:", err);
-        tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-400 font-semibold">Gagal memuat pratinjau otomatis dari cloud.</td></tr>`;
-    }
-}
+            const file = input.files[0];
+            btn.disabled = true;
+            btn.innerHTML = `<span>⏳</span> <span>Mentransmisikan Berkas UH...</span>`;
 
-function filterDataTabelTp() {
-    const filterValue = document.getElementById('selectFilterMapel').value;
-    const tbody = document.getElementById('tableBodyTp');
-    tbody.innerHTML = "";
+            const reader = new FileReader();
+            
+            reader.onload = async function(e) {
+                try {
+                    const arrayBuffer = e.target.result;
+                    const bytes = new Uint8Array(arrayBuffer);
+                    let binaryString = "";
+                    for (let i = 0; i < bytes.byteLength; i++) {
+                        binaryString += String.fromCharCode(bytes[i]);
+                    }
+                    const base64Data = btoa(binaryString);
+                    const npsnMurni = ekstrakNpsnDariNamaFile(file.name);
 
-    let nomorUrut = 1;
-    databaseLokalTp.forEach(row => {
-        const mapelRow = row[2] ? row[2].toString().trim().toUpperCase() : "";
-        const filterMatch = filterValue === "all" || mapelRow.includes(filterValue.toUpperCase());
+                    const payloadData = {
+                        action: "upload_excel_uh",
+                        fileName: file.name,
+                        fileData: base64Data
+                    };
 
-        if (filterMatch) {
-            const tr = document.createElement('tr');
-            tr.className = "hover:bg-slate-800/40 transition-colors border-b border-slate-800/50";
-            tr.innerHTML = `
-                <td class="p-3 text-center font-mono text-slate-500">${nomorUrut++}</td>
-                <td class="p-3 font-bold text-blue-400 font-mono">${row[1] || '-'}</td>
-                <td class="p-3 font-semibold text-slate-300">${row[2] || '-'}</td>
-                <td class="p-3 text-slate-400 pr-4 max-w-xs truncate">${row[3] || '-'}</td>
-            `;
-            tbody.appendChild(tr);
-        }
-    });
-
-    if (tbody.children.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-500 italic">Tidak ada data kompetensi yang cocok dengan filter ini.</td></tr>`;
-    }
-}
-
-// =========================================================================
-// KOORDINASI PREVIEW MODAL WIDE (UNTUK TOMBOL DATABASE MODUL)
-// =========================================================================
-async function bukaPreviewTab(namaTab) {
-    const modal = document.getElementById('modalPreviewTab');
-    const content = document.getElementById('modalContent');
-    const title = document.getElementById('modalTitle');
-    const subtitle = document.getElementById('modalSubtitle');
-    const loading = document.getElementById('modalLoading');
-    const wrapper = document.getElementById('modalTableWrapper');
-    const emptyNotice = document.getElementById('modalEmptyNotice');
-    const tHead = document.getElementById('modalTableHead');
-    const tBody = document.getElementById('modalTableBody');
-
-    modal.classList.remove('hidden');
-    setTimeout(() => {
-        modal.classList.remove('opacity-0', 'pointer-events-none');
-        content.classList.remove('scale-95', 'opacity-0');
-        content.classList.add('scale-100', 'opacity-100');
-    }, 25);
-
-    title.innerText = `Pratinjau Lembar Dokumen Database: ${namaTab.toUpperCase()}`;
-    subtitle.innerText = "Menghubungkan ke API Gateway...";
-    loading.classList.remove('hidden');
-    wrapper.classList.add('hidden');
-    emptyNotice.classList.add('hidden');
-    tHead.innerHTML = ''; tBody.innerHTML = '';
-
-    try {
-        const idUrlFallback = new URLSearchParams(window.location.search);
-        const idSesiTarget = localStorage.getItem('raporIdAktif') || idUrlFallback.get('raporId') || "";
-
-        const responServer = await fetch(`${API_SHEET_URL}?action=getPreviewTab&tabName=${namaTab}&targetId=${idSesiTarget}`);
-        const dataJson = await responServer.json();
-        loading.classList.add('hidden');
-
-        if (dataJson.status === "SUCCESS") {
-            subtitle.innerText = `Total Data Tersimpan: ${dataJson.totalBaris || 0} Entri Baris`;
-            if (!dataJson.data || dataJson.data.length === 0) {
-                emptyNotice.classList.remove('hidden');
-            } else {
-                let barisHeaderHtml = '<tr>';
-                if (dataJson.headers && dataJson.headers.length > 0) {
-                    dataJson.headers.forEach(headKolom => {
-                        barisHeaderHtml += `<th class="px-4 py-2.5 border-b border-slate-800 font-bold bg-slate-950 text-slate-300 text-xs">${headKolom}</th>`;
+                    const response = await fetch(API_SHEET_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        body: JSON.stringify(payloadData)
                     });
+                    
+                    const textResponse = await response.text();
+                    const result = JSON.parse(textResponse);
+
+                    if (result.status === "SUCCESS") {
+                        const namaSekolahAktif = localStorage.getItem('namaSekolahAktif') || "UPT SDN Ranuklindungan I";
+                        const npsnFinal = npsnMurni || "Terdeteksi";
+                        const infoSiswa = (result.total_siswa || result.totalSiswa) ? `${result.total_siswa || result.totalSiswa} anak` : "Seluruh siswa";
+
+                        alert(`🎉 SINKRONISASI BERHASIL!\n\nLembaga: ${namaSekolahAktif}\nNPSN Terdeteksi: ${npsnFinal}\nStatus: Berhasil memperbarui data di database lokal.`);
+                        
+                        input.value = "";
+                        document.getElementById('labelNamaFileUh').innerText = "Pilih file Excel dari gawai Anda";
+                        document.getElementById('labelNamaFileUh').className = "text-xs font-bold text-slate-300";
+                        document.getElementById('boxDropUh').className = "flex flex-col items-center justify-center border-2 border-dashed border-slate-800 bg-slate-950/50 rounded-2xl p-4 text-center hover:bg-slate-800/40 transition relative";
+                    } else {
+                        alert(`❌ GAGAL TRANSMISI PUSAT:\n\n${result.message}`);
+                    }
+
+                } catch (error) {
+                    console.error("Detail Error Integrasi UH:", error);
+                    alert("Terjadi kesalahan teknis saat enkripsi transmisi berkas UH atau koneksi cloud terputus.");
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = `<span>🚀</span> <span>Kirim Berkas UH</span>`;
                 }
-                barisHeaderHtml += '</tr>';
-                tHead.innerHTML = barisHeaderHtml;
+            };
 
-                let barisDataHtml = '';
-                dataJson.data.forEach(itemBaris => {
-                    barisDataHtml += '<tr class="hover:bg-slate-800/50 transition-colors border-b border-slate-800/60">';
-                    itemBaris.forEach(itemSel => {
-                        let isiSel = (itemSel !== null && itemSel !== undefined && itemSel !== "") ? itemSel : "-";
-                        barisDataHtml += `<td class="px-4 py-2 max-w-[150px] truncate">${isiSel}</td>`;
-                    });
-                    barisDataHtml += '</tr>';
+            reader.readAsArrayBuffer(file);
+        }
+
+        // =========================================================================
+        // FITUR BARU: TRIGGER HITUNG DAN EKSPOR RATA-RATA UH KE REKAP_HARIAN RAPOR PUSAT
+        // =========================================================================
+        async function eksekusiKalkulasiRataRataUH() {
+            const btn = document.getElementById('btnHitungRataUH');
+            btn.disabled = true;
+            btn.innerHTML = `<span>⏳</span> <span>Mengkalkulasi & Mengekspor...</span>`;
+
+            try {
+                const payloadData = {
+                    tipe: "hitung_dan_kirim_total"
+                };
+
+                const response = await fetch(API_SHEET_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(payloadData)
                 });
-                tBody.innerHTML = barisDataHtml;
+
+                const textResponse = await response.text();
+                const result = JSON.parse(textResponse);
+
+                if (result.status === "SUCCESS") {
+                    alert(`🎉 BERHASIL!\n\n${result.message}`);
+                } else {
+                    alert(`❌ GAGAL PROSES SERVER:\n\n${result.message}`);
+                }
+            } catch (error) {
+                console.error("Error Hitung Rata-Rata:", error);
+                alert("Terjadi gangguan jaringan atau kegagalan kompilasi rumus harian di cloud server.");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<span>📊</span> <span>Kirim Nilai Rata-rata UH</span>`;
+            }
+        }
+
+        // =========================================================================
+        // FITUR SINKRONISASI FILE 2: VALIDASI & TRANSMISI EXCEL ASAS + TP
+        // =========================================================================
+        function validasiPilihFileAsas() {
+            const input = document.getElementById('fileExcelASAS');
+            const label = document.getElementById('labelNamaFileAsas');
+            const box = document.getElementById('boxDropAsas');
+            if (input.files.length === 0) return;
+            
+            const namaFile = input.files[0].name;
+            const npsnFile = ekstrakNpsnDariNamaFile(namaFile);
+
+            if (!npsnFile) {
+                alert(`🚨 PENOLAKAN UNGGAH ASAS:\nNama berkas wajib menggunakan nomor NPSN diawal kata.\nContoh format: NPSN-TP-Kelas-IV.xlsx`);
+                input.value = "";
+                return;
+            }
+            
+            label.innerText = `✅ Berkas ASAS Valid: ${namaFile}`;
+            label.className = "text-xs font-bold text-emerald-400";
+            box.className = "flex flex-col items-center justify-center border-2 border-dashed border-emerald-500 bg-emerald-950/20 rounded-2xl p-4 text-center relative";
+        }
+
+        function eksekusiKirimAsasExcel() {
+            const input = document.getElementById('fileExcelASAS');
+            const btn = document.getElementById('btnKirimAsas');
+            if (input.files.length === 0) {
+                alert("Silakan tentukan file Excel rekapitulasi ASAS lembaga Anda terlebih dahulu.");
+                return;
+            }
+
+            const file = input.files[0];
+            const reader = new FileReader();
+            btn.disabled = true;
+            btn.innerHTML = `<span>⏳</span> <span>Mentransmisikan Data Kompetensi...</span>`;
+
+            reader.onload = async function(e) {
+                try {
+                    const arrayBuffer = e.target.result;
+                    const bytes = new Uint8Array(arrayBuffer);
+                    let binaryString = "";
+                    for (let i = 0; i < bytes.byteLength; i++) {
+                        binaryString += String.fromCharCode(bytes[i]);
+                    }
+                    const base64Data = btoa(binaryString);
+
+                    const payloadData = {
+                        tipe: "upload_asas_tp",
+                        fileName: file.name, 
+                        fileData: base64Data
+                    };
+
+                    const response = await fetch(API_SHEET_URL, {
+                        method: "POST",
+                        headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        body: JSON.stringify(payloadData)
+                    });
+                    const textResponse = await response.text();
+                    const result = JSON.parse(textResponse);
+
+                    if (result.status === "SUCCESS") {
+                        alert(`🎉 SUKSES TRANSKRIP ASAS!\n\n${result.message}`);
+                        input.value = "";
+                        document.getElementById('labelNamaFileAsas').innerText = "Pilih file Excel dari gawai Anda";
+                        document.getElementById('labelNamaFileAsas').className = "text-xs font-bold text-slate-300";
+                        document.getElementById('boxDropAsas').className = "flex flex-col items-center justify-center border-2 border-dashed border-slate-800 bg-slate-950/50 rounded-2xl p-4 text-center hover:bg-slate-800/40 transition relative";
+                        muatDataTpDariCloud();
+                    } else {
+                        alert(`❌ GAGAL INTEGRASI PUSAT:\n\n${result.message}`);
+                    }
+                } catch (error) {
+                    console.error("Detail Error ASAS:", error);
+                    alert("Koneksi cloud terganggu atau format respons tidak dikenali saat sinkronisasi berkas ASAS.");
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = `<span>🚀</span> <span>Kirim Berkas ASAS</span>`;
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // =========================================================================
+        // MENGAMBIL DATA TUJUAN PEMBELAJARAN (TP) UNTUK TABEL SISI KANAN
+        // =========================================================================
+        async function muatDataTpDariCloud() {
+            const tbody = document.getElementById('tableBodyTp');
+            const idRaporTarget = localStorage.getItem('raporIdAktif') || new URLSearchParams(window.location.search).get('raporId') || "";
+            
+            if (!idRaporTarget) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-amber-400 font-medium">Sesi Rapor ID kosong. Buka kembali halaman dari hub utama.</td></tr>`;
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_SHEET_URL}?action=getPreviewTab&tabName=tp&targetId=${idRaporTarget}`);
+                const res = await response.json();
+                
+                if (res.status === "SUCCESS" && res.data && res.data.length > 0) {
+                    databaseLokalTp = res.data;
+                    filterDataTabelTp();
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500 italic">Tidak ada entri data tujuan pembelajaran di sheet "tp".</td></tr>`;
+                }
+            } catch (err) {
+                console.error("Gagal muat data TP:", err);
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-400 font-semibold">Gagal memuat pratinjau otomatis dari cloud.</td></tr>`;
+            }
+        }
+
+        function filterDataTabelTp() {
+            const filterValue = document.getElementById('selectFilterMapel').value;
+            const tbody = document.getElementById('tableBodyTp');
+            tbody.innerHTML = "";
+
+            let nomorUrut = 1;
+            databaseLokalTp.forEach(row => {
+                const mapelRow = row[2] ? row[2].toString().trim().toUpperCase() : "";
+                const filterMatch = filterValue === "all" || mapelRow.includes(filterValue.toUpperCase());
+
+                if (filterMatch) {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-800/40 transition-colors border-b border-slate-800/50";
+                    tr.innerHTML = `
+                        <td class="p-3 text-center font-mono text-slate-500">${nomorUrut++}</td>
+                        <td class="p-3 font-bold text-blue-400 font-mono">${row[1] || '-'}</td>
+                        <td class="p-3 font-semibold text-slate-300">${row[2] || '-'}</td>
+                        <td class="p-3 text-slate-400 pr-4 max-w-xs truncate">${row[3] || '-'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            });
+
+            if (tbody.children.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-500 italic">Tidak ada data kompetensi yang cocok dengan filter ini.</td></tr>`;
+            }
+        }
+
+        // =========================================================================
+        // KOORDINASI PREVIEW MODAL WIDE (UNTUK TOMBOL DATABASE MODUL)
+        // =========================================================================
+        async function bukaPreviewTab(namaTab) {
+            const modal = document.getElementById('modalPreviewTab');
+            const content = document.getElementById('modalContent');
+            const title = document.getElementById('modalTitle');
+            const subtitle = document.getElementById('modalSubtitle');
+            const loading = document.getElementById('modalLoading');
+            const wrapper = document.getElementById('modalTableWrapper');
+            const emptyNotice = document.getElementById('modalEmptyNotice');
+            const tHead = document.getElementById('modalTableHead');
+            const tBody = document.getElementById('modalTableBody');
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 25);
+
+            title.innerText = `Pratinjau Lembar Dokumen Database: ${namaTab.toUpperCase()}`;
+            subtitle.innerText = "Menghubungkan ke API Gateway...";
+            loading.classList.remove('hidden');
+            wrapper.classList.add('hidden');
+            emptyNotice.classList.add('hidden');
+            tHead.innerHTML = ''; tBody.innerHTML = '';
+
+            try {
+                const idUrlFallback = new URLSearchParams(window.location.search);
+                const idSesiTarget = localStorage.getItem('raporIdAktif') || idUrlFallback.get('raporId') || "";
+
+                const responServer = await fetch(`${API_SHEET_URL}?action=getPreviewTab&tabName=${namaTab}&targetId=${idSesiTarget}`);
+                const dataJson = await responServer.json();
+                loading.classList.add('hidden');
+
+                if (dataJson.status === "SUCCESS") {
+                    subtitle.innerText = `Total Data Tersimpan: ${dataJson.totalBaris || 0} Entri Baris`;
+                    if (!dataJson.data || dataJson.data.length === 0) {
+                        emptyNotice.classList.remove('hidden');
+                    } else {
+                        let barisHeaderHtml = '<tr>';
+                        if (dataJson.headers && dataJson.headers.length > 0) {
+                            dataJson.headers.forEach(headKolom => {
+                                barisHeaderHtml += `<th class="px-4 py-2.5 border-b border-slate-800 font-bold bg-slate-950 text-slate-300 text-xs">${headKolom}</th>`;
+                            });
+                        }
+                        barisHeaderHtml += '</tr>';
+                        tHead.innerHTML = barisHeaderHtml;
+
+                        let barisDataHtml = '';
+                        dataJson.data.forEach(itemBaris => {
+                            barisDataHtml += '<tr class="hover:bg-slate-800/50 transition-colors border-b border-slate-800/60">';
+                            itemBaris.forEach(itemSel => {
+                                let isiSel = (itemSel !== null && itemSel !== undefined && itemSel !== "") ? itemSel : "-";
+                                barisDataHtml += `<td class="px-4 py-2 max-w-[150px] truncate">${isiSel}</td>`;
+                            });
+                            barisDataHtml += '</tr>';
+                        });
+                        tBody.innerHTML = barisDataHtml;
+                        wrapper.classList.remove('hidden');
+                    }
+                } else {
+                    subtitle.innerText = "Gagal memproses permintaan server.";
+                    tBody.innerHTML = `<tr><td class="px-4 py-8 text-center text-red-400 font-bold italic">${dataJson.message}</td></tr>`;
+                    wrapper.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error("Detail Error Preview:", err);
+                loading.classList.add('hidden');
+                subtitle.innerText = "Koneksi terputus.";
+                tBody.innerHTML = `<tr><td class="px-4 py-8 text-center text-red-400 font-bold text-xs">Gagal tersambung dengan server cloud.</td></tr>`;
                 wrapper.classList.remove('hidden');
             }
-        } else {
-            subtitle.innerText = "Gagal memproses permintaan server.";
-            tBody.innerHTML = `<tr><td class="px-4 py-8 text-center text-red-400 font-bold italic">${dataJson.message}</td></tr>`;
-            wrapper.classList.remove('hidden');
         }
-    } catch (err) {
-        console.error("Detail Error Preview:", err);
-        loading.classList.add('hidden');
-        subtitle.innerText = "Koneksi terputus.";
-        tBody.innerHTML = `<tr><td class="px-4 py-8 text-center text-red-400 font-bold text-xs">Gagal tersambung dengan server cloud.</td></tr>`;
-        wrapper.classList.remove('hidden');
-    }
-}
 
-function tutupModalPreview() {
-    const modal = document.getElementById('modalPreviewTab');
-    const content = document.getElementById('modalContent');
-    content.classList.remove('scale-100', 'opacity-100');
-    content.classList.add('scale-95', 'opacity-0');
-    modal.classList.add('opacity-0', 'pointer-events-none');
-    setTimeout(() => { modal.classList.add('hidden'); }, 180);
-}
+        function tutupModalPreview() {
+            const modal = document.getElementById('modalPreviewTab');
+            const content = document.getElementById('modalContent');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            setTimeout(() => { modal.classList.add('hidden'); }, 180);
+        }
 
-window.onclick = function(e) {
-    if (e.target === document.getElementById('modalPreviewTab')) tutupModalPreview();
-}
+        window.onclick = function(e) {
+            if (e.target === document.getElementById('modalPreviewTab')) tutupModalPreview();
+        }
 
-window.addEventListener('DOMContentLoaded', () => {
-    sinkronisasiNamaSekolahSesi();
-    muatDataTpDariCloud();
-});
+        window.addEventListener('DOMContentLoaded', () => {
+            sinkronisasiNamaSekolahSesi();
+            muatDataTpDariCloud();
+        });
     </script>
 </body>
 </html>
