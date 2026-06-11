@@ -22,8 +22,8 @@
             </div>
             <div class="flex items-center gap-2 w-full md:w-auto">
                 <input type="number" id="inputNoAbsen" placeholder="No. Absen" class="w-full md:w-28 px-4 py-2.5 border border-slate-200 rounded-2xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <button id="btnAmbil" onclick="ambilNilaiSiswa()" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-2xl transition whitespace-nowrap">🔍 Ambil Data</button>
-                <button id="btnBuat" onclick="prosesBuatRapor()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-2xl shadow-sm transition whitespace-nowrap">⚡ Buat Rapor</button>
+                <button onclick="ambilNilaiSiswa()" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-2xl transition whitespace-nowrap">🔍 Ambil Data</button>
+                <button onclick="prosesBuatRapor()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-2xl shadow-sm transition whitespace-nowrap">⚡ Buat Rapor</button>
             </div>
         </div>
 
@@ -52,7 +52,7 @@
             <div class="text-xs space-y-2 text-emerald-800 font-medium">
                 <p><strong>Nama Siswa:</strong> <span id="outNamaSiswa" class="font-bold text-slate-900 uppercase">-</span></p>
                 <p><strong>Status Sinkronisasi:</strong> <span class="px-2 py-0.5 bg-white border border-emerald-300 font-bold rounded text-emerald-700">SUKSES</span></p>
-                <p class="text-[11px] text-emerald-600 pt-1 font-normal">Seluruh nilai tiap mata pelajaran telah dihitung berdasarkan rumus kombinasi <code class="bg-emerald-100 px-1 rounded text-emerald-800">(Harian + ASAS) / 2</code>. Deskripsi disinkronkan otomatis dari sheet <b>tp</b> &amp; <b>kkm_kktp</b>, serta akumulasi narasi sikap <b>dpl_1</b> s/d <b>dpl_8</b> dari sheet <b>dpl</b> telah berhasil disimpan langsung ke dalam tab sheet <b>rapor_siswa</b>.</p>
+                <p class="text-[11px] text-emerald-600 pt-1 font-normal">Seluruh nilai tiap mata pelajaran telah dihitung berdasarkan rumus rentang nilai pada sheet <strong>kkm_kktp</strong> and deskripsi berbasis kode mapel sheet <strong>tp</strong>. Hasilnya berhasil di-posting langsung ke tab sheet <strong>rapor_siswa</strong>.</p>
             </div>
         </div>
 
@@ -84,49 +84,30 @@
     </div>
 
     <script>
-        // TARGET URL API APPS SCRIPT RESMI (ISOLATED ENGINE V16.0)
+        // TARGET URL API APPS SCRIPT RESMI (ISOLATED ENGINE V12.5)
         const API_URL = "https://script.google.com/macros/s/AKfycbwEpRt1PizUVTq3zatgbEX8gnce2LILCoPjEsf0FertTGfCwuhFps0wVYguPyF8XRyo/exec";
 
-        // Mengambil Id Spreadsheet Rapor secara dinamis dari LocalStorage Sesi Login
-        const raporId = localStorage.getItem("raporIdAktif");
-
-        // [PENAMBAHAN] Mengambil NPSN secara dinamis dari Sesi Login / Parameter URL (Default fallback UPT SDN Ranuklindungan I)
-        const urlParams = new URLSearchParams(window.location.search);
-        const targetNpsn = urlParams.get('npsn') || localStorage.getItem("npsnAktif") || "20520190"; 
-
-        // Validasi awal agar user tidak melompati sistem login dashboard
-        if (!raporId) {
-            alert("Sesi tidak valid! Token Spreadsheet Rapor tidak ditemukan. Mengalihkan kembali ke login...");
-            window.location.href = "index.html";
-        }
-
-        // Simpan database NISN client-side untuk disuntikkan ke URL tujuan cetak
-        let cacheNisnSiswa = {};
-
-        // Muat daftar status ketika aplikasi pertama kali dibuka
+        // Otomatis muat daftar tabel status cetak saat aplikasi dibuka pertama kali
         window.addEventListener('DOMContentLoaded', muatStatusCetakSemuaSiswa);
 
         async function muatStatusCetakSemuaSiswa() {
             try {
-                // Menembak endpoint status dengan parameter terpadu npsn & raporId
-                const res = await fetch(`${API_URL}?action=get_status_cetak&raporId=${raporId}&npsn=${targetNpsn}`);
+                const res = await fetch(`${API_URL}?action=get_status_cetak`);
                 const data = await res.json();
                 
                 if (data.status === "SUCCESS") {
                     const tbody = document.getElementById('rowStatusCetak');
                     tbody.innerHTML = "";
-                    cacheNisnSiswa = {}; // Reset cache mapel
                     
                     data.dataSiswa.forEach(siswa => {
                         const tr = document.createElement('tr');
                         let tombolStatus = "";
                         
-                        // Simpan NISN ke dalam memori runtime berbasis Nomor Absen
-                        cacheNisnSiswa[siswa.no_absen] = siswa.nisn || "";
-                        
                         if (siswa.isLengkap) {
+                            // JIKA LENGKAP -> TOMBOL HIJAU
                             tombolStatus = `<button onclick="aksiCetak('${siswa.no_absen}')" class="w-full px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white font-bold text-[11px] rounded-lg shadow-sm transition">🟢 Cetak Rapor</button>`;
                         } else {
+                            // JIKA ADA YANG KOSONG -> TOMBOL MERAH
                             tombolStatus = `<button onclick="alert('Data nilai Ananda ${siswa.nama} belum lengkap! Silakan klik tombol Ambil Data dilanjutkan Buat Rapor terlebih dahulu.')" class="w-full px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold text-[11px] rounded-lg shadow-sm transition">🔴 Belum Lengkap</button>`;
                         }
                         
@@ -150,15 +131,11 @@
             const noAbsen = document.getElementById('inputNoAbsen').value.trim();
             if (!noAbsen) return alert("Isi No. Absen!");
             
-            const btn = document.getElementById('btnAmbil');
-            btn.disabled = true;
-            btn.innerText = "Memuat...";
-
             document.getElementById('boxTabelAtas').classList.add('hidden');
             document.getElementById('outputGenerator').classList.add('hidden');
 
             try {
-                const res = await fetch(`${API_URL}?action=read&no_absen=${noAbsen}&raporId=${raporId}&npsn=${targetNpsn}`);
+                const res = await fetch(`${API_URL}?action=read&no_absen=${noAbsen}`);
                 const data = await res.json();
                 
                 if (data.status === "SUCCESS") {
@@ -170,8 +147,8 @@
                     
                     mapelList.forEach(m => {
                         const tr = document.createElement('tr');
-                        const nSumatif = data.dataSumatif[m] !== undefined && data.dataSumatif[m] !== "" ? data.dataSumatif[m] : "0";
-                        const nAsas = data.dataAsas[m] !== undefined && data.dataAsas[m] !== "" ? data.dataAsas[m] : "0";
+                        const nSumatif = data.dataSumatif[m] !== undefined && data.dataSumatif[m] !== "" ? data.dataSumatif[m] : "-";
+                        const nAsas = data.dataAsas[m] !== undefined && data.dataAsas[m] !== "" ? data.dataAsas[m] : "-";
                         
                         tr.innerHTML = `
                             <td class="p-3 font-bold">${m}</td>
@@ -186,10 +163,7 @@
                     alert(data.message);
                 }
             } catch (e) {
-                alert("Koneksi gagal membaca database spreadsheet rapor.");
-            } finaly {
-                btn.disabled = false;
-                btn.innerText = "🔍 Ambil Data";
+                alert("Koneksi gagal membaca database.");
             }
         }
 
@@ -197,47 +171,39 @@
             const noAbsen = document.getElementById('inputNoAbsen').value.trim();
             if (!noAbsen) return alert("Pilih No. Absen Siswa!");
 
-            const btn = document.getElementById('btnBuat');
-            btn.disabled = true;
-            btn.innerText = "Memproses Engine...";
-
             try {
                 document.getElementById('outputGenerator').classList.add('hidden');
-                
-                const res = await fetch(`${API_URL}?action=generate&no_absen=${noAbsen}&raporId=${raporId}&npsn=${targetNpsn}`);
+                const res = await fetch(`${API_URL}?action=generate&no_absen=${noAbsen}`);
                 const data = await res.json();
                 
                 if (data.status === "SUCCESS") {
                     document.getElementById('outNamaSiswa').innerText = data.nama;
                     document.getElementById('outputGenerator').classList.remove('hidden');
-                    alert("Berhasil! Nilai Rapor Akhir, Deskripsi TP, dan Komponen DPL Terhitung & Tersimpan ke sheet rapor_siswa.");
+                    alert("Berhasil! Nilai Komparasi Rapor & Deskripsi Tersebar Otomatis ke tab sheet rapor_siswa.");
                     muatStatusCetakSemuaSiswa();
                 } else {
                     alert(data.message);
                 }
             } catch (e) {
-                alert("Engine gagal melakukan kalkulasi atau penulisan ke cloud spreadsheet.");
-            } finaly {
-                btn.disabled = false;
-                btn.innerText = "⚡ Buat Rapor";
+                alert("Engine gagal melakukan penulisan ke cloud storage.");
             }
         }
 
         // =========================================================================
-        // PERBAIKAN MUTLAK: FUNGSI REDIREKSI DISPATCH MENUJU CETAK-RAPOR.HTML V16.0
+        // HUBUNGAN JEMBATAN OTOMATIS KE FILE CETAK-RAPOR.HTML GITHUB (JALUR PINTAS)
         // =========================================================================
         function aksiCetak(noAbsen) {
+            // 1. Dapatkan URL dasar halaman saat ini secara otomatis (mengikuti struktur folder GitHub Anda)
             const currentUrl = window.location.href;
             const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
+            
+            // 2. Rakit URL menuju file cetak-rapor.html yang berada dalam satu folder di GitHub
             const halamanCetakTarget = `${baseUrl}/cetak-rapor.html`;
             
-            // Mengambil data NISN dari runtime cache yang cocok dengan No Absen siswa
-            const nisnSiswa = cacheNisnSiswa[noAbsen] || "";
+            // 3. Gabungkan parameter dengan tambahan penunjuk bypass page=cetak agar langsung terbaca di server Google
+            const urlFinal = `${halamanCetakTarget}?no_absen=${encodeURIComponent(noAbsen)}&page=cetak&api_url=${encodeURIComponent(API_URL)}`;
             
-            // Merakit parameter query string wajib: npsn, nisn, dan absen sesuai spesifikasi cetak-rapor.html
-            const urlFinal = `${halamanCetakTarget}?npsn=${encodeURIComponent(targetNpsn)}&nisn=${encodeURIComponent(nisnSiswa)}&absen=${encodeURIComponent(noAbsen)}`;
-            
-            // Membuka lembar berkas cetak di tab baru secara seamless
+            // 4. Buka lembar cetak rapor resmi di tab baru browser
             window.open(urlFinal, '_blank');
         }
     </script>
