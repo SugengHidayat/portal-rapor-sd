@@ -84,11 +84,15 @@
     </div>
 
     <script>
-        // TARGET URL API APPS SCRIPT RESMI (ISOLATED ENGINE V12.5)
-        const API_URL = "https://script.google.com/macros/s/AKfycbwEpRt1PizUVTq3zatgbEX8gnce2LILCoPjEsf0FertTGfCwuhFps0wVYguPyF8XRyo/exec";
+        // TARGET URL API APPS SCRIPT RESMI (ISOLATED ENGINE V16.0)
+        const API_URL = "https://script.google.com/macros/s/AKfycbxpKAZzJ2P3Mj7BTGkMsdLulOQkIDqRbXGhTjrGZeyvIVFsUwBdhSJcyeBOXk4zDpd_/exec";
 
         // Mengambil Id Spreadsheet Rapor secara dinamis dari LocalStorage Sesi Login
         const raporId = localStorage.getItem("raporIdAktif");
+
+        // [PENAMBAHAN] Mengambil NPSN secara dinamis dari Sesi Login / Parameter URL (Default fallback UPT SDN Ranuklindungan I)
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetNpsn = urlParams.get('npsn') || localStorage.getItem("npsnAktif") || "20520190"; 
 
         // Validasi awal agar user tidak melompati sistem login dashboard
         if (!raporId) {
@@ -96,21 +100,29 @@
             window.location.href = "index.html";
         }
 
+        // Simpan database NISN client-side untuk disuntikkan ke URL tujuan cetak
+        let cacheNisnSiswa = {};
+
         // Muat daftar status ketika aplikasi pertama kali dibuka
         window.addEventListener('DOMContentLoaded', muatStatusCetakSemuaSiswa);
 
         async function muatStatusCetakSemuaSiswa() {
             try {
-                const res = await fetch(`${API_URL}?action=get_status_cetak&raporId=${raporId}`);
+                // Menembak endpoint status dengan parameter terpadu npsn & raporId
+                const res = await fetch(`${API_URL}?action=get_status_cetak&raporId=${raporId}&npsn=${targetNpsn}`);
                 const data = await res.json();
                 
                 if (data.status === "SUCCESS") {
                     const tbody = document.getElementById('rowStatusCetak');
                     tbody.innerHTML = "";
+                    cacheNisnSiswa = {}; // Reset cache mapel
                     
                     data.dataSiswa.forEach(siswa => {
                         const tr = document.createElement('tr');
                         let tombolStatus = "";
+                        
+                        // Simpan NISN ke dalam memori runtime berbasis Nomor Absen
+                        cacheNisnSiswa[siswa.no_absen] = siswa.nisn || "";
                         
                         if (siswa.isLengkap) {
                             tombolStatus = `<button onclick="aksiCetak('${siswa.no_absen}')" class="w-full px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white font-bold text-[11px] rounded-lg shadow-sm transition">🟢 Cetak Rapor</button>`;
@@ -146,8 +158,7 @@
             document.getElementById('outputGenerator').classList.add('hidden');
 
             try {
-                // Mengambil nilai murni dari sheet 'rekap_harian' dan 'rekap_asas' di id_spreadsheet_rapor
-                const res = await fetch(`${API_URL}?action=read&no_absen=${noAbsen}&raporId=${raporId}`);
+                const res = await fetch(`${API_URL}?action=read&no_absen=${noAbsen}&raporId=${raporId}&npsn=${targetNpsn}`);
                 const data = await res.json();
                 
                 if (data.status === "SUCCESS") {
@@ -176,7 +187,7 @@
                 }
             } catch (e) {
                 alert("Koneksi gagal membaca database spreadsheet rapor.");
-            } finally {
+            } finaly {
                 btn.disabled = false;
                 btn.innerText = "🔍 Ambil Data";
             }
@@ -193,8 +204,7 @@
             try {
                 document.getElementById('outputGenerator').classList.add('hidden');
                 
-                // Mengirim instruksi kalkulasi (Harian+ASAS/2), sinkronisasi TP & KKM, serta penulisan narasi DPL_1-DPL_8
-                const res = await fetch(`${API_URL}?action=generate&no_absen=${noAbsen}&raporId=${raporId}`);
+                const res = await fetch(`${API_URL}?action=generate&no_absen=${noAbsen}&raporId=${raporId}&npsn=${targetNpsn}`);
                 const data = await res.json();
                 
                 if (data.status === "SUCCESS") {
@@ -207,19 +217,27 @@
                 }
             } catch (e) {
                 alert("Engine gagal melakukan kalkulasi atau penulisan ke cloud spreadsheet.");
-            } finally {
+            } finaly {
                 btn.disabled = false;
                 btn.innerText = "⚡ Buat Rapor";
             }
         }
 
+        // =========================================================================
+        // PERBAIKAN MUTLAK: FUNGSI REDIREKSI DISPATCH MENUJU CETAK-RAPOR.HTML V16.0
+        // =========================================================================
         function aksiCetak(noAbsen) {
             const currentUrl = window.location.href;
             const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
             const halamanCetakTarget = `${baseUrl}/cetak-rapor.html`;
             
-            // Menyertakan token raporId agar lembar cetak mengambil sumber data yang tepat
-            const urlFinal = `${halamanCetakTarget}?no_absen=${encodeURIComponent(noAbsen)}&raporId=${raporId}&page=cetak&api_url=${encodeURIComponent(API_URL)}`;
+            // Mengambil data NISN dari runtime cache yang cocok dengan No Absen siswa
+            const nisnSiswa = cacheNisnSiswa[noAbsen] || "";
+            
+            // Merakit parameter query string wajib: npsn, nisn, dan absen sesuai spesifikasi cetak-rapor.html
+            const urlFinal = `${halamanCetakTarget}?npsn=${encodeURIComponent(targetNpsn)}&nisn=${encodeURIComponent(nisnSiswa)}&absen=${encodeURIComponent(noAbsen)}`;
+            
+            // Membuka lembar berkas cetak di tab baru secara seamless
             window.open(urlFinal, '_blank');
         }
     </script>
