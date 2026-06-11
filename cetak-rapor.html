@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pratinjau Rapor Resmi - E-Rapor Kecamatan Grati</title>
+  <title>Sistem E-Rapor Digital Pasuruan</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body { 
@@ -26,259 +26,161 @@
       border: 1.5px solid #000000 !important;
     }
 
-    @page {
-      size: A4;           
-      margin: 0mm;        
-    }
-
+    @page { size: A4; margin: 0mm; }
     @media print {
-      .no-print, #navigasiAtas, [class*="no-print"] { 
+      .no-print, #navigasiAtas, #loader, [class*="no-print"] { 
         display: none !important; 
-        height: 0 !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        visibility: hidden !important;
       }
-      body { 
-        background: #ffffff !important; 
-        margin: 0 !important; 
-        padding: 0 !important; 
-      }
-      .lembar-rapor { 
-        box-shadow: none !important; 
-        margin: 0 auto !important; 
-        padding: 15mm 15mm 15mm 15mm !important; 
-        width: 210mm !important; 
-        min-height: auto !important; 
-      }
-      .blok-anti-pisah {
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
-      }
+      body { background: #ffffff !important; margin: 0 !important; padding: 0 !important; }
+      .lembar-rapor { box-shadow: none !important; margin: 0 auto !important; padding: 15mm !important; width: 210mm !important; }
     }
   </style>
 </head>
 <body>
 
   <div id="navigasiAtas" class="no-print bg-slate-900 p-4 text-white flex justify-between items-center sticky top-0 shadow-md z-50">
-    <div class="text-xs font-bold font-sans tracking-wide">📄 RAPOR ELEKTRONIK (ENGINE V15.0 MULTI-SEKOLAH)</div>
+    <div class="text-xs font-bold font-sans tracking-wide">📄 RAPOR ELEKTRONIK AUTOMATION SYSTEM (ENGINE V16.0)</div>
     <button onclick="window.print()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow transition">🖨️ Cetak Lembaran Rapor</button>
   </div>
 
-  <div class="lembar-rapor" id="kontenRapor">
-    
-    <div id="loader" class="text-center text-slate-500 font-bold text-sm pt-20 animate-pulse font-sans">
-      🔄 Menghubungi Server Apps Script... Memetakan Relasi Database Induk...
+  <div id="loader" class="text-center text-slate-500 font-bold text-sm pt-40 animate-pulse font-sans">
+    🔄 Menghubungi Server Apps Script...<br>
+    <span class="text-xs font-normal text-slate-400 block mt-2">Membaca Spreadsheet Induk & mencocokkan NISN/Absen di tab rapor_siswa...</span>
+  </div>
+
+  <div class="lembar-rapor hidden" id="kontenRapor">
+    <div class="flex items-center justify-start gap-6 border-b-2 border-black pb-4 mb-4">
+      <div class="text-center flex-1">
+        <h1 id="lblHeaderNamaSekolah" class="text-base font-bold tracking-wide uppercase">-</h1>
+        <h1 class="text-lg font-bold tracking-wide">LAPORAN HASIL BELAJAR</h1>
+        <h2 class="text-base font-bold tracking-wider">(RAPOR)</h2>
+      </div>
     </div>
 
-    <div id="coreRapor" class="hidden">
-      
-      <div class="flex items-center justify-start gap-6 border-b-2 border-black pb-4 mb-4">
-        <div class="text-center flex-1">
-          <h1 id="lblHeaderNamaSekolah" class="text-base font-bold tracking-wide uppercase">-</h1>
-          <h1 class="text-lg font-bold tracking-wide">LAPORAN HASIL BELAJAR</h1>
-          <h2 class="text-base font-bold tracking-wider">(RAPOR)</h2>
+    <div class="grid grid-cols-2 gap-x-8 text-[12.5px] leading-relaxed mb-4">
+      <table class="w-full">
+        <tr><td class="w-36 py-0.5 font-medium">Nama Peserta Didik</td><td class="w-4">:</td><td id="lblNama" class="font-bold uppercase text-sm">-</td></tr>
+        <tr><td class="py-0.5 font-medium">NIS / NISN</td><td>:</td><td><span id="lblMurniNis">-</span> / <span id="lblMurniNisn">-</span></td></tr>
+        <tr><td class="py-0.5 font-medium">Nama Sekolah</td><td>:</td><td id="lblSekolah" class="font-medium">-</td></tr>
+        <tr><td class="py-0.5 font-medium">Alamat</td><td>:</td><td id="lblAlamat">-</td></tr>
+      </table>
+      <table class="w-full">
+        <tr><td class="w-32 py-0.5 font-medium">Kelas</td><td class="w-4">:</td><td id="lblKelas">-</td></tr>
+        <tr><td class="py-0.5 font-medium">Fase</td><td>:</td><td id="lblFase">-</td></tr>
+        <tr><td class="py-0.5 font-medium">Semester</td><td>:</td><td id="lblSemester">-</td></tr>
+        <tr><td class="py-0.5 font-medium">Tahun Pelajaran</td><td>:</td><td id="lblTp">-</td></tr>
+      </table>
+    </div>
+
+    <div class="mb-4">
+      <table class="w-full tabel-border-tegas text-xs text-left">
+        <thead>
+          <tr class="bg-slate-50 text-center font-bold">
+            <th class="p-2 w-10">No</th><th class="p-2 w-48">Muatan Pelajaran</th><th class="p-2 w-16">Nilai Akhir</th><th class="p-2">Capaian Kompetensi</th>
+          </tr>
+        </thead>
+        <tbody id="bodyTabelRapor" class="divide-y divide-black"></tbody>
+      </table>
+    </div>
+
+    <div class="mb-5">
+      <h3 class="font-bold text-xs uppercase mb-1">MUATAN LOKAL</h3>
+      <table class="w-full tabel-border-tegas text-xs text-left">
+        <thead>
+          <tr class="bg-slate-50 text-center font-bold">
+            <th class="p-2 w-10">No</th><th class="p-2 w-48">Muatan Pelajaran</th><th class="p-2 w-16">Nilai Akhir</th><th class="p-2">Capaian Kompetensi</th>
+          </tr>
+        </thead>
+        <tbody id="bodyTabelMulok" class="divide-y divide-black"></tbody>
+      </table>
+    </div>
+
+    <div class="mt-10 mb-5">
+      <h3 class="font-bold text-xs uppercase mb-1">EKSTRAKURIKULER</h3>
+      <table class="w-full tabel-border-tegas text-xs text-left">
+        <thead>
+          <tr class="bg-slate-50 text-center font-bold">
+            <th class="p-2 w-10">No</th><th class="p-2 w-48">Kegiatan Ekstrakurikuler</th><th class="p-2 w-16">Predikat</th><th class="p-2">Keterangan</th>
+          </tr>
+        </thead>
+        <tbody id="bodyTabelEkstra" class="divide-y divide-black"></tbody>
+      </table>
+    </div>
+
+    <div class="mb-6 w-[260px]">
+      <h3 class="font-bold text-xs uppercase mb-1">KETIDAKHADIRAN</h3>
+      <table class="w-full tabel-border-tegas text-xs text-left">
+        <tbody>
+          <tr><td class="p-2 w-32">Sakit</td><td id="lblSakit" class="p-2 text-center font-bold w-14 bg-slate-50">-</td><td class="p-2">hari</td></tr>
+          <tr><td class="p-2">Izin</td><td id="lblIzin" class="p-2 text-center font-bold bg-slate-50">-</td><td class="p-2">hari</td></tr>
+          <tr><td class="p-2">Tanpa Keterangan</td><td id="lblAlfa" class="p-2 text-center font-bold bg-slate-50">-</td><td class="p-2">hari</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="text-xs mt-12 leading-relaxed">
+      <div class="flex justify-between items-end text-center mb-16 px-4">
+        <div class="w-64"><p class="mb-20">Orang Tua,</p><div class="border-b border-black w-48 mx-auto"></div></div>
+        <div class="w-64">
+          <p class="mb-20"><span id="lblTempatTanggal">-</span><br>Wali Kelas</p>
+          <p id="lblNamaGuru" class="font-bold capitalize">-</p>
+          <div class="border-b border-black w-48 mx-auto my-0.5"></div>
+          <p id="lblNipGuru" class="text-slate-700">-</p>
         </div>
       </div>
-
-      <div class="grid grid-cols-2 gap-x-8 text-[12.5px] leading-relaxed mb-4">
-        <table class="w-full">
-          <tr>
-            <td class="w-36 py-0.5 font-medium">Nama Peserta Didik</td>
-            <td class="w-4">:</td>
-            <td id="lblNama" class="font-bold uppercase text-sm">-</td>
-          </tr>
-          <tr>
-            <td class="py-0.5 font-medium">NIS / NISN</td>
-            <td>:</td>
-            <td><span id="lblMurniNis">-</span> / <span id="lblMurniNisn">-</span></td>
-          </tr>
-          <tr>
-            <td class="py-0.5 font-medium">Nama Sekolah</td>
-            <td>:</td>
-            <td id="lblSekolah" class="font-medium">-</td>
-          </tr>
-          <tr>
-            <td class="py-0.5 font-medium">Alamat</td>
-            <td>:</td>
-            <td id="lblAlamat">-</td>
-          </tr>
-        </table>
-        <table class="w-full">
-          <tr>
-            <td class="w-32 py-0.5 font-medium">Kelas</td>
-            <td class="w-4">:</td>
-            <td id="lblKelas">-</td>
-          </tr>
-          <tr>
-            <td class="py-0.5 font-medium">Fase</td>
-            <td>:</td>
-            <td id="lblFase">-</td>
-          </tr>
-          <tr>
-            <td class="py-0.5 font-medium">Semester</td>
-            <td>:</td>
-            <td id="lblSemester">-</td>
-          </tr>
-          <tr>
-            <td class="py-0.5 font-medium">Tahun Pelajaran</td>
-            <td>:</td>
-            <td id="lblTp">-</td>
-          </tr>
-        </table>
+      <div class="text-center w-full">
+        <p class="mb-20">Mengetahui,<br>Kepala Sekolah</p>
+        <p id="lblNamaKepsek" class="font-bold capitalize">-</p>
+        <div class="border-b border-black w-56 mx-auto my-0.5"></div>
+        <p id="lblNipKepsek" class="text-slate-700">-</p>
       </div>
-
-      <div class="mb-4">
-        <table class="w-full tabel-border-tegas text-xs text-left">
-          <thead>
-            <tr class="bg-slate-50 text-center font-bold">
-              <th class="p-2 w-10 text-center">No</th>
-              <th class="p-2 w-48 text-center">Muatan Pelajaran</th>
-              <th class="p-2 w-16 text-center">Nilai Akhir</th>
-              <th class="p-2 text-center">Capaian Kompetensi</th>
-            </tr>
-          </thead>
-          <tbody id="bodyTabelRapor" class="divide-y divide-black font-normal"></tbody>
-        </table>
-      </div>
-
-      <div class="mb-5">
-        <h3 class="font-bold text-xs uppercase mb-1 tracking-wide">MUATAN LOKAL</h3>
-        <table class="w-full tabel-border-tegas text-xs text-left">
-          <thead>
-            <tr class="bg-slate-50 text-center font-bold">
-              <th class="p-2 w-10 text-center">No</th>
-              <th class="p-2 w-48 text-center">Muatan Pelajaran</th>
-              <th class="p-2 w-16 text-center">Nilai Akhir</th>
-              <th class="p-2 text-center">Capaian Kompetensi</th>
-            </tr>
-          </thead>
-          <tbody id="bodyTabelMulok" class="divide-y divide-black font-normal"></tbody>
-        </table>
-      </div>
-
-      <div class="mt-10 mb-5 blok-anti-pisah">
-        <h3 class="font-bold text-xs uppercase mb-1 tracking-wide">EKSTRAKURIKULER</h3>
-        <table class="w-full tabel-border-tegas text-xs text-left">
-          <thead>
-            <tr class="bg-slate-50 text-center font-bold">
-              <th class="p-2 w-10 text-center">No</th>
-              <th class="p-2 w-48 text-center">Kegiatan Ekstrakurikuler</th>
-              <th class="p-2 w-16 text-center">Predikat</th>
-              <th class="p-2 text-center">Keterangan</th>
-            </tr>
-          </thead>
-          <tbody id="bodyTabelEkstra" class="divide-y divide-black font-normal"></tbody>
-        </table>
-      </div>
-
-      <div class="mb-6 w-[260px] blok-anti-pisah">
-        <h3 class="font-bold text-xs uppercase mb-1 tracking-wide">KETIDAKHADIRAN</h3>
-        <table class="w-full tabel-border-tegas text-xs text-left">
-          <tbody>
-            <tr>
-              <td class="p-2 w-32 font-medium">Sakit</td>
-              <td id="lblSakit" class="p-2 text-center font-bold w-14 bg-slate-50">-</td>
-              <td class="p-2 text-left">hari</td>
-            </tr>
-            <tr>
-              <td class="p-2 font-medium">Izin</td>
-              <td id="lblIzin" class="p-2 text-center font-bold bg-slate-50">-</td>
-              <td class="p-2 text-left">hari</td>
-            </tr>
-            <tr>
-              <td class="p-2 font-medium">Tanpa Keterangan</td>
-              <td id="lblAlfa" class="p-2 text-center font-bold bg-slate-50">-</td>
-              <td class="p-2 text-left">hari</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="blok-anti-pisah text-xs mt-12 leading-relaxed">
-        <div class="flex justify-between items-end text-center mb-16 px-4">
-          <div class="w-64">
-            <p class="mb-20 font-medium text-sm">Orang Tua,</p>
-            <div class="border-b border-black w-48 mx-auto"></div>
-            <p class="text-xs text-transparent select-none">NIP. -</p> 
-          </div>
-          <div class="w-64">
-            <p class="mb-20 font-medium text-sm"><span id="lblTempatTanggal">-</span><br>Wali Kelas</p>
-            <p id="lblNamaGuru" class="font-bold text-sm capitalize">-</p>
-            <div class="border-b border-black w-48 mx-auto my-0.5"></div>
-            <p id="lblNipGuru" class="text-xs text-slate-700">-</p>
-          </div>
-        </div>
-
-        <div class="text-center w-full">
-          <p class="mb-20 font-medium text-sm">Mengetahui,<br>Kepala Sekolah</p>
-          <p id="lblNamaKepsek" class="font-bold text-sm capitalize">-</p>
-          <div class="border-b border-black w-56 mx-auto my-0.5"></div>
-          <p id="lblNipKepsek" class="text-xs text-slate-700">-</p>
-        </div>
-      </div>
-      
     </div>
   </div>
 
   <script>
-    // =========================================================================
-    // CONFIGURATION ENGINE V15.0 MULTI-SEKOLAH (ADAPTIF NISN)
-    // =========================================================================
-    const BASE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxpKAZzJ2P3Mj7BTGkMsdLulOQkIDqRbXGhTjrGZeyvIVFsUwBdhSJcyeBOXk4zDpd_/exec"; 
-
-    // Menangkap parameter dari URL browser (Mendukung npsn & nisn)
-    const urlParams = new URLSearchParams(window.location.search);
-    const npsnTarget = urlParams.get('npsn');
-    const nisnTarget = urlParams.get('nisn'); // Menangkap NISN langsung
+    const BASE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw6mIByF-uN4G2m1SIdv9pSmsv3tWd42Rsc557X1z-ZIn6XNlG6I6DqE_X66W4m6uI/exec"; 
 
     window.addEventListener('DOMContentLoaded', function() {
-      // Validasi kelengkapan parameter di URL browser
-      if (!npsnTarget || !nisnTarget) {
-        tampilkanPesanKhusus(
-          "⚠️ PARAMETER LINK BELUM LENGKAP", 
-          "Pastikan format URL browser Anda adalah: cetak-rapor.html?npsn=" + (npsnTarget || "NPSN") + "&nisn=" + (nisnTarget || "NISN_SISWA"), 
-          "amber"
-        );
+      // Menangkap parameter kiriman dari tombol Spreadsheet secara otomatis
+      const urlParams = new URLSearchParams(window.location.search);
+      const npsn = urlParams.get('npsn');
+      const nisn = urlParams.get('nisn');
+      const absen = urlParams.get('absen');
+
+      if (!npsn || !nisn) {
+        document.getElementById('loader').innerHTML = "<div class='text-red-500 p-4 bg-red-50 rounded-xl border border-red-200 inline-block'>⚠️ ERROR: Link rujukan dari Spreadsheet tidak lengkap (Membutuhkan parameter npsn & nisn).</div>";
         return;
       }
-      ambilDataDariAppsScript();
+
+      ambilDataRaporOtomatis(npsn, nisn, absen);
     });
 
-    async function ambilDataDariAppsScript() {
+    async function ambilDataRaporOtomatis(npsn, nisn, absen) {
       try {
-        // Mengirimkan parameter 'npsn' dan 'nisn' ke Apps Script Web App
-        const urlTembakan = `${BASE_WEB_APP_URL}?action=cetak_github&npsn=${npsnTarget}&nisn=${nisnTarget}`;
-        
+        // Menembak Google Apps Script dengan payload parameter lengkap
+        const urlTembakan = `${BASE_WEB_APP_URL}?action=cetak_github&npsn=${npsn}&nisn=${nisn}&absen=${absen}`;
         const respon = await fetch(urlTembakan);
-        if (!respon.ok) throw new Error("Server Apps Script memberikan respon tidak valid atau terblokir CORS.");
+        if (!respon.ok) throw new Error("Koneksi Apps Script terputus.");
         
         const resJson = await respon.json();
+        if (resJson.status === "ERROR") throw new Error(resJson.message);
 
-        if (resJson.status === "ERROR") {
-          throw new Error(resJson.message);
-        }
-
-        // Render jika sukses
+        // Render hasil
+        document.getElementById('loader').classList.add('hidden');
+        document.getElementById('kontenRapor').classList.remove('hidden');
         renderDataKeRapor(resJson.data);
 
       } catch (err) {
-        tampilkanPesanGagal(err.toString());
+        document.getElementById('loader').innerHTML = `🛑 GAGAL MEMBACA DATA RAPOR:<br><span class='font-normal text-xs text-red-600 block mt-2'>${err.toString()}</span>`;
       }
     }
 
     function renderDataKeRapor(data) {
-      // Sembunyikan loader, tampilkan core rapor
-      document.getElementById('loader').classList.add('hidden');
-      document.getElementById('coreRapor').classList.remove('hidden');
-      
-      // 1. Injeksi Data Sekolah di Header & Profil
       document.getElementById('lblHeaderNamaSekolah').innerText = data.sekolah.nama_sekolah || "-";
       document.getElementById('lblSekolah').innerText = data.sekolah.nama_sekolah || "-";
       document.getElementById('lblAlamat').innerText = data.sekolah.alamat || "-";
       document.getElementById('lblTp').innerText = data.sekolah.tp || "-";
 
-      // 2. Injeksi Data Profil Siswa
       document.getElementById('lblNama').innerText = data.profil.nama || "-";
       document.getElementById('lblMurniNis').innerText = data.profil.nis || "-";
       document.getElementById('lblMurniNisn').innerText = data.profil.nisn || "-";
@@ -286,84 +188,46 @@
       document.getElementById('lblFase').innerText = data.profil.fase || "-";
       document.getElementById('lblSemester').innerText = data.profil.semester || "-";
       
-      // 3. Render Tabel A: Muatan Pelajaran Utama
-      const tbodyUtama = document.getElementById('bodyTabelRapor');
-      tbodyUtama.innerHTML = "";
-      if (data.payloadNilai && data.payloadNilai.length > 0) {
-        data.payloadNilai.forEach(item => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td class="p-2 text-center font-semibold align-top">${item.no}</td>
-            <td class="p-2 font-semibold align-top">${item.mapel}</td>
-            <td class="p-2 text-center font-bold text-sm align-top bg-slate-50">${item.nilai !== "" ? item.nilai : "-"}</td>
-            <td class="p-2 text-justify leading-relaxed text-[11px] align-top whitespace-pre-line">${item.deskripsi || "-"}</td>
-          `;
-          tbodyUtama.appendChild(tr);
-        });
-      }
+      // Render Loop Tabel Nilai
+      const renderTabel = (idBody, payload) => {
+        const tbody = document.getElementById(idBody);
+        tbody.innerHTML = "";
+        if(payload && payload.length > 0) {
+          payload.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td class="p-2 text-center font-semibold">${item.no}</td><td class="p-2 font-semibold">${item.mapel}</td><td class="p-2 text-center font-bold bg-slate-50">${item.nilai}</td><td class="p-2 text-justify text-[11px] whitespace-pre-line">${item.deskripsi}</td>`;
+            tbody.appendChild(tr);
+          });
+        }
+      };
 
-      // 4. Render Tabel B: Muatan Lokal
-      const tbodyMulok = document.getElementById('bodyTabelMulok');
-      tbodyMulok.innerHTML = "";
-      if (data.payloadMulok && data.payloadMulok.length > 0) {
-        data.payloadMulok.forEach(item => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td class="p-2 text-center font-semibold align-top">${item.no}</td>
-            <td class="p-2 font-semibold align-top">${item.mapel}</td>
-            <td class="p-2 text-center font-bold text-sm align-top bg-slate-50">${item.nilai !== "" ? item.nilai : "-"}</td>
-            <td class="p-2 text-justify leading-relaxed text-[11px] align-top whitespace-pre-line">${item.deskripsi || "-"}</td>
-          `;
-          tbodyMulok.appendChild(tr);
-        });
-      }
+      renderTabel('bodyTabelRapor', data.payloadNilai);
+      renderTabel('bodyTabelMulok', data.payloadMulok);
 
-      // 5. Render Tabel C: Ekstrakurikuler
+      // Ekstra
       const tbodyEkstra = document.getElementById('bodyTabelEkstra');
       tbodyEkstra.innerHTML = "";
       if (data.ekstra && data.ekstra.length > 0) {
         data.ekstra.forEach(item => {
           const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td class="p-2 text-center font-semibold align-top">${item.no}</td>
-            <td class="p-2 font-semibold align-top">${item.nama}</td>
-            <td class="p-2 text-center font-bold text-sm align-top bg-slate-50">${item.predikat !== "" ? item.predikat : "-"}</td>
-            <td class="p-2 text-justify leading-relaxed text-[11px] align-top whitespace-pre-line">${item.keterangan || "-"}</td>
-          `;
+          tr.innerHTML = `<td class="p-2 text-center">${item.no}</td><td class="p-2 font-semibold">${item.nama}</td><td class="p-2 text-center font-bold bg-slate-50">${item.predikat}</td><td class="p-2 text-[11px]">${item.keterangan}</td>`;
           tbodyEkstra.appendChild(tr);
         });
-      } else {
-        tbodyEkstra.innerHTML = `<tr><td colspan="4" class="p-2 text-center text-slate-400 italic">Tidak mengikuti kegiatan ekstrakurikuler</td></tr>`;
       }
 
-      // 6. Render Tabel D: Rekap Ketidakhadiran (Absensi)
       if (data.kehadiran) {
-        document.getElementById('lblSakit').innerText = data.kehadiran.sakit !== "" ? data.kehadiran.sakit : "0";
-        document.getElementById('lblIzin').innerText = data.kehadiran.izin !== "" ? data.kehadiran.izin : "0";
-        document.getElementById('lblAlfa').innerText = data.kehadiran.alfa !== "" ? data.kehadiran.alfa : "0";
+        document.getElementById('lblSakit').innerText = data.kehadiran.sakit || "0";
+        document.getElementById('lblIzin').innerText = data.kehadiran.izin || "0";
+        document.getElementById('lblAlfa').innerText = data.kehadiran.alfa || "0";
       }
 
-      // 7. Injeksi Blok Tanda Tangan
       if (data.ttd) {
-        document.getElementById('lblTempatTanggal').innerText = data.ttd.tanggal_cetak || "Pasuruan, .........................";
+        document.getElementById('lblTempatTanggal').innerText = data.ttd.tanggal_cetak || "-";
         document.getElementById('lblNamaGuru').innerText = data.ttd.guru_kelas || "-";
-        document.getElementById('lblNipGuru').innerText = data.ttd.nip_guru ? "NIP. " + data.ttd.nip_guru : "NIP. ...........................";
+        document.getElementById('lblNipGuru').innerText = data.ttd.nip_guru ? "NIP. " + data.ttd.nip_guru : "-";
         document.getElementById('lblNamaKepsek').innerText = data.ttd.kepala_sekolah || "-";
-        document.getElementById('lblNipKepsek').innerText = data.ttd.nip_kepala ? "NIP. " + data.ttd.nip_kepala : "NIP. ...........................";
+        document.getElementById('lblNipKepsek').innerText = data.ttd.nip_kepala ? "NIP. " + data.ttd.nip_kepala : "-";
       }
-    }
-
-    function tampilkanPesanKhusus(judul, subPesan, warna) {
-      const loader = document.getElementById('loader');
-      loader.removeAttribute('class');
-      loader.className = `text-center p-8 text-sm font-sans text-${warna}-600 font-bold bg-${warna}-50 rounded-xl border border-${warna}-200 m-5`;
-      loader.innerHTML = `${judul}<br><span class='font-normal text-xs text-slate-600 block my-2'>${subPesan}</span>`;
-    }
-
-    function tampilkanPesanGagal(pesanError) {
-      document.getElementById('loader').removeAttribute('class');
-      document.getElementById('loader').className = "text-center p-8 text-sm font-sans text-red-600 font-bold bg-red-50 rounded-xl border border-red-200 m-5";
-      document.getElementById('loader').innerHTML = `🛑 GAGAL MEMUAT BLOK RAPOR:<br><span class='font-normal text-xs text-slate-600 block my-2'>${pesanError}</span>`;
     }
   </script>
 </body>
