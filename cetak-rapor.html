@@ -223,19 +223,23 @@
 
   <script>
     // =========================================================================
-    // CONFIGURATION ENGINE V15.0 MULTI-SEKOLAH
+    // CONFIGURATION ENGINE V15.0 MULTI-SEKOLAH (ADAPTIF NISN)
     // =========================================================================
-    // Tempelkan URL Web App dari Apps Script Deployment Anda di sini:
-    const BASE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxpKAZzJ2P3Mj7BTGkMsdLulOQkIDqRbXGhTjrGZeyvIVFsUwBdhSJcyeBOXk4zDpd_/exec"; 
+    const BASE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw6mIByF-uN4G2m1SIdv9pSmsv3tWd42Rsc557X1z-ZIn6XNlG6I6DqE_X66W4m6uI/exec"; 
 
-    // Menangkap parameter dari URL browser
+    // Menangkap parameter dari URL browser (Mendukung npsn & nisn)
     const urlParams = new URLSearchParams(window.location.search);
     const npsnTarget = urlParams.get('npsn');
-    const absenTarget = urlParams.get('absen') || urlParams.get('no_absen');
+    const nisnTarget = urlParams.get('nisn'); // Menangkap NISN langsung
 
     window.addEventListener('DOMContentLoaded', function() {
-      if (!npsnTarget || !absenTarget) {
-        tampilkanPesanKhusus("⚠️ PARAMETER LINK TIDAK LENGKAP", "Gunakan pola link baru: cetak-rapor.html?npsn=NPSN_SEKOLAH&absen=NOMOR_ABSEN", "amber");
+      // Validasi kelengkapan parameter di URL browser
+      if (!npsnTarget || !nisnTarget) {
+        tampilkanPesanKhusus(
+          "⚠️ PARAMETER LINK BELUM LENGKAP", 
+          "Pastikan format URL browser Anda adalah: cetak-rapor.html?npsn=" + (npsnTarget || "NPSN") + "&nisn=" + (nisnTarget || "NISN_SISWA"), 
+          "amber"
+        );
         return;
       }
       ambilDataDariAppsScript();
@@ -243,8 +247,8 @@
 
     async function ambilDataDariAppsScript() {
       try {
-        // Eksekusi pemanggilan ke Apps Script Engine V15.0 menggunakan metode JSONP/CORS Fetch aman
-        const urlTembakan = `${BASE_WEB_APP_URL}?action=cetak_github&npsn=${npsnTarget}&no_absen=${absenTarget}`;
+        // Mengirimkan parameter 'npsn' dan 'nisn' ke Apps Script Web App
+        const urlTembakan = `${BASE_WEB_APP_URL}?action=cetak_github&npsn=${npsnTarget}&nisn=${nisnTarget}`;
         
         const respon = await fetch(urlTembakan);
         if (!respon.ok) throw new Error("Server Apps Script memberikan respon tidak valid atau terblokir CORS.");
@@ -255,7 +259,7 @@
           throw new Error(resJson.message);
         }
 
-        // Jika status SUCCESS, kirim objek data ke fungsi render
+        // Render jika sukses
         renderDataKeRapor(resJson.data);
 
       } catch (err) {
