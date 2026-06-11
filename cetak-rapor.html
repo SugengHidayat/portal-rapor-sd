@@ -138,46 +138,47 @@
   </div>
 
   <script>
+    // URL Web App hasil deploy Google Apps Script Engine V15.5/V16.0 Anda
     const BASE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxpKAZzJ2P3Mj7BTGkMsdLulOQkIDqRbXGhTjrGZeyvIVFsUwBdhSJcyeBOXk4zDpd_/exec"; 
 
-   window.addEventListener('DOMContentLoaded', function() {
-      // Mengambil parameter otomatis dari URL hasil klik di Spreadsheet
+    window.addEventListener('DOMContentLoaded', function() {
       const urlParams = new URLSearchParams(window.location.search);
       const npsn = urlParams.get('npsn');
       const nisn = urlParams.get('nisn');
       const absen = urlParams.get('absen');
 
-      // Validasi internal: Jika link yang diklik tidak membawa parameter, munculkan error rujukan
-      if (!npsn || !nisn) {
+      // Validasi Parameter URL
+      if (!npsn || (!absen && !nisn)) {
         document.getElementById('loader').innerHTML = `
           <div class='text-center p-6 bg-amber-50 rounded-2xl border border-amber-200 max-w-md mx-auto my-10 font-sans'>
-            <div class='text-amber-500 font-bold text-base mb-1'>⚠️ ERROR: Link rujukan dari Spreadsheet tidak lengkap</div>
-            <p class='text-slate-600 text-xs leading-relaxed'>Pastikan Anda membuka halaman ini dengan mengklik tombol tautan yang ada di dalam Google Spreadsheet Sekolah pada tab sheet <b>rapor_siswa</b>.</p>
+            <div class='text-amber-500 font-bold text-base mb-1'>⚠️ ERROR: Link Rujukan Tidak Lengkap</div>
+            <p class='text-slate-600 text-xs leading-relaxed'>Sistem gagal mendeteksi identitas rujukan. Pastikan tautan dibuka melalui tombol cetak di Google Spreadsheet Sekolah.</p>
           </div>`;
         return;
       }
 
-      // Jika parameter lengkap, langsung tembak Apps Script untuk ambil data
       ambilDataRaporOtomatis(npsn, nisn, absen);
     });
 
     async function ambilDataRaporOtomatis(npsn, nisn, absen) {
       try {
-        // Menembak Google Apps Script dengan payload parameter lengkap
         const urlTembakan = `${BASE_WEB_APP_URL}?action=cetak_github&npsn=${npsn}&nisn=${nisn}&absen=${absen}`;
         const respon = await fetch(urlTembakan);
-        if (!respon.ok) throw new Error("Koneksi Apps Script terputus.");
+        if (!respon.ok) throw new Error("Gagal terhubung dengan server Google Apps Script.");
         
         const resJson = await respon.json();
         if (resJson.status === "ERROR") throw new Error(resJson.message);
 
-        // Render hasil
         document.getElementById('loader').classList.add('hidden');
         document.getElementById('kontenRapor').classList.remove('hidden');
         renderDataKeRapor(resJson.data);
 
       } catch (err) {
-        document.getElementById('loader').innerHTML = `🛑 GAGAL MEMBACA DATA RAPOR:<br><span class='font-normal text-xs text-red-600 block mt-2'>${err.toString()}</span>`;
+        document.getElementById('loader').innerHTML = `
+          <div class='text-center p-6 bg-red-50 rounded-2xl border border-red-200 max-w-md mx-auto my-10 font-sans text-red-600 font-bold text-sm'>
+            🛑 GAGAL MERAKIT DOKUMEN RAPOR:<br>
+            <span class='font-normal text-xs text-slate-600 block mt-2'>${err.toString()}</span>
+          </div>`;
       }
     }
 
@@ -210,15 +211,25 @@
       renderTabel('bodyTabelRapor', data.payloadNilai);
       renderTabel('bodyTabelMulok', data.payloadMulok);
 
-      // Ekstra
+      // Sinkronisasi Penulisan Ekstrakurikuler (Menangani format array maupun objek tunggal dari Apps Script)
       const tbodyEkstra = document.getElementById('bodyTabelEkstra');
       tbodyEkstra.innerHTML = "";
-      if (data.ekstra && data.ekstra.length > 0) {
-        data.ekstra.forEach(item => {
+      
+      if (data.extra || data.ekstra) {
+        const itemEkstra = data.extra || data.ekstra;
+        
+        if (Array.isArray(itemEkstra)) {
+          itemEkstra.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td class="p-2 text-center">${item.no || 1}</td><td class="p-2 font-semibold">${item.nama}</td><td class="p-2 text-center font-bold bg-slate-50">${item.predikat}</td><td class="p-2 text-[11px]">${item.keterangan}</td>`;
+            tbodyEkstra.appendChild(tr);
+          });
+        } else {
+          // Jika format yang kembali dari server berupa objek tunggal bawaan V15.5
           const tr = document.createElement('tr');
-          tr.innerHTML = `<td class="p-2 text-center">${item.no}</td><td class="p-2 font-semibold">${item.nama}</td><td class="p-2 text-center font-bold bg-slate-50">${item.predikat}</td><td class="p-2 text-[11px]">${item.keterangan}</td>`;
+          tr.innerHTML = `<td class="p-2 text-center">1</td><td class="p-2 font-semibold">${itemEkstra.nama || "Pramuka Wajib"}</td><td class="p-2 text-center font-bold bg-slate-50">${itemEkstra.predikat || "-"}</td><td class="p-2 text-[11px]">${itemEkstra.keterangan || "-"}</td>`;
           tbodyEkstra.appendChild(tr);
-        });
+        }
       }
 
       if (data.kehadiran) {
