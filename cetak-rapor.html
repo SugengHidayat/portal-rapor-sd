@@ -234,35 +234,132 @@
   </div>
 
   <script>
+    // =========================================================================
+    // GLOBAL CONFIGURATION (ISOLATED CHARIVA SYSTEM MULTI-TENANCY V14.5)
+    // =========================================================================
+    const API_KEY = 'MASUKKAN_GOOGLE_SHEETS_API_KEY_ANDA';
+    const SPREADSHEET_INDUK_ID = 'MASUKKAN_ID_SPREADSHEET_INDUK_UTAMA_ANDA';
+
+    // Menangkap parameter npsn dan nisn dari URL. 
+    // Contoh URL Baru: cetak-rapor.html?npsn=20518953&nisn=3159717464
     const urlParams = new URLSearchParams(window.location.search);
-    const currentNoAbsen = urlParams.get('no_absen');
-    const dynamicAppsScriptUrl = urlParams.get('api_url');
+    const npsnTarget = urlParams.get('npsn');
+    const nisnTarget = urlParams.get('nisn');
 
     window.addEventListener('DOMContentLoaded', function() {
-      if(!currentNoAbsen || !dynamicAppsScriptUrl) {
+      if (!npsnTarget || !nisnTarget) {
         document.getElementById('loader').className = "text-center p-10 text-sm font-sans text-amber-600 font-bold bg-amber-50 rounded-xl border border-amber-200 m-5";
-        document.getElementById('loader').innerHTML = "⚠️ PARAMETER DOKUMEN BELUM LENGKAP.";
+        document.getElementById('loader').innerHTML = "⚠️ PARAMETER DOKUMEN BELUM LENGKAP (Membutuhkan 'npsn' dan 'nisn').";
         return;
       }
       
-      const targetApiUrl = `${dynamicAppsScriptUrl}?action=cetak_github&no_absen=${encodeURIComponent(currentNoAbsen)}`;
-      
-      fetch(targetApiUrl)
-        .then(response => {
-          if (!response.ok) throw new Error("Terjadi gangguan transmisi data API.");
-          return response.json();
-        })
-        .then(responseObj => {
-          if (responseObj.status === "SUCCESS" && responseObj.data) {
-            renderBundleKeRapor(responseObj.data);
-          } else {
-            throw new Error(responseObj.message || "Gagal menarik data melalui parameter cetak_github.");
-          }
-        })
-        .catch(err => {
-          tampilkanPesanGagal(err.toString());
-        });
+      executeMultiTenancyEngine();
     });
+
+    async function executeMultiTenancyEngine() {
+      try {
+        // 1. Fetching Database Induk untuk Isolasi Jalur Data Sekolah
+        const responInduk = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_INDUK_ID}/values/induk!A2:J100?key=${API_KEY}`);
+        if (!responInduk.ok) throw new Error("Gagal menghubungi server database induk.");
+        const dataInduk = await responInduk.json();
+        
+        if (!dataInduk.values) throw new Error("Spreadsheet Induk kosong atau data belum terisi.");
+
+        // Cari sekolah yang aktif berdasarkan NPSN (Kolom B = indeks 1, Status = indeks 9)
+        const barisSekolah = dataInduk.values.find(row => row[1] === npsnTarget && row[9] === 'AKTIF');
+        if (!barisSekolah) throw new Error(`Sekolah dengan NPSN ${npsnTarget} tidak terdaftar atau status NONAKTIF.`);
+
+        const idSpreadsheetDb = barisSekolah[6];    // Kolom G (id_spreadsheet_db)
+        const idSpreadsheetRapor = barisSekolah[7]; // Kolom H (id_spreadsheet_rapor)
+
+        if (!idSpreadsheetDb || !idSpreadsheetRapor) {
+          throw new Error("Konektor ID Spreadsheet DB / Rapor sekolah ini belum diset di induk.");
+        }
+
+        // 2. Parallel Fetching Data dari Spesifik Spreadsheet Sekolah (Menghemat Kuota & Waktu Tunggu)
+        const [responIdentitas, responSiswa, responRapor] = await Promise.all([
+          fetch(`https://sheets.googleapis.com/v4/spreadsheets/${idSpreadsheetDb}/values/identitas_sekolah!A2:B30?key=${API_KEY}`).then(res => res.json()),
+          fetch(`https://sheets.googleapis.com/v4/spreadsheets/${idSpreadsheetDb}/values/data_siswa!A2:O500?key=${API_KEY}`).then(res => res.json()),
+          fetch(`https://sheets.googleapis.com/v4/spreadsheets/${idSpreadsheetRapor}/values/rapor_siswa!A2:Z500?key=${API_KEY}`).then(res => res.json())
+        ]);
+
+        // 3. Matriks Parsing - Tab Identitas Sekolah (Vertikal)
+        const sekolahObj = {};
+        if (responIdentitas.values) {
+          responIdentitas.values.forEach(row => {
+            if (row[0]) sekolahObj[row[0].trim()] = row[1] ? row[1].trim() : '';
+          });
+        }
+
+        // 4. Matriks Parsing - Tab Data Siswa (Horizontal, Cari Berdasarkan NISN di Kolom C / Indeks 2)
+        if (!responSiswa.values) throw new Error("Sheet database 'data_siswa' kosong.");
+        const dataSiswaRow = responSiswa.values.find(row => row[2] === nisnTarget);
+        if (!dataSiswaRow) throw new Error(`Siswa dengan NISN ${nisnTarget} tidak ditemukan di database sekolah.`);
+
+        // 5. Matriks Parsing - Tab Rapor Siswa (Horizontal, Cari Berdasarkan NISN di Kolom B / Indeks 1)
+        if (!responRapor.values) throw new Error("Sheet nilai 'rapor_siswa' kosong.");
+        const raporRow = responRapor.values.find(row => row[1] === nisnTarget);
+        if (!raporRow) throw new Error(`Data nilai rapor untuk NISN ${nisnTarget} belum diisi oleh guru.`);
+
+        // 6. Restrukturisasi Data ke Format 'Bundle' Agar Sesuai dengan Fungsi Render Asli Anda
+        const bundle = {
+          profil: {
+            nama: dataSiswaRow[3], // Kolom D (Nama Siswa)
+            nis: dataSiswaRow[1],  // Kolom B (NIS)
+            nisn: dataSiswaRow[2], // Kolom C (NISN)
+            kelas: sekolahObj['Kelas'] || '-',
+            fase:  sekolahObj['Fase'] || '-',
+            semester: sekolahObj['Semester'] || '-'
+          },
+          sekolah: {
+            nama_sekolah: sekolahObj['Nama Sekolah'] || '-',
+            alamat: sekolahObj['Alamat Sekolah'] || '-',
+            tp: sekolahObj['Tahun Pelajaran'] || '-'
+          },
+          // Memisahkan Muatan Pelajaran Utama (Sesuai Urutan Kurikulum Merdeka SD)
+          payloadNilai: [
+            { no: 1, mapel: "Pendidikan Agama dan Budi Pekerti", nilai: raporRow[3], deskripsi: raporRow[4] },
+            { no: 2, mapel: "Pendidikan Pancasila", nilai: raporRow[7], deskripsi: raporRow[8] },
+            { no: 3, mapel: "Bahasa Indonesia", nilai: raporRow[5], deskripsi: raporRow[6] },
+            { no: 4, mapel: "Matematika", nilai: raporRow[9], deskripsi: raporRow[10] },
+            { no: 5, mapel: "Ilmu Pengetahuan Alam dan Sosial", nilai: raporRow[11], deskripsi: raporRow[12] },
+            { no: 6, mapel: "Pendidikan Jasmani, Olahraga dan Kesehatan", nilai: raporRow[15], deskripsi: raporRow[16] },
+            { no: 7, mapel: "Seni dan Budaya (Kesenian)", nilai: raporRow[13], deskripsi: raporRow[14] || '-' },
+            { no: 8, mapel: "Bahasa Inggris", nilai: raporRow[17], deskripsi: raporRow[18] }
+          ],
+          // Memisahkan Muatan Lokal (Bahasa Jawa & BTQ) ke Tabel B
+          payloadMulok: [
+            { no: 1, mapel: "Bahasa Jawa", nilai: raporRow[19], deskripsi: raporRow[20] },
+            { no: 2, mapel: "BTQ (Baca Tulis Al-Qur'an)", nilai: raporRow[21], deskripsi: raporRow[22] || '-' }
+          ],
+          // Mengambil Data Ekstrakurikuler Dinamis (Kolom X, Y, Z jika ada, atau fallback default)
+          ekstra: {
+            nama: raporRow[23] || "Pramuka Wajib",
+            predikat: raporRow[24] || "Baik",
+            keterangan: raporRow[25] || "Menunjukkan partisipasi aktif dalam kegiatan kepramukaan."
+          },
+          // Mengambil Data Absensi Berdasarkan Kolom Terakhir di Sheet rapor_siswa Anda
+          kehadiran: {
+            sakit: raporRow[26] || "0",
+            izin: raporRow[27] || "0",
+            alfa: raporRow[28] || "0"
+          },
+          ttd: {
+            tanggal_cetak: sekolahObj['Tempat/Tanggal Rapor'] || "Pasuruan, .........................",
+            guru_kelas: sekolahObj['Nama Guru Kelas'] || "-",
+            nip_guru: sekolahObj['NIP Guru Kelas'] || null,
+            kepala_sekolah: sekolahObj['Nama Kepala Sekolah'] || "-",
+            nip_kepala: sekolahObj['NIP Kepala Sekolah'] || null
+          }
+        };
+
+        // 7. Panggil Fungsi Utama Renderer Bawaan Anda Tanpa Ada Perubahan Layout HTML
+        renderBundleKeRapor(bundle);
+
+      } catch (err) {
+        tampilkanPesanGagal(err.toString());
+      }
+    }
 
     function renderBundleKeRapor(bundle) {
       document.getElementById('loader').classList.add('hidden');
