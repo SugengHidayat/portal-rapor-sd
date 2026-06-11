@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Pemroses Data Rapor - UPT SDN Ranuklindungan I</title>
+    <title>Sistem Pemroses Data Rapor Digital - Multi School</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Style tambahan untuk memastikan border tabel berwarna hitam tegas */
         .border-hitam { border: 1px solid #000000; }
         .border-hitam th, .border-hitam td { border: 1px solid #000000; }
     </style>
@@ -15,10 +14,23 @@
 
     <div class="max-w-4xl mx-auto space-y-6">
         
+        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+            <div>
+                <label for="selectSekolah" class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">🏫 Pilih Lembaga / Sekolah:</label>
+                <select id="selectSekolah" onchange="gantiSekolah()" class="w-full px-4 py-3 bg-slate-900 text-white text-xs font-bold rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                    <option value="https://script.google.com/macros/s/AKfycbwEpRt1PizUVTq3zatgbEX8gnce2LILCoPjEsf0FertTGfCwuhFps0wVYguPyF8XRyo/exec">UPT SDN Ranuklindungan I</option>
+                    <option value="https://script.google.com/macros/s/URL_APPS_SCRIPT_SEKOLAH_2/exec">UPT SDN Ranuklindungan II</option>
+                    <option value="https://script.google.com/macros/s/URL_APPS_SCRIPT_SEKOLAH_3/exec">UPT SDN Gati Kencana</option>
+                </select>
+            </div>
+        </div>
+        
         <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-                <h1 class="text-lg font-black text-slate-900 tracking-tight">🎛️ Panel Penghitung & Input Rapor</h1>
-                <p class="text-xs text-slate-500 font-medium">Lakukan verifikasi nilai ASAS & Sumatif sebelum melakukan kalkulasi akhir.</p>
+                <h1 class="text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
+                    🎛️ Panel Penghitung & Input Rapor
+                </h1>
+                <p class="text-xs text-slate-500 font-medium">Lembaga Aktif: <span id="namaSekolahAktif" class="text-blue-600 font-bold">UPT SDN Ranuklindungan I</span></p>
             </div>
             <div class="flex items-center gap-2 w-full md:w-auto">
                 <input type="number" id="inputNoAbsen" placeholder="No. Absen" class="w-full md:w-28 px-4 py-2.5 border border-slate-200 rounded-2xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -84,11 +96,40 @@
     </div>
 
     <script>
-        // TARGET URL API APPS SCRIPT RESMI (ISOLATED ENGINE V12.5)
-        const API_URL = "https://script.google.com/macros/s/AKfycbwEpRt1PizUVTq3zatgbEX8gnce2LILCoPjEsf0FertTGfCwuhFps0wVYguPyF8XRyo/exec";
+        // State Global URL API yang dipilih dinamis
+        let API_URL = "";
 
-        // Otomatis muat daftar tabel status cetak saat aplikasi dibuka pertama kali
-        window.addEventListener('DOMContentLoaded', muatStatusCetakSemuaSiswa);
+        // Inisialisasi awal saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+            gantiSekolah(); // Otomatis set API_URL berdasarkan pilihan awal dropdown
+        });
+
+        // Dipanggil setiap kali dropdown sekolah diganti
+        function gantiSekolah() {
+            const selector = document.getElementById('selectSekolah');
+            
+            // 1. Ambil URL Apps script dan Nama Sekolah dari dropdown yang dipilih
+            API_URL = selector.value;
+            const namaSekolah = selector.options[selector.selectedIndex].text;
+            
+            // 2. Update tampilan teks nama sekolah aktif
+            document.getElementById('namaSekolahAktif').innerText = namaSekolah;
+            
+            // 3. Bersihkan sisa tampilan data lama agar tidak membingungkan user
+            document.getElementById('boxTabelAtas').classList.add('hidden');
+            document.getElementById('outputGenerator').classList.add('hidden');
+            document.getElementById('inputNoAbsen').value = "";
+            
+            document.getElementById('rowStatusCetak').innerHTML = `
+                <tr>
+                    <td colspan="4" class="p-4 text-center text-slate-400 font-medium animate-pulse">
+                        Menghubungkan ke database ${namaSekolah}...
+                    </td>
+                </tr>`;
+            
+            // 4. Tarik data baru dari server sekolah yang dipilih
+            muatStatusCetakSemuaSiswa();
+        }
 
         async function muatStatusCetakSemuaSiswa() {
             try {
@@ -104,10 +145,8 @@
                         let tombolStatus = "";
                         
                         if (siswa.isLengkap) {
-                            // JIKA LENGKAP -> TOMBOL HIJAU
                             tombolStatus = `<button onclick="aksiCetak('${siswa.no_absen}')" class="w-full px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white font-bold text-[11px] rounded-lg shadow-sm transition">🟢 Cetak Rapor</button>`;
                         } else {
-                            // JIKA ADA YANG KOSONG -> TOMBOL MERAH
                             tombolStatus = `<button onclick="alert('Data nilai Ananda ${siswa.nama} belum lengkap! Silakan klik tombol Ambil Data dilanjutkan Buat Rapor terlebih dahulu.')" class="w-full px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold text-[11px] rounded-lg shadow-sm transition">🔴 Belum Lengkap</button>`;
                         }
                         
@@ -123,7 +162,7 @@
                     document.getElementById('rowStatusCetak').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-600">Gagal memuat: ${data.message}</td></tr>`;
                 }
             } catch (e) {
-                document.getElementById('rowStatusCetak').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-600">Gagal terhubung dengan cloud server database.</td></tr>`;
+                document.getElementById('rowStatusCetak').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-600">Gagal terhubung dengan cloud server database sekolah ini.</td></tr>`;
             }
         }
 
@@ -189,21 +228,14 @@
             }
         }
 
-        // =========================================================================
-        // HUBUNGAN JEMBATAN OTOMATIS KE FILE CETAK-RAPOR.HTML GITHUB (JALUR PINTAS)
-        // =========================================================================
         function aksiCetak(noAbsen) {
-            // 1. Dapatkan URL dasar halaman saat ini secara otomatis (mengikuti struktur folder GitHub Anda)
             const currentUrl = window.location.href;
             const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
-            
-            // 2. Rakit URL menuju file cetak-rapor.html yang berada dalam satu folder di GitHub
             const halamanCetakTarget = `${baseUrl}/cetak-rapor.html`;
             
-            // 3. Gabungkan parameter dengan tambahan penunjuk bypass page=cetak agar langsung terbaca di server Google
+            // API_URL dilempar secara dinamis agar halaman cetak-rapor.html tahu database mana yang harus ditarik datanya
             const urlFinal = `${halamanCetakTarget}?no_absen=${encodeURIComponent(noAbsen)}&page=cetak&api_url=${encodeURIComponent(API_URL)}`;
             
-            // 4. Buka lembar cetak rapor resmi di tab baru browser
             window.open(urlFinal, '_blank');
         }
     </script>
