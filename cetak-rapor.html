@@ -140,18 +140,24 @@
   <script>
     const BASE_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxpKAZzJ2P3Mj7BTGkMsdLulOQkIDqRbXGhTjrGZeyvIVFsUwBdhSJcyeBOXk4zDpd_/exec"; 
 
-    window.addEventListener('DOMContentLoaded', function() {
-      // Menangkap parameter kiriman dari tombol Spreadsheet secara otomatis
+   window.addEventListener('DOMContentLoaded', function() {
+      // Mengambil parameter otomatis dari URL hasil klik di Spreadsheet
       const urlParams = new URLSearchParams(window.location.search);
       const npsn = urlParams.get('npsn');
       const nisn = urlParams.get('nisn');
       const absen = urlParams.get('absen');
 
+      // Validasi internal: Jika link yang diklik tidak membawa parameter, munculkan error rujukan
       if (!npsn || !nisn) {
-        document.getElementById('loader').innerHTML = "<div class='text-red-500 p-4 bg-red-50 rounded-xl border border-red-200 inline-block'>⚠️ ERROR: Link rujukan dari Spreadsheet tidak lengkap (Membutuhkan parameter npsn & nisn).</div>";
+        document.getElementById('loader').innerHTML = `
+          <div class='text-center p-6 bg-amber-50 rounded-2xl border border-amber-200 max-w-md mx-auto my-10 font-sans'>
+            <div class='text-amber-500 font-bold text-base mb-1'>⚠️ ERROR: Link rujukan dari Spreadsheet tidak lengkap</div>
+            <p class='text-slate-600 text-xs leading-relaxed'>Pastikan Anda membuka halaman ini dengan mengklik tombol tautan yang ada di dalam Google Spreadsheet Sekolah pada tab sheet <b>rapor_siswa</b>.</p>
+          </div>`;
         return;
       }
 
+      // Jika parameter lengkap, langsung tembak Apps Script untuk ambil data
       ambilDataRaporOtomatis(npsn, nisn, absen);
     });
 
