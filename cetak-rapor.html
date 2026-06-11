@@ -62,7 +62,7 @@
 <body>
 
   <div id="navigasiAtas" class="no-print bg-slate-900 p-4 text-white flex justify-between items-center sticky top-0 shadow-md z-50">
-    <div class="text-xs font-bold font-sans tracking-wide">📄 RAPOR ELEKTRONIK (ISOLATED CHARIVA SYSTEM V14.5)</div>
+    <div class="text-xs font-bold font-sans tracking-wide">📄 RAPOR ELEKTRONIK (ISOLATED CHARIVA SYSTEM V16.0)</div>
     <button onclick="window.print()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow transition">🖨️ Cetak Lembaran Rapor</button>
   </div>
 
@@ -74,7 +74,6 @@
 
     <div id="coreRapor" class="hidden">
       
-      <!-- HEADER RAPOR -->
       <div class="flex items-center justify-start gap-6 border-b-2 border-black pb-4 mb-4">
        <img src="img/Logo_SD_Ranu_1.png" 
             class="w-16 h-auto object-contain" 
@@ -85,7 +84,6 @@
        </div>
       </div>
 
-      <!-- BIODATA / IDENTITAS SISWA -->
       <div class="grid grid-cols-2 gap-x-8 text-[12.5px] leading-relaxed mb-4">
         <table class="w-full">
           <tr>
@@ -133,7 +131,6 @@
         </table>
       </div>
 
-      <!-- TABEL A: MATAPELAJARAN UTAMA -->
       <div class="mb-4">
         <table class="w-full tabel-border-tegas text-xs text-left">
           <thead>
@@ -148,7 +145,6 @@
         </table>
       </div>
 
-      <!-- TABEL B: MUATAN LOKAL -->
       <div class="mb-5">
         <h3 class="font-bold text-xs uppercase mb-1 tracking-wide">MUATAN LOKAL</h3>
         <table class="w-full tabel-border-tegas text-xs text-left">
@@ -164,7 +160,6 @@
         </table>
       </div>
 
-      <!-- TABEL C: EKSTRAKURIKULER (TURUN 5 BARIS DENGAN MT-20 & REGISTER ANTI-PISAH) -->
       <div class="mt-20 mb-5 blok-anti-pisah">
         <h3 class="font-bold text-xs uppercase mb-1 tracking-wide">EKSTRAKURIKULER</h3>
         <table class="w-full tabel-border-tegas text-xs text-left">
@@ -180,7 +175,6 @@
         </table>
       </div>
 
-      <!-- TABEL D: KETIDAKHADIRAN -->
       <div class="mb-6 w-[260px] blok-anti-pisah">
         <h3 class="font-bold text-xs uppercase mb-1 tracking-wide">KETIDAKHADIRAN</h3>
         <table class="w-full tabel-border-tegas text-xs text-left">
@@ -204,7 +198,6 @@
         </table>
       </div>
 
-      <!-- BLOK TANDA TANGAN (AUTOMATICALLY SEJALUR) -->
       <div class="blok-anti-pisah text-xs mt-12 leading-relaxed">
         
         <div class="flex justify-between items-end text-center mb-16 px-4">
@@ -214,7 +207,7 @@
             <p class="text-xs text-transparent select-none">NIP. -</p> 
           </div>
           <div class="w-64">
-            <p class="mb-20 font-medium text-sm"><span id="lblTempatTanggal">-</span><br>Wali Kelas 4 (empat)</p>
+            <p class="mb-20 font-medium text-sm"><span id="lblTempatTanggal">-</span><br>Wali Kelas</p>
             <p id="lblNamaGuru" class="font-bold text-sm capitalize">-</p>
             <div class="border-b border-black w-48 mx-auto my-0.5"></div>
             <p id="lblNipGuru" class="text-xs text-slate-700">-</p>
@@ -237,6 +230,8 @@
     const urlParams = new URLSearchParams(window.location.search);
     const currentNoAbsen = urlParams.get('no_absen');
     const dynamicAppsScriptUrl = urlParams.get('api_url');
+    // Menangkap parameter NPSN dari LocalStorage atau URL rujukan untuk mendukung multi-tenant
+    const currentNpsn = urlParams.get('npsn') || localStorage.getItem('npsnAktif') || "20520190";
 
     window.addEventListener('DOMContentLoaded', function() {
       if(!currentNoAbsen || !dynamicAppsScriptUrl) {
@@ -245,7 +240,8 @@
         return;
       }
       
-      const targetApiUrl = `${dynamicAppsScriptUrl}?action=cetak_github&no_absen=${encodeURIComponent(currentNoAbsen)}`;
+      // Mengompilasi endpoint fetch lengkap sejalan dengan spesifikasi routing Engine V16.0
+      const targetApiUrl = `${dynamicAppsScriptUrl}?action=cetak_github&page=cetak&no_absen=${encodeURIComponent(currentNoAbsen)}&absen=${encodeURIComponent(currentNoAbsen)}&npsn=${encodeURIComponent(currentNpsn)}`;
       
       fetch(targetApiUrl)
         .then(response => {
@@ -272,13 +268,13 @@
       document.getElementById('lblNama').innerText = bundle.profil.nama || "-";
       document.getElementById('lblMurniNis').innerText = bundle.profil.nis || "-";
       document.getElementById('lblMurniNisn').innerText = bundle.profil.nisn || "-";
-      document.getElementById('lblKelas').innerText = bundle.profil.kelas || "IV";
-      document.getElementById('lblFase').innerText = bundle.profil.fase || "B";
-      document.getElementById('lblSemester').innerText = bundle.profil.semester || "II";
+      document.getElementById('lblKelas').innerText = bundle.profil.kelas || "-";
+      document.getElementById('lblFase').innerText = bundle.profil.fase || "-";
+      document.getElementById('lblSemester').innerText = bundle.profil.semester || "-";
       
       document.getElementById('lblSekolah').innerText = bundle.sekolah.nama_sekolah || "UPT SDN RANUKLINDUNGAN I";
-      document.getElementById('lblAlamat').innerText = bundle.sekolah.alamat || "Bandilan, Ranuklindungan";
-      document.getElementById('lblTp').innerText = bundle.sekolah.tp || "2025/2026";
+      document.getElementById('lblAlamat').innerText = bundle.sekolah.alamat || "-";
+      document.getElementById('lblTp').innerText = bundle.sekolah.tp || "-";
       
       // 2. Render Tabel A: Muatan Pelajaran Utama
       const tbodyUtama = document.getElementById('bodyTabelRapor');
@@ -312,12 +308,12 @@
         });
       }
 
-      // 4. Render Tabel C: Ekstrakurikuler
+      // 4. Render Tabel C: Ekstrakurikuler (Sinkronisasi struktur objek bundle.extra)
       const tbodyEkstra = document.getElementById('bodyTabelEkstra');
       tbodyEkstra.innerHTML = "";
-      const namaEkskul = (bundle.ekstra && bundle.ekstra.nama) ? bundle.ekstra.nama : "Pramuka";
-      const predikatEkskul = (bundle.ekstra && bundle.ekstra.predikat) ? bundle.ekstra.predikat : "-";
-      const keteranganEkskul = (bundle.ekstra && bundle.ekstra.keterangan) ? bundle.ekstra.keterangan : "-";
+      const namaEkskul = (bundle.extra && bundle.extra.nama) ? bundle.extra.nama : "Pramuka Wajib";
+      const predikatEkskul = (bundle.extra && bundle.extra.predikat) ? bundle.extra.predikat : "A";
+      const keteranganEkskul = (bundle.extra && bundle.extra.keterangan) ? bundle.extra.keterangan : "-";
 
       const trEx = document.createElement('tr');
       trEx.innerHTML = `
@@ -330,9 +326,9 @@
 
       // 5. Render Tabel D: Rekap Ketidakhadiran (Absensi)
       if (bundle.kehadiran) {
-        document.getElementById('lblSakit').innerText = bundle.kehadiran.sakit !== "" ? bundle.kehadiran.sakit : "-";
-        document.getElementById('lblIzin').innerText = bundle.kehadiran.izin !== "" ? bundle.kehadiran.izin : "-";
-        document.getElementById('lblAlfa').innerText = bundle.kehadiran.alfa !== "" ? bundle.kehadiran.alfa : "-";
+        document.getElementById('lblSakit').innerText = bundle.kehadiran.sakit !== "" ? bundle.kehadiran.sakit : "0";
+        document.getElementById('lblIzin').innerText = bundle.kehadiran.izin !== "" ? bundle.kehadiran.izin : "0";
+        document.getElementById('lblAlfa').innerText = bundle.kehadiran.alfa !== "" ? bundle.kehadiran.alfa : "0";
       }
 
       // 6. Injeksi Dinamis Blok Tanda Tangan Sesuai Request
