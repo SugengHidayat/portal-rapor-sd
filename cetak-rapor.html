@@ -1,227 +1,355 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Pemroses Data Rapor - UPT SDN Ranuklindungan I</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Style tambahan untuk memastikan border tabel berwarna hitam tegas */
-        .border-hitam { border: 1px solid #000000; }
-        .border-hitam th, .border-hitam td { border: 1px solid #000000; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pratinjau Rapor Resmi - UPT SDN Ranuklindungan I</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { 
+      font-family: 'Calibri', 'Arial', sans-serif; 
+      background-color: #f1f5f9; 
+      color: #000; 
+      margin: 0;
+      padding: 0;
+    }
+    .lembar-rapor {
+      background: white;
+      width: 210mm;
+      min-height: 297mm;
+      padding: 20mm 20mm 15mm 20mm;
+      margin: 20px auto;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+    }
+    .tabel-border-tegas, .tabel-border-tegas th, .tabel-border-tegas td {
+      border: 1.5px solid #000000 !important;
+    }
+
+    @page {
+      size: A4;           
+      margin: 0mm;        
+    }
+
+    @media print {
+      .no-print, #navigasiAtas, [class*="no-print"] { 
+        display: none !important; 
+        height: 0 !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        visibility: hidden !important;
+      }
+      body { 
+        background: #ffffff !important; 
+        margin: 0 !important; 
+        padding: 0 !important; 
+      }
+      .lembar-rapor { 
+        box-shadow: none !important; 
+        margin: 0 auto !important; 
+        padding: 15mm 15mm 15mm 15mm !important; 
+        width: 210mm !important; 
+        min-height: auto !important; 
+      }
+      /* Arsitektur Pencegahan Dokumen Terpotong Tengah */
+      .blok-anti-pisah {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+    }
+  </style>
 </head>
-<body class="bg-slate-50 font-sans p-4 md:p-8 text-slate-800">
+<body>
 
-    <div class="max-w-4xl mx-auto space-y-6">
-        
-        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-                <h1 class="text-lg font-black text-slate-900 tracking-tight">🎛️ Panel Penghitung & Input Rapor</h1>
-                <p class="text-xs text-slate-500 font-medium">Lakukan verifikasi nilai ASAS & Sumatif sebelum melakukan kalkulasi akhir.</p>
-            </div>
-            <div class="flex items-center gap-2 w-full md:w-auto">
-                <input type="number" id="inputNoAbsen" placeholder="No. Absen" class="w-full md:w-28 px-4 py-2.5 border border-slate-200 rounded-2xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <button id="btnAmbil" onclick="ambilNilaiSiswa()" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-2xl transition whitespace-nowrap">🔍 Ambil Data</button>
-                <button id="btnBuat" onclick="prosesBuatRapor()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-2xl shadow-sm transition whitespace-nowrap">⚡ Buat Rapor</button>
-            </div>
-        </div>
+  <div id="navigasiAtas" class="no-print bg-slate-900 p-4 text-white flex justify-between items-center sticky top-0 shadow-md z-50">
+    <div class="text-xs font-bold font-sans tracking-wide">📄 RAPOR ELEKTRONIK (ISOLATED CHARIVA SYSTEM V14.5)</div>
+    <button onclick="window.print()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow transition">🖨️ Cetak Lembaran Rapor</button>
+  </div>
 
-        <div id="boxTabelAtas" class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="font-bold text-sm text-slate-900">📊 Lembar Verifikasi Nilai Murni: <span id="namaSiswaLabel" class="text-blue-600 uppercase"></span></h2>
-                <span class="px-2.5 py-1 bg-amber-50 text-amber-700 rounded-lg text-[10px] font-bold">Status: Terkoneksi</span>
-            </div>
-            
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs border border-slate-200 rounded-xl overflow-hidden">
-                    <thead>
-                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold">
-                            <th class="p-3">Mata Pelajaran / Komponen</th>
-                            <th class="p-3 text-center">Rata-Rata Sumatif Harian</th>
-                            <th class="p-3 text-center">Nilai Murni ASAS</th>
-                        </tr>
-                    </thead>
-                    <tbody id="rowNilaiMurni" class="divide-y divide-slate-100 font-semibold text-slate-700"></tbody>
-                </table>
-            </div>
-        </div>
+  <div class="lembar-rapor" id="kontenRapor">
+    
+    <div id="loader" class="text-center text-slate-500 font-bold text-sm pt-20 animate-pulse font-sans">
+      🔄 Mengakses jalur data terisolasi 'cetak_github'... Memetakan lembar rapor...
+    </div>
 
-        <div id="outputGenerator" class="bg-emerald-50 border border-emerald-200 rounded-3xl p-6 hidden">
-            <h3 class="font-bold text-emerald-900 text-sm mb-2">🎉 Hasil Pemrosesan Engine Berhasil Ditulis!</h3>
-            <div class="text-xs space-y-2 text-emerald-800 font-medium">
-                <p><strong>Nama Siswa:</strong> <span id="outNamaSiswa" class="font-bold text-slate-900 uppercase">-</span></p>
-                <p><strong>Status Sinkronisasi:</strong> <span class="px-2 py-0.5 bg-white border border-emerald-300 font-bold rounded text-emerald-700">SUKSES</span></p>
-                <p class="text-[11px] text-emerald-600 pt-1 font-normal">Seluruh nilai tiap mata pelajaran telah dihitung berdasarkan rumus kombinasi <code class="bg-emerald-100 px-1 rounded text-emerald-800">(Harian + ASAS) / 2</code>. Deskripsi disinkronkan otomatis dari sheet <b>tp</b> &amp; <b>kkm_kktp</b>, serta akumulasi narasi sikap <b>dpl_1</b> s/d <b>dpl_8</b> dari sheet <b>dpl</b> telah berhasil disimpan langsung ke dalam tab sheet <b>rapor_siswa</b>.</p>
-            </div>
-        </div>
+    <div id="coreRapor" class="hidden">
+      
+      <!-- HEADER RAPOR -->
+      <div class="flex items-center justify-start gap-6 border-b-2 border-black pb-4 mb-4">
+       <img src="img/Logo_SD_Ranu_1.png" 
+            class="w-16 h-auto object-contain" 
+            alt="Logo SDN Ranuklindungan I">
+       <div class="text-center flex-1 pr-16">
+         <h1 class="text-lg font-bold tracking-wide">LAPORAN HASIL BELAJAR</h1>
+         <h2 class="text-base font-bold tracking-wider">(RAPOR)</h2>
+       </div>
+      </div>
 
-        <div id="boxTabelStatusCetak" class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-            <div class="mb-4">
-                <h2 class="font-bold text-sm text-slate-900">🖨️ Daftar Status Monitor Cetak Rapor Siswa</h2>
-                <p class="text-[11px] text-slate-500">Warna tombol mendeteksi kelengkapan data 10 mata pelajaran pada lembar berkas <b>rapor_siswa</b>.</p>
-            </div>
-            
-            <div class="overflow-x-auto">
-                <table class="w-full text-left text-xs border-hitam font-semibold">
-                    <thead>
-                        <tr class="bg-slate-100 text-slate-900 font-bold">
-                            <th class="p-2.5 w-16 text-center">No Absen</th>
-                            <th class="p-2.5 w-36">NISN</th>
-                            <th class="p-2.5">Nama Siswa</th>
-                            <th class="p-2.5 w-40 text-center">Status / Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="rowStatusCetak" class="divide-y divide-slate-900 text-slate-800">
-                        <tr>
-                            <td colspan="4" class="p-4 text-center text-slate-400 font-medium animate-pulse">Sedang memuat status data siswa dari server...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+      <!-- BIODATA / IDENTITAS SISWA -->
+      <div class="grid grid-cols-2 gap-x-8 text-[12.5px] leading-relaxed mb-4">
+        <table class="w-full">
+          <tr>
+            <td class="w-36 py-0.5 font-medium">Nama Peserta Didik</td>
+            <td class="w-4">:</td>
+            <td id="lblNama" class="font-bold uppercase text-sm">-</td>
+          </tr>
+          <tr>
+            <td class="py-0.5 font-medium">NIS / NISN</td>
+            <td>:</td>
+            <td><span id="lblMurniNis">-</span> / <span id="lblMurniNisn">-</span></td>
+          </tr>
+          <tr>
+            <td class="py-0.5 font-medium">Nama Sekolah</td>
+            <td>:</td>
+            <td id="lblSekolah" class="font-medium">-</td>
+          </tr>
+          <tr>
+            <td class="py-0.5 font-medium">Alamat</td>
+            <td>:</td>
+            <td id="lblAlamat">-</td>
+          </tr>
+        </table>
+        <table class="w-full">
+          <tr>
+            <td class="w-32 py-0.5 font-medium">Kelas</td>
+            <td class="w-4">:</td>
+            <td id="lblKelas">-</td>
+          </tr>
+          <tr>
+            <td class="py-0.5 font-medium">Fase</td>
+            <td>:</td>
+            <td id="lblFase">-</td>
+          </tr>
+          <tr>
+            <td class="py-0.5 font-medium">Semester</td>
+            <td>:</td>
+            <td id="lblSemester">-</td>
+          </tr>
+          <tr>
+            <td class="py-0.5 font-medium">Tahun Pelajaran</td>
+            <td>:</td>
+            <td id="lblTp">-</td>
+          </tr>
+        </table>
+      </div>
 
-    </div>
+      <!-- TABEL A: MATAPELAJARAN UTAMA -->
+      <div class="mb-4">
+        <table class="w-full tabel-border-tegas text-xs text-left">
+          <thead>
+            <tr class="bg-slate-50 text-center font-bold">
+              <th class="p-2 w-10 text-center">No</th>
+              <th class="p-2 w-48 text-center">Muatan Pelajaran</th>
+              <th class="p-2 w-16 text-center">Nilai Akhir</th>
+              <th class="p-2 text-center">Capaian Kompetensi</th>
+            </tr>
+          </thead>
+          <tbody id="bodyTabelRapor" class="divide-y divide-black font-normal"></tbody>
+        </table>
+      </div>
 
-    <script>
-        // TARGET URL API APPS SCRIPT RESMI (ISOLATED ENGINE V12.5)
-        const API_URL = "https://script.google.com/macros/s/AKfycbwEpRt1PizUVTq3zatgbEX8gnce2LILCoPjEsf0FertTGfCwuhFps0wVYguPyF8XRyo/exec";
+      <!-- TABEL B: MUATAN LOKAL -->
+      <div class="mb-5">
+        <h3 class="font-bold text-xs uppercase mb-1 tracking-wide">MUATAN LOKAL</h3>
+        <table class="w-full tabel-border-tegas text-xs text-left">
+          <thead>
+            <tr class="bg-slate-50 text-center font-bold">
+              <th class="p-2 w-10 text-center">No</th>
+              <th class="p-2 w-48 text-center">Muatan Pelajaran</th>
+              <th class="p-2 w-16 text-center">Nilai Akhir</th>
+              <th class="p-2 text-center">Capaian Kompetensi</th>
+            </tr>
+          </thead>
+          <tbody id="bodyTabelMulok" class="divide-y divide-black font-normal"></tbody>
+        </table>
+      </div>
 
-        // Mengambil Id Spreadsheet Rapor secara dinamis dari LocalStorage Sesi Login
-        const raporId = localStorage.getItem("raporIdAktif");
+      <!-- TABEL C: EKSTRAKURIKULER (TURUN 5 BARIS DENGAN MT-20 & REGISTER ANTI-PISAH) -->
+      <div class="mt-20 mb-5 blok-anti-pisah">
+        <h3 class="font-bold text-xs uppercase mb-1 tracking-wide">EKSTRAKURIKULER</h3>
+        <table class="w-full tabel-border-tegas text-xs text-left">
+          <thead>
+            <tr class="bg-slate-50 text-center font-bold">
+              <th class="p-2 w-10 text-center">No</th>
+              <th class="p-2 w-48 text-center">Kegiatan Ekstrakurikuler</th>
+              <th class="p-2 w-16 text-center">Predikat</th>
+              <th class="p-2 text-center">Keterangan</th>
+            </tr>
+          </thead>
+          <tbody id="bodyTabelEkstra" class="divide-y divide-black font-normal"></tbody>
+        </table>
+      </div>
 
-        // Validasi awal agar user tidak melompati sistem login dashboard
-        if (!raporId) {
-            alert("Sesi tidak valid! Token Spreadsheet Rapor tidak ditemukan. Mengalihkan kembali ke login...");
-            window.location.href = "index.html";
-        }
+      <!-- TABEL D: KETIDAKHADIRAN -->
+      <div class="mb-6 w-[260px] blok-anti-pisah">
+        <h3 class="font-bold text-xs uppercase mb-1 tracking-wide">KETIDAKHADIRAN</h3>
+        <table class="w-full tabel-border-tegas text-xs text-left">
+          <tbody>
+            <tr>
+              <td class="p-2 w-32 font-medium">Sakit</td>
+              <td id="lblSakit" class="p-2 text-center font-bold w-14 bg-slate-50">-</td>
+              <td class="p-2 text-left">hari</td>
+            </tr>
+            <tr>
+              <td class="p-2 font-medium">Izin</td>
+              <td id="lblIzin" class="p-2 text-center font-bold bg-slate-50">-</td>
+              <td class="p-2 text-left">hari</td>
+            </tr>
+            <tr>
+              <td class="p-2 font-medium">Tanpa Keterangan</td>
+              <td id="lblAlfa" class="p-2 text-center font-bold bg-slate-50">-</td>
+              <td class="p-2 text-left">hari</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-        // Muat daftar status ketika aplikasi pertama kali dibuka
-        window.addEventListener('DOMContentLoaded', muatStatusCetakSemuaSiswa);
+      <!-- BLOK TANDA TANGAN (AUTOMATICALLY SEJALUR) -->
+      <div class="blok-anti-pisah text-xs mt-12 leading-relaxed">
+        
+        <div class="flex justify-between items-end text-center mb-16 px-4">
+          <div class="w-64">
+            <p class="mb-20 font-medium text-sm">Orang Tua,</p>
+            <div class="border-b border-black w-48 mx-auto"></div>
+            <p class="text-xs text-transparent select-none">NIP. -</p> 
+          </div>
+          <div class="w-64">
+            <p class="mb-20 font-medium text-sm"><span id="lblTempatTanggal">-</span><br>Wali Kelas 4 (empat)</p>
+            <p id="lblNamaGuru" class="font-bold text-sm capitalize">-</p>
+            <div class="border-b border-black w-48 mx-auto my-0.5"></div>
+            <p id="lblNipGuru" class="text-xs text-slate-700">-</p>
+          </div>
+        </div>
 
-        async function muatStatusCetakSemuaSiswa() {
-            try {
-                const res = await fetch(`${API_URL}?action=get_status_cetak&raporId=${raporId}`);
-                const data = await res.json();
-                
-                if (data.status === "SUCCESS") {
-                    const tbody = document.getElementById('rowStatusCetak');
-                    tbody.innerHTML = "";
-                    
-                    data.dataSiswa.forEach(siswa => {
-                        const tr = document.createElement('tr');
-                        let tombolStatus = "";
-                        
-                        if (siswa.isLengkap) {
-                            tombolStatus = `<button onclick="aksiCetak('${siswa.no_absen}')" class="w-full px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white font-bold text-[11px] rounded-lg shadow-sm transition">🟢 Cetak Rapor</button>`;
-                        } else {
-                            tombolStatus = `<button onclick="alert('Data nilai Ananda ${siswa.nama} belum lengkap! Silakan klik tombol Ambil Data dilanjutkan Buat Rapor terlebih dahulu.')" class="w-full px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white font-bold text-[11px] rounded-lg shadow-sm transition">🔴 Belum Lengkap</button>`;
-                        }
-                        
-                        tr.innerHTML = `
-                            <td class="p-2.5 text-center">${siswa.no_absen}</td>
-                            <td class="p-2.5">${siswa.nisn || "-"}</td>
-                            <td class="p-2.5 uppercase">${siswa.nama}</td>
-                            <td class="p-2.5 text-center">${tombolStatus}</td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                } else {
-                    document.getElementById('rowStatusCetak').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-600">Gagal memuat: ${data.message}</td></tr>`;
-                }
-            } catch (e) {
-                document.getElementById('rowStatusCetak').innerHTML = `<tr><td colspan="4" class="p-4 text-center text-red-600">Gagal terhubung dengan cloud server database.</td></tr>`;
-            }
-        }
+        <div class="text-center w-full">
+          <p class="mb-20 font-medium text-sm">Mengetahui,<br>Kepala Sekolah</p>
+          <p id="lblNamaKepsek" class="font-bold text-sm capitalize">-</p>
+          <div class="border-b border-black w-56 mx-auto my-0.5"></div>
+          <p id="lblNipKepsek" class="text-xs text-slate-700">-</p>
+        </div>
 
-        async function ambilNilaiSiswa() {
-            const noAbsen = document.getElementById('inputNoAbsen').value.trim();
-            if (!noAbsen) return alert("Isi No. Absen!");
-            
-            const btn = document.getElementById('btnAmbil');
-            btn.disabled = true;
-            btn.innerText = "Memuat...";
+      </div>
+      
+    </div>
+  </div>
 
-            document.getElementById('boxTabelAtas').classList.add('hidden');
-            document.getElementById('outputGenerator').classList.add('hidden');
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentNoAbsen = urlParams.get('no_absen');
+    const dynamicAppsScriptUrl = urlParams.get('api_url');
 
-            try {
-                // Mengambil nilai murni dari sheet 'rekap_harian' dan 'rekap_asas' di id_spreadsheet_rapor
-                const res = await fetch(`${API_URL}?action=read&no_absen=${noAbsen}&raporId=${raporId}`);
-                const data = await res.json();
-                
-                if (data.status === "SUCCESS") {
-                    document.getElementById('namaSiswaLabel').innerText = data.nama;
-                    const tbody = document.getElementById('rowNilaiMurni');
-                    tbody.innerHTML = "";
-                    
-                    const mapelList = ["Agama", "Pancasila", "B. Indonesia", "Matematika", "IPAS", "PJOK", "Kesenian", "B. Jawa", "B. Inggris", "BTQ"];
-                    
-                    mapelList.forEach(m => {
-                        const tr = document.createElement('tr');
-                        const nSumatif = data.dataSumatif[m] !== undefined && data.dataSumatif[m] !== "" ? data.dataSumatif[m] : "0";
-                        const nAsas = data.dataAsas[m] !== undefined && data.dataAsas[m] !== "" ? data.dataAsas[m] : "0";
-                        
-                        tr.innerHTML = `
-                            <td class="p-3 font-bold">${m}</td>
-                            <td class="p-3 text-center text-emerald-600 font-black text-sm">${nSumatif}</td>
-                            <td class="p-3 text-center text-blue-600 font-black text-sm">${nAsas}</td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                    
-                    document.getElementById('boxTabelAtas').classList.remove('hidden');
-                } else {
-                    alert(data.message);
-                }
-            } catch (e) {
-                alert("Koneksi gagal membaca database spreadsheet rapor.");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "🔍 Ambil Data";
-            }
-        }
+    window.addEventListener('DOMContentLoaded', function() {
+      if(!currentNoAbsen || !dynamicAppsScriptUrl) {
+        document.getElementById('loader').className = "text-center p-10 text-sm font-sans text-amber-600 font-bold bg-amber-50 rounded-xl border border-amber-200 m-5";
+        document.getElementById('loader').innerHTML = "⚠️ PARAMETER DOKUMEN BELUM LENGKAP.";
+        return;
+      }
+      
+      const targetApiUrl = `${dynamicAppsScriptUrl}?action=cetak_github&no_absen=${encodeURIComponent(currentNoAbsen)}`;
+      
+      fetch(targetApiUrl)
+        .then(response => {
+          if (!response.ok) throw new Error("Terjadi gangguan transmisi data API.");
+          return response.json();
+        })
+        .then(responseObj => {
+          if (responseObj.status === "SUCCESS" && responseObj.data) {
+            renderBundleKeRapor(responseObj.data);
+          } else {
+            throw new Error(responseObj.message || "Gagal menarik data melalui parameter cetak_github.");
+          }
+        })
+        .catch(err => {
+          tampilkanPesanGagal(err.toString());
+        });
+    });
 
-        async function prosesBuatRapor() {
-            const noAbsen = document.getElementById('inputNoAbsen').value.trim();
-            if (!noAbsen) return alert("Pilih No. Absen Siswa!");
+    function renderBundleKeRapor(bundle) {
+      document.getElementById('loader').classList.add('hidden');
+      document.getElementById('coreRapor').classList.remove('hidden');
+      
+      // 1. Injeksi Data Identitas Utama
+      document.getElementById('lblNama').innerText = bundle.profil.nama || "-";
+      document.getElementById('lblMurniNis').innerText = bundle.profil.nis || "-";
+      document.getElementById('lblMurniNisn').innerText = bundle.profil.nisn || "-";
+      document.getElementById('lblKelas').innerText = bundle.profil.kelas || "IV";
+      document.getElementById('lblFase').innerText = bundle.profil.fase || "B";
+      document.getElementById('lblSemester').innerText = bundle.profil.semester || "II";
+      
+      document.getElementById('lblSekolah').innerText = bundle.sekolah.nama_sekolah || "UPT SDN RANUKLINDUNGAN I";
+      document.getElementById('lblAlamat').innerText = bundle.sekolah.alamat || "Bandilan, Ranuklindungan";
+      document.getElementById('lblTp').innerText = bundle.sekolah.tp || "2025/2026";
+      
+      // 2. Render Tabel A: Muatan Pelajaran Utama
+      const tbodyUtama = document.getElementById('bodyTabelRapor');
+      tbodyUtama.innerHTML = "";
+      if (bundle.payloadNilai && bundle.payloadNilai.length > 0) {
+        bundle.payloadNilai.forEach(item => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="p-2 text-center font-semibold align-top">${item.no}</td>
+            <td class="p-2 font-semibold align-top">${item.mapel}</td>
+            <td class="p-2 text-center font-bold text-sm align-top bg-slate-50">${item.nilai}</td>
+            <td class="p-2 text-justify leading-relaxed text-[11px] align-top whitespace-pre-line">${item.deskripsi}</td>
+          `;
+          tbodyUtama.appendChild(tr);
+        });
+      }
 
-            const btn = document.getElementById('btnBuat');
-            btn.disabled = true;
-            btn.innerText = "Memproses Engine...";
+      // 3. Render Tabel B: Muatan Lokal
+      const tbodyMulok = document.getElementById('bodyTabelMulok');
+      tbodyMulok.innerHTML = "";
+      if (bundle.payloadMulok && bundle.payloadMulok.length > 0) {
+        bundle.payloadMulok.forEach(item => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="p-2 text-center font-semibold align-top">${item.no}</td>
+            <td class="p-2 font-semibold align-top">${item.mapel}</td>
+            <td class="p-2 text-center font-bold text-sm align-top bg-slate-50">${item.nilai}</td>
+            <td class="p-2 text-justify leading-relaxed text-[11px] align-top whitespace-pre-line">${item.deskripsi}</td>
+          `;
+          tbodyMulok.appendChild(tr);
+        });
+      }
 
-            try {
-                document.getElementById('outputGenerator').classList.add('hidden');
-                
-                // Mengirim instruksi kalkulasi (Harian+ASAS/2), sinkronisasi TP & KKM, serta penulisan narasi DPL_1-DPL_8
-                const res = await fetch(`${API_URL}?action=generate&no_absen=${noAbsen}&raporId=${raporId}`);
-                const data = await res.json();
-                
-                if (data.status === "SUCCESS") {
-                    document.getElementById('outNamaSiswa').innerText = data.nama;
-                    document.getElementById('outputGenerator').classList.remove('hidden');
-                    alert("Berhasil! Nilai Rapor Akhir, Deskripsi TP, dan Komponen DPL Terhitung & Tersimpan ke sheet rapor_siswa.");
-                    muatStatusCetakSemuaSiswa();
-                } else {
-                    alert(data.message);
-                }
-            } catch (e) {
-                alert("Engine gagal melakukan kalkulasi atau penulisan ke cloud spreadsheet.");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "⚡ Buat Rapor";
-            }
-        }
+      // 4. Render Tabel C: Ekstrakurikuler
+      const tbodyEkstra = document.getElementById('bodyTabelEkstra');
+      tbodyEkstra.innerHTML = "";
+      const namaEkskul = (bundle.ekstra && bundle.ekstra.nama) ? bundle.ekstra.nama : "Pramuka";
+      const predikatEkskul = (bundle.ekstra && bundle.ekstra.predikat) ? bundle.ekstra.predikat : "-";
+      const keteranganEkskul = (bundle.ekstra && bundle.ekstra.keterangan) ? bundle.ekstra.keterangan : "-";
 
-        function aksiCetak(noAbsen) {
-            const currentUrl = window.location.href;
-            const baseUrl = currentUrl.substring(0, currentUrl.lastIndexOf('/'));
-            const halamanCetakTarget = `${baseUrl}/cetak-rapor.html`;
-            
-            // Menyertakan token raporId agar lembar cetak mengambil sumber data yang tepat
-            const urlFinal = `${halamanCetakTarget}?no_absen=${encodeURIComponent(noAbsen)}&raporId=${raporId}&page=cetak&api_url=${encodeURIComponent(API_URL)}`;
-            window.open(urlFinal, '_blank');
-        }
-    </script>
+      const trEx = document.createElement('tr');
+      trEx.innerHTML = `
+        <td class="p-2 text-center font-semibold align-top">1</td>
+        <td class="p-2 font-semibold align-top">${namaEkskul}</td>
+        <td class="p-2 text-center font-bold text-sm align-top bg-slate-50">${predikatEkskul}</td>
+        <td class="p-2 text-justify leading-relaxed text-[11px] align-top whitespace-pre-line">${keteranganEkskul}</td>
+      `;
+      tbodyEkstra.appendChild(trEx);
+
+      // 5. Render Tabel D: Rekap Ketidakhadiran (Absensi)
+      if (bundle.kehadiran) {
+        document.getElementById('lblSakit').innerText = bundle.kehadiran.sakit !== "" ? bundle.kehadiran.sakit : "-";
+        document.getElementById('lblIzin').innerText = bundle.kehadiran.izin !== "" ? bundle.kehadiran.izin : "-";
+        document.getElementById('lblAlfa').innerText = bundle.kehadiran.alfa !== "" ? bundle.kehadiran.alfa : "-";
+      }
+
+      // 6. Injeksi Dinamis Blok Tanda Tangan Sesuai Request
+      if (bundle.ttd) {
+        document.getElementById('lblTempatTanggal').innerText = bundle.ttd.tanggal_cetak || "Pasuruan, .........................";
+        document.getElementById('lblNamaGuru').innerText = bundle.ttd.guru_kelas || "-";
+        document.getElementById('lblNipGuru').innerText = bundle.ttd.nip_guru ? "NIP. " + bundle.ttd.nip_guru : "NIP. ...........................";
+        document.getElementById('lblNamaKepsek').innerText = bundle.ttd.kepala_sekolah || "-";
+        document.getElementById('lblNipKepsek').innerText = bundle.ttd.nip_kepala ? "NIP. " + bundle.ttd.nip_kepala : "NIP. ...........................";
+      }
+    }
+
+    function tampilkanPesanGagal(pesanError) {
+      document.getElementById('loader').removeAttribute('class');
+      document.getElementById('loader').className = "text-center p-8 text-sm font-sans text-red-600 font-bold bg-red-50 rounded-xl border border-red-200 m-5";
+      document.getElementById('loader').innerHTML = `🛑 GAGAL MEMUAT BLOK RAPOR:<br><span class='font-normal text-xs text-slate-600 block my-2'>${pesanError}</span>`;
+    }
+  </script>
 </body>
 </html>
